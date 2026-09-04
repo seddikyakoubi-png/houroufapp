@@ -1,0 +1,14 @@
+{
+  "id": 97,
+  "name_ar": "القدر",
+  "name_fr": "La Destinée",
+  "name_nl": "De Macht",
+  "total_ayahs": 5,
+  "ayahs": [
+    { "number": 1, "arabic": "إِنَّا أَنزَلْنَاهُ فِي لَيْلَةِ الْقَدْرِ", "french": "En vérité, Nous l'avons fait descendre pendant la Nuit du Destin", "dutch": "Voorwaar, Wij hebben hem neergezonden in de Nacht van de Macht" },
+    { "number": 2, "arabic": "وَمَا أَدْرَاكَ مَا لَيْلَةُ الْقَدْرِ", "french": "Et qui te fera savoir ce qu'est la Nuit du Destin ?", "dutch": "En wat doet je weten wat de Nacht van de Macht is?" },
+    { "number": 3, "arabic": "لَيْلَةُ الْقَدْرِ خَيْرٌ مِّنْ أَلْفِ شَهْرٍ", "french": "La Nuit du Destin est meilleure que mille mois", "dutch": "De Nacht van de Macht is beter dan duizend maanden" },
+    { "number": 4, "arabic": "تَنَزَّلُ الْمَلَائِكَةُ وَالرُّوحُ فِيهَا بِإِذْنِ رَبِّهِم مِّن كُلِّ أَمْرٍ", "french": "Les anges et l'Esprit y descendent, par la permission de leur Seigneur, pour tout ordre", "dutch": "De engelen en de Geest dalen erin neer, met verlof van hun Heer, voor elke beschikking" },
+    { "number": 5, "arabic": "سَلَامٌ هِيَ حَتَّىٰ مَطْلَعِ الْفَجْرِ", "french": "Elle est paix et sérénité jusqu'au lever de l'aube", "dutch": "Het is vrede, tot het aanbreken van de dageraad" }
+  ]
+}

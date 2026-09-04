@@ -1,0 +1,45 @@
+{
+  "id": 109,
+  "name_ar": "الكافرون",
+  "name_fr": "Les Infidèles",
+  "name_nl": "De Ongelovigen",
+  "total_ayahs": 6,
+  "ayahs": [
+    {
+      "number": 1,
+      "arabic": "قُلْ يَا أَيُّهَا الْكَافِرُونَ",
+      "french": "Dis : Ô vous les infidèles",
+      "dutch": "Zeg: O ongelovigen"
+    },
+    {
+      "number": 2,
+      "arabic": "لَا أَعْبُدُ مَا تَعْبُدُونَ",
+      "french": "Je n'adore pas ce que vous adorez",
+      "dutch": "Ik aanbid niet wat jullie aanbidden"
+    },
+    {
+      "number": 3,
+      "arabic": "وَلَا أَنتُمْ عَابِدُونَ مَا أَعْبُدُ",
+      "french": "Et vous n'êtes pas adorateurs de ce que j'adore",
+      "dutch": "En jullie zijn geen aanbidders van wat ik aanbid"
+    },
+    {
+      "number": 4,
+      "arabic": "وَلَا أَنَا عَابِدٌ مَّا عَبَدتُّمْ",
+      "french": "Et je ne suis pas adorateur de ce que vous adorez",
+      "dutch": "En ik ben geen aanbidder van wat jullie aanbidden"
+    },
+    {
+      "number": 5,
+      "arabic": "وَلَا أَنتُمْ عَابِدُونَ مَا أَعْبُدُ",
+      "french": "Et vous n'êtes pas adorateurs de ce que j'adore",
+      "dutch": "En jullie zijn geen aanbidders van wat ik aanbid"
+    },
+    {
+      "number": 6,
+      "arabic": "لَكُمْ دِينُكُمْ وَلِيَ دِينِ",
+      "french": "À vous votre religion, et à moi ma religion",
+      "dutch": "Voor jullie is jullie godsdienst en voor mij is mijn godsdienst"
+    }
+  ]
+}

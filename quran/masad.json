@@ -1,0 +1,39 @@
+{
+  "id": 111,
+  "name_ar": "المسد",
+  "name_fr": "Les Fibres",
+  "name_nl": "De Palmvezel",
+  "total_ayahs": 5,
+  "ayahs": [
+    {
+      "number": 1,
+      "arabic": "تَبَّتْ يَدَا أَبِي لَهَبٍ وَتَبَّ",
+      "french": "Que périssent les deux mains d'Abou Lahab et que lui-même périsse",
+      "dutch": "Mogen de twee handen van Abu Lahab vergaan en moge hij zelf vergaan"
+    },
+    {
+      "number": 2,
+      "arabic": "مَا أَغْنَىٰ عَنْهُ مَالُهُ وَمَا كَسَبَ",
+      "french": "Sa richesse ne lui a servi à rien, ni ce qu'il a acquis",
+      "dutch": "Zijn bezit heeft hem niet gebaat, noch wat hij heeft verdiend"
+    },
+    {
+      "number": 3,
+      "arabic": "سَيَصْلَىٰ نَارًا ذَاتَ لَهَبٍ",
+      "french": "Il sera brûlé dans un feu plein de flammes",
+      "dutch": "Hij zal branden in een vuur vol vlammen"
+    },
+    {
+      "number": 4,
+      "arabic": "وَامْرَأَتُهُ حَمَّالَةَ الْحَطَبِ",
+      "french": "Et sa femme, la porteuse de bois",
+      "dutch": "En zijn vrouw, de houtdraagster"
+    },
+    {
+      "number": 5,
+      "arabic": "فِي جِيدِهَا حَبْلٌ مِّن مَّسَدٍ",
+      "french": "À son cou, une corde de fibres de palmier",
+      "dutch": "Om haar hals een touw van palmvezels"
+    }
+  ]
+}

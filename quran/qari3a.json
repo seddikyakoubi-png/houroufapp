@@ -1,0 +1,69 @@
+{
+  "id": 101,
+  "name_ar": "القارعة",
+  "name_fr": "Le Fracas",
+  "name_nl": "De Verpletterende Slag",
+  "total_ayahs": 10,
+  "ayahs": [
+    {
+      "number": 1,
+      "arabic": "الْقَارِعَةُ مَا الْقَارِعَةُ",
+      "french": "Le Fracas ! Qu'est-ce que le Fracas ?",
+      "dutch": "De Verpletterende Slag! Wat is de Verpletterende Slag?"
+    },
+    {
+      "number": 2,
+      "arabic": "وَمَا أَدْرَاكَ مَا الْقَارِعَةُ",
+      "french": "Et qui te fera savoir ce qu'est le Fracas ?",
+      "dutch": "En wat doet je weten wat de Verpletterende Slag is?"
+    },
+    {
+      "number": 3,
+      "arabic": "يَوْمَ يَكُونُ النَّاسُ كَالْفَرَاشِ الْمَبْثُوثِ",
+      "french": "Le jour où les gens seront comme des papillons dispersés",
+      "dutch": "Op de Dag waarop de mensen als verspreide vlinders zullen zijn"
+    },
+    {
+      "number": 4,
+      "arabic": "وَتَكُونُ الْجِبَالُ كَالْعِهْنِ الْمَنْفُوشِ",
+      "french": "et les montagnes comme de la laine cardée",
+      "dutch": "en de bergen als losgekaarde wol zullen zijn"
+    },
+    {
+      "number": 5,
+      "arabic": "فَأَمَّا مَنْ ثَقُلَتْ مَوَازِينُهُ",
+      "french": "Quant à celui dont la balance sera lourde",
+      "dutch": "Wat betreft degene wiens weegschaal zwaar is"
+    },
+    {
+      "number": 6,
+      "arabic": "فَهُوَ فِي عِيشَةٍ رَاضِيَةٍ",
+      "french": "il vivra dans une existence agréable",
+      "dutch": "hij zal in een aangenaam leven verkeren"
+    },
+    {
+      "number": 7,
+      "arabic": "وَأَمَّا مَنْ خَفَّتْ مَوَازِينُهُ",
+      "french": "Et quant à celui dont la balance sera légère",
+      "dutch": "En wat betreft degene wiens weegschaal licht is"
+    },
+    {
+      "number": 8,
+      "arabic": "فَأُمُّهُ هَاوِيَةٌ",
+      "french": "sa demeure sera l'Abîme",
+      "dutch": "zijn verblijfplaats zal de Afgrond zijn"
+    },
+    {
+      "number": 9,
+      "arabic": "وَمَا أَدْرَاكَ مَا هِيَهْ",
+      "french": "Et qui te fera savoir ce qu'il en est ?",
+      "dutch": "En wat doet je weten wat dat is?"
+    },
+    {
+      "number": 10,
+      "arabic": "نَارٌ حَامِيَةٌ",
+      "french": "C'est un Feu ardent",
+      "dutch": "Het is een brandend Vuur"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "id": 107,
+  "name_ar": "الماعون",
+  "name_fr": "L'Ustensile",
+  "name_nl": "Het Gebruiksvoorwerp",
+  "total_ayahs": 6,
+  "ayahs": [
+    {
+      "number": 1,
+      "arabic": "أَرَأَيْتَ الَّذِي يُكَذِّبُ بِالدِّينِ",
+      "french": "As-tu vu celui qui traite la rétribution de mensonge ?",
+      "dutch": "Heb je hem gezien die het Oordeel loochent?"
+    },
+    {
+      "number": 2,
+      "arabic": "فَذَٰلِكَ الَّذِي يَدُعُّ الْيَتِيمَ",
+      "french": "C'est celui qui repousse rudement l'orphelin",
+      "dutch": "Dat is degene die de wees ruw wegduwt"
+    },
+    {
+      "number": 3,
+      "arabic": "وَلَا يَحُضُّ عَلَىٰ طَعَامِ الْمِسْكِينِ",
+      "french": "et qui n'incite pas à nourrir le pauvre",
+      "dutch": "en die niet aanspoort tot het voeden van de arme"
+    },
+    {
+      "number": 4,
+      "arabic": "فَوَيْلٌ لِلْمُصَلِّينَ",
+      "french": "Malheur donc à ceux qui prient",
+      "dutch": "Wee dan degenen die bidden"
+    },
+    {
+      "number": 5,
+      "arabic": "الَّذِينَ هُمْ عَنْ صَلَاتِهِمْ سَاهُونَ",
+      "french": "tout en étant distraits de leur prière",
+      "dutch": "terwijl zij achteloos zijn tegenover hun gebed"
+    },
+    {
+      "number": 6,
+      "arabic": "الَّذِينَ هُمْ يُرَاءُونَ وَيَمْنَعُونَ الْمَاعُونَ",
+      "french": "ceux qui font semblant [de bien agir] et refusent l'entraide",
+      "dutch": "die zich alleen voordoen en de gewone hulp weigeren"
+    }
+  ]
+}

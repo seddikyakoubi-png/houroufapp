@@ -1,0 +1,63 @@
+{
+  "id": 99,
+  "name_ar": "الزلزلة",
+  "name_fr": "Le Séisme",
+  "name_nl": "De Aardbeving",
+  "total_ayahs": 9,
+  "ayahs": [
+    {
+      "number": 1,
+      "arabic": "إِذَا زُلْزِلَتِ الْأَرْضُ زِلْزَالَهَا",
+      "french": "Quand la terre tremblera de son tremblement",
+      "dutch": "Wanneer de aarde beeft met haar beving"
+    },
+    {
+      "number": 2,
+      "arabic": "وَأَخْرَجَتِ الْأَرْضُ أَثْقَالَهَا",
+      "french": "et que la terre expulsera ses fardeaux",
+      "dutch": "en de aarde haar lasten naar buiten brengt"
+    },
+    {
+      "number": 3,
+      "arabic": "وَقَالَ الْإِنْسَانُ مَا لَهَا",
+      "french": "et que l'homme dira : \"Qu'a-t-elle ?\"",
+      "dutch": "en de mens zegt: \"Wat is er met haar?\""
+    },
+    {
+      "number": 4,
+      "arabic": "يَوْمَئِذٍ تُحَدِّثُ أَخْبَارَهَا",
+      "french": "ce jour-là, elle racontera ce qu'elle sait",
+      "dutch": "op die Dag zal zij haar berichten vertellen"
+    },
+    {
+      "number": 5,
+      "arabic": "بِأَنَّ رَبَّكَ أَوْحَىٰ لَهَا",
+      "french": "car ton Seigneur lui aura inspiré cela",
+      "dutch": "omdat jouw Heer het haar heeft ingegeven"
+    },
+    {
+      "number": 6,
+      "arabic": "يَوْمَئِذٍ يَصْدُرُ النَّاسُ أَشْتَاتًا",
+      "french": "Ce jour-là, les gens sortiront séparément",
+      "dutch": "Op die Dag zullen de mensen uiteenlopend naar voren komen"
+    },
+    {
+      "number": 7,
+      "arabic": "لِيُرَوْا أَعْمَالَهُمْ",
+      "french": "pour que leur soient montrées leurs œuvres",
+      "dutch": "om hun daden te laten zien"
+    },
+    {
+      "number": 8,
+      "arabic": "فَمَنْ يَعْمَلْ مِثْقَالَ ذَرَّةٍ خَيْرًا يَرَهُ",
+      "french": "Quiconque fait un bien, fût-ce du poids d'un atome, le verra",
+      "dutch": "Wie het gewicht van een atoom aan goeds doet, zal het zien"
+    },
+    {
+      "number": 9,
+      "arabic": "وَمَنْ يَعْمَلْ مِثْقَالَ ذَرَّةٍ شَرًّا يَرَهُ",
+      "french": "et quiconque fait un mal, fût-ce du poids d'un atome, le verra",
+      "dutch": "en wie het gewicht van een atoom aan kwaad doet, zal het zien"
+    }
+  ]
+}

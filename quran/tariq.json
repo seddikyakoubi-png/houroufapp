@@ -1,0 +1,26 @@
+{
+  "id": 86,
+  "name_ar": "الطارق",
+  "name_fr": "L'Astre Nocturne",
+  "name_nl": "De Nachtelijke Ster",
+  "total_ayahs": 17,
+  "ayahs": [
+    { "number": 1, "arabic": "وَالسَّمَاءِ وَالطَّارِقِ", "french": "Par le ciel et l'astre nocturne", "dutch": "Bij de hemel en de nachtelijke ster" },
+    { "number": 2, "arabic": "وَمَا أَدْرَاكَ مَا الطَّارِقُ", "french": "Et qui te fera savoir ce qu'est l'astre nocturne ?", "dutch": "En wat doet je weten wat de nachtelijke ster is?" },
+    { "number": 3, "arabic": "النَّجْمُ الثَّاقِبُ", "french": "C'est l'étoile perçante", "dutch": "Het is de doorborende ster" },
+    { "number": 4, "arabic": "إِن كُلُّ نَفْسٍ لَّمَّا عَلَيْهَا حَافِظٌ", "french": "Il n'est point d'âme sans un gardien sur elle", "dutch": "Er is geen ziel zonder een bewaker over haar" },
+    { "number": 5, "arabic": "فَلْيَنظُرِ الْإِنسَانُ مِمَّ خُلِقَ", "french": "Que l'homme considère donc de quoi il a été créé", "dutch": "Laat de mens dan overwegen waaruit hij geschapen is" },
+    { "number": 6, "arabic": "خُلِقَ مِن مَّاءٍ دَافِقٍ", "french": "Il a été créé d'une eau jaillissante", "dutch": "Hij is geschapen uit een voortstuwend water" },
+    { "number": 7, "arabic": "يَخْرُجُ مِن بَيْنِ الصُّلْبِ وَالتَّرَائِبِ", "french": "sortant d'entre les lombes et les côtes", "dutch": "voortkomend van tussen de lendenen en de ribben" },
+    { "number": 8, "arabic": "إِنَّهُ عَلَىٰ رَجْعِهِ لَقَادِرٌ", "french": "Allah est certes capable de le faire revenir", "dutch": "Hij is zeker in staat hem te doen terugkeren" },
+    { "number": 9, "arabic": "يَوْمَ تُبْلَى السَّرَائِرُ", "french": "Le jour où les secrets seront mis à l'épreuve", "dutch": "Op de Dag waarop de geheimen op de proef worden gesteld" },
+    { "number": 10, "arabic": "فَمَا لَهُ مِن قُوَّةٍ وَلَا نَاصِرٍ", "french": "il n'aura alors ni force ni secoureur", "dutch": "zal hij geen kracht noch helper hebben" },
+    { "number": 11, "arabic": "وَالسَّمَاءِ ذَاتِ الرَّجْعِ", "french": "Par le ciel qui fait revenir la pluie", "dutch": "Bij de hemel die de regen doet terugkeren" },
+    { "number": 12, "arabic": "وَالْأَرْضِ ذَاتِ الصَّدْعِ", "french": "et par la terre qui se fend", "dutch": "en bij de aarde die openbarst" },
+    { "number": 13, "arabic": "إِنَّهُ لَقَوْلٌ فَصْلٌ", "french": "ceci est certes une parole décisive", "dutch": "dit is zeker een beslissend woord" },
+    { "number": 14, "arabic": "وَمَا هُوَ بِالْهَزْلِ", "french": "et ce n'est pas un badinage", "dutch": "en het is geen scherts" },
+    { "number": 15, "arabic": "إِنَّهُمْ يَكِيدُونَ كَيْدًا", "french": "Ils trament certes une ruse", "dutch": "Zij smeden zeker een list" },
+    { "number": 16, "arabic": "وَأَكِيدُ كَيْدًا", "french": "et Moi aussi Je trame [Ma stratégie]", "dutch": "en Ik smeed ook Mijn plan" },
+    { "number": 17, "arabic": "فَمَهِّلِ الْكَافِرِينَ أَمْهِلْهُمْ رُوَيْدًا", "french": "Accorde donc un répit aux mécréants, un léger répit", "dutch": "Geef de ongelovigen dus uitstel, een kort uitstel" }
+  ]
+}

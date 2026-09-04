@@ -1,0 +1,27 @@
+{
+  "id": 110,
+  "name_ar": "النصر",
+  "name_fr": "Le Secours",
+  "name_nl": "De Overwinning",
+  "total_ayahs": 3,
+  "ayahs": [
+    {
+      "number": 1,
+      "arabic": "إِذَا جَاءَ نَصْرُ اللَّهِ وَالْفَتْحُ",
+      "french": "Quand vient le secours d'Allah et la victoire",
+      "dutch": "Wanneer de hulp van Allah en de overwinning komen"
+    },
+    {
+      "number": 2,
+      "arabic": "وَرَأَيْتَ النَّاسَ يَدْخُلُونَ فِي دِينِ اللَّهِ أَفْوَاجًا",
+      "french": "Et que tu vois les gens entrer en foule dans la religion d'Allah",
+      "dutch": "En je de mensen in groepen de godsdienst van Allah ziet binnengaan"
+    },
+    {
+      "number": 3,
+      "arabic": "فَسَبِّحْ بِحَمْدِ رَبِّكَ وَاسْتَغْفِرْهُ إِنَّهُ كَانَ تَوَّابًا",
+      "french": "Alors célèbre la gloire de ton Seigneur par Sa louange et implore Son pardon, car Il est certes Grand Repentant",
+      "dutch": "Verheerlijk dan de lof van jouw Heer en vraag Hem om vergiffenis, want Hij is zeker Vergever"
+    }
+  ]
+}

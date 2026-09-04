@@ -1,0 +1,33 @@
+{
+  "id": 112,
+  "name_ar": "الإخلاص",
+  "name_fr": "La Pureté",
+  "name_nl": "De Oprechtheid",
+  "total_ayahs": 4,
+  "ayahs": [
+    {
+      "number": 1,
+      "arabic": "قُلْ هُوَ اللَّهُ أَحَدٌ",
+      "french": "Dis : Il est Allah, [l'Unique]",
+      "dutch": "Zeg: Hij is Allah, de Enige"
+    },
+    {
+      "number": 2,
+      "arabic": "اللَّهُ الصَّمَدُ",
+      "french": "Allah, le Seul à être imploré pour ce que nous désirons",
+      "dutch": "Allah, de Eeuwige, de Absolute"
+    },
+    {
+      "number": 3,
+      "arabic": "لَمْ يَلِدْ وَلَمْ يُولَدْ",
+      "french": "Il n'a jamais engendré, n'a pas été engendré non plus",
+      "dutch": "Hij heeft niet verwekt en is niet verwekt"
+    },
+    {
+      "number": 4,
+      "arabic": "وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ",
+      "french": "Et nul n'est égal à Lui",
+      "dutch": "En niemand is aan Hem gelijkwaardig"
+    }
+  ]
+}

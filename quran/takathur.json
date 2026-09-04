@@ -1,0 +1,57 @@
+{
+  "id": 102,
+  "name_ar": "التكاثر",
+  "name_fr": "La Course aux richesses",
+  "name_nl": "De Wedloop om meer",
+  "total_ayahs": 8,
+  "ayahs": [
+    {
+      "number": 1,
+      "arabic": "أَلْهَاكُمُ التَّكَاثُرُ",
+      "french": "La course aux richesses vous distrait",
+      "dutch": "De wedloop om meer bezit houdt jullie bezig"
+    },
+    {
+      "number": 2,
+      "arabic": "حَتَّى زُرْتُمُ الْمَقَابِرَ",
+      "french": "jusqu'à ce que vous visitiez les tombes",
+      "dutch": "totdat jullie de graven bezoeken"
+    },
+    {
+      "number": 3,
+      "arabic": "كَلَّا سَوْفَ تَعْلَمُونَ",
+      "french": "Non ! Vous saurez bientôt",
+      "dutch": "Nee! Jullie zullen het weldra weten"
+    },
+    {
+      "number": 4,
+      "arabic": "ثُمَّ كَلَّا سَوْفَ تَعْلَمُونَ",
+      "french": "Encore une fois, non ! Vous saurez bientôt",
+      "dutch": "Nogmaals, nee! Jullie zullen het weldra weten"
+    },
+    {
+      "number": 5,
+      "arabic": "كَلَّا لَوْ تَعْلَمُونَ عِلْمَ الْيَقِينِ",
+      "french": "Non ! Si vous saviez d'un savoir certain",
+      "dutch": "Nee, als jullie het met zekere kennis zouden weten"
+    },
+    {
+      "number": 6,
+      "arabic": "لَتَرَوُنَّ الْجَحِيمَ",
+      "french": "vous verriez certainement la Fournaise",
+      "dutch": "dan zouden jullie zeker de Hel zien"
+    },
+    {
+      "number": 7,
+      "arabic": "ثُمَّ لَتَرَوُنَّهَا عَيْنَ الْيَقِينِ",
+      "french": "puis vous la verriez avec l'œil de la certitude",
+      "dutch": "dan zouden jullie haar zien met het oog van de zekerheid"
+    },
+    {
+      "number": 8,
+      "arabic": "ثُمَّ لَتُسْأَلُنَّ يَوْمَئِذٍ عَنِ النَّعِيمِ",
+      "french": "puis, ce jour-là, vous serez interrogés sur les bienfaits reçus",
+      "dutch": "dan zullen jullie op die Dag zeker ondervraagd worden over de genietingen"
+    }
+  ]
+}

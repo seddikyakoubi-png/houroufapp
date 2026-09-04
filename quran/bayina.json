@@ -1,0 +1,57 @@
+{
+  "id": 98,
+  "name_ar": "البينة",
+  "name_fr": "La Preuve",
+  "name_nl": "Het Duidelijke Bewijs",
+  "total_ayahs": 8,
+  "ayahs": [
+    {
+      "number": 1,
+      "arabic": "لَمْ يَكُنِ الَّذِينَ كَفَرُوا مِنْ أَهْلِ الْكِتَابِ وَالْمُشْرِكِينَ مُنْفَكِّينَ حَتَّىٰ تَأْتِيَهُمُ الْبَيِّنَةُ",
+      "french": "Ceux qui ont mécru parmi les gens du Livre et les polythéistes n'allaient pas cesser [leur mécréance] jusqu'à ce que leur parvienne la Preuve évidente",
+      "dutch": "Degenen die ongelovig waren onder de mensen van het Boek en de veelgodendienaars zouden niet ophouden totdat het duidelijke bewijs tot hen kwam"
+    },
+    {
+      "number": 2,
+      "arabic": "رَسُولٌ مِنَ اللَّهِ يَتْلُو صُحُفًا مُطَهَّرَةً",
+      "french": "un Messager d'Allah, récitant des feuillets purifiés",
+      "dutch": "een Boodschapper van Allah die gezuiverde bladen voorleest"
+    },
+    {
+      "number": 3,
+      "arabic": "فِيهَا كُتُبٌ قَيِّمَةٌ",
+      "french": "contenant des écrits d'une valeur sûre",
+      "dutch": "waarin geldige geschriften staan"
+    },
+    {
+      "number": 4,
+      "arabic": "وَمَا تَفَرَّقَ الَّذِينَ أُوتُوا الْكِتَابَ إِلَّا مِنْ بَعْدِ مَا جَاءَتْهُمُ الْبَيِّنَةُ",
+      "french": "Or, ceux à qui le Livre fut donné ne se sont divisés qu'après que la Preuve évidente leur fut venue",
+      "dutch": "En degenen aan wie het Boek gegeven was, raakten pas verdeeld nadat het duidelijke bewijs tot hen was gekomen"
+    },
+    {
+      "number": 5,
+      "arabic": "وَمَا أُمِرُوا إِلَّا لِيَعْبُدُوا اللَّهَ مُخْلِصِينَ لَهُ الدِّينَ حُنَفَاءَ وَيُقِيمُوا الصَّلَاةَ وَيُؤْتُوا الزَّكَاةَ ۚ وَذَٰلِكَ دِينُ الْقَيِّمَةِ",
+      "french": "Il ne leur a été commandé que d'adorer Allah avec une dévotion sincère et exclusive, d'accomplir la prière et de s'acquitter de l'aumône : voilà la religion droite",
+      "dutch": "Hun werd slechts bevolen Allah te aanbidden met zuivere devotie, het gebed te verrichten en de zakat te geven: dat is de rechte religie"
+    },
+    {
+      "number": 6,
+      "arabic": "إِنَّ الَّذِينَ كَفَرُوا مِنْ أَهْلِ الْكِتَابِ وَالْمُشْرِكِينَ فِي نَارِ جَهَنَّمَ خَالِدِينَ فِيهَا ۚ أُولَٰئِكَ هُمْ شَرُّ الْبَرِيَّةِ",
+      "french": "Ceux qui ont mécru parmi les gens du Livre et les polythéistes seront dans le Feu de l'Enfer, y demeurant éternellement ; ce sont les pires des créatures",
+      "dutch": "Degenen die ongelovig waren onder de mensen van het Boek en de veelgodendienaars zullen eeuwig in het Vuur van de Hel zijn; zij zijn de slechtste van de schepselen"
+    },
+    {
+      "number": 7,
+      "arabic": "إِنَّ الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ أُولَٰئِكَ هُمْ خَيْرُ الْبَرِيَّةِ",
+      "french": "Ceux qui croient et accomplissent de bonnes œuvres sont les meilleures des créatures",
+      "dutch": "Degenen die geloven en goede daden verrichten zijn de beste van de schepselen"
+    },
+    {
+      "number": 8,
+      "arabic": "جَزَاؤُهُمْ عِنْدَ رَبِّهِمْ جَنَّاتُ عَدْنٍ تَجْرِي مِنْ تَحْتِهَا الْأَنْهَارُ خَالِدِينَ فِيهَا أَبَدًا ۖ رَضِيَ اللَّهُ عَنْهُمْ وَرَضُوا عَنْهُ ۚ ذَٰلِكَ لِمَنْ خَشِيَ رَبَّهُ",
+      "french": "Leur récompense auprès de leur Seigneur sera les jardins d'Éden sous lesquels coulent les rivières, où ils demeureront éternellement. Allah est satisfait d'eux et ils sont satisfaits de Lui : cela est pour celui qui craint son Seigneur",
+      "dutch": "Hun beloning bij hun Heer zijn de Tuinen van Eden waar rivieren onderdoor stromen, waarin zij voor eeuwig zullen verblijven. Allah is tevreden met hen en zij zijn tevreden met Hem: dat is voor wie zijn Heer vreest"
+    }
+  ]
+}

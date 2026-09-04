@@ -1,0 +1,28 @@
+{
+  "id": 87,
+  "name_ar": "الأعلى",
+  "name_fr": "Le Très-Haut",
+  "name_nl": "De Allerhoogste",
+  "total_ayahs": 19,
+  "ayahs": [
+    { "number": 1, "arabic": "سَبِّحِ اسْمَ رَبِّكَ الْأَعْلَى", "french": "Glorifie le nom de ton Seigneur, le Très-Haut", "dutch": "Verheerlijk de naam van jouw Heer, de Allerhoogste" },
+    { "number": 2, "arabic": "الَّذِي خَلَقَ فَسَوَّىٰ", "french": "qui a créé et harmonieusement proportionné", "dutch": "die geschapen heeft en volmaakt gevormd" },
+    { "number": 3, "arabic": "وَالَّذِي قَدَّرَ فَهَدَىٰ", "french": "qui a déterminé puis guidé", "dutch": "die bepaald heeft en vervolgens geleid" },
+    { "number": 4, "arabic": "وَالَّذِي أَخْرَجَ الْمَرْعَىٰ", "french": "qui a fait sortir le pâturage", "dutch": "die de weide heeft doen groeien" },
+    { "number": 5, "arabic": "فَجَعَلَهُ غُثَاءً أَحْوَىٰ", "french": "puis en a fait un fourrage desséché", "dutch": "en het daarna tot verdord voer heeft gemaakt" },
+    { "number": 6, "arabic": "سَنُقْرِئُكَ فَلَا تَنسَىٰ", "french": "Nous te ferons réciter, et tu n'oublieras pas", "dutch": "Wij zullen jou doen reciteren, en jij zult niet vergeten" },
+    { "number": 7, "arabic": "إِلَّا مَا شَاءَ اللَّهُ ۚ إِنَّهُ يَعْلَمُ الْجَهْرَ وَمَا يَخْفَىٰ", "french": "sauf ce qu'Allah veut ; Il connaît ce qui est apparent et ce qui est caché", "dutch": "behalve wat Allah wil; Hij kent het openlijke en het verborgene" },
+    { "number": 8, "arabic": "وَنُيَسِّرُكَ لِلْيُسْرَىٰ", "french": "Nous te faciliterons la voie la plus aisée", "dutch": "Wij zullen het jou gemakkelijk maken" },
+    { "number": 9, "arabic": "فَذَكِّرْ إِن نَّفَعَتِ الذِّكْرَىٰ", "french": "Rappelle donc, si le rappel est utile", "dutch": "Vermaan dus, als de vermaning baat" },
+    { "number": 10, "arabic": "سَيَذَّكَّرُ مَن يَخْشَىٰ", "french": "Celui qui craint [Allah] se souviendra", "dutch": "Wie ontzag heeft, zal zich laten vermanen" },
+    { "number": 11, "arabic": "وَيَتَجَنَّبُهَا الْأَشْقَى", "french": "et le plus misérable l'évitera", "dutch": "en de meest ellendige zal het vermijden" },
+    { "number": 12, "arabic": "الَّذِي يَصْلَى النَّارَ الْكُبْرَىٰ", "french": "celui qui brûlera dans le plus grand Feu", "dutch": "die in het grootste Vuur zal branden" },
+    { "number": 13, "arabic": "ثُمَّ لَا يَمُوتُ فِيهَا وَلَا يَحْيَىٰ", "french": "où il ne mourra ni ne vivra", "dutch": "waarin hij noch zal sterven, noch zal leven" },
+    { "number": 14, "arabic": "قَدْ أَفْلَحَ مَن تَزَكَّىٰ", "french": "Réussit certes celui qui se purifie", "dutch": "Waarlijk, hij slaagt die zich zuivert" },
+    { "number": 15, "arabic": "وَذَكَرَ اسْمَ رَبِّهِ فَصَلَّىٰ", "french": "et se souvient du nom de son Seigneur, puis prie", "dutch": "en de naam van zijn Heer gedenkt en bidt" },
+    { "number": 16, "arabic": "بَلْ تُؤْثِرُونَ الْحَيَاةَ الدُّنْيَا", "french": "Mais vous préférez la vie d'ici-bas", "dutch": "Maar jullie verkiezen het wereldse leven" },
+    { "number": 17, "arabic": "وَالْآخِرَةُ خَيْرٌ وَأَبْقَىٰ", "french": "alors que l'au-delà est meilleur et plus durable", "dutch": "terwijl het hiernamaals beter en blijvender is" },
+    { "number": 18, "arabic": "إِنَّ هَٰذَا لَفِي الصُّحُفِ الْأُولَىٰ", "french": "Cela se trouve certes dans les Feuillets primitifs", "dutch": "Dit staat zeker in de eerdere geschriften" },
+    { "number": 19, "arabic": "صُحُفِ إِبْرَاهِيمَ وَمُوسَىٰ", "french": "les Feuillets d'Abraham et de Moïse", "dutch": "de geschriften van Abraham en Mozes" }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "id": 93,
+  "name_ar": "الضحى",
+  "name_fr": "Le Jour montant",
+  "name_nl": "De Ochtendglans",
+  "total_ayahs": 11,
+  "ayahs": [
+    { "number": 1, "arabic": "وَالضُّحَىٰ", "french": "Par le jour montant", "dutch": "Bij de ochtendglans" },
+    { "number": 2, "arabic": "وَاللَّيْلِ إِذَا سَجَىٰ", "french": "Et par la nuit quand elle s'assombrit", "dutch": "En bij de nacht wanneer hij donker wordt" },
+    { "number": 3, "arabic": "مَا وَدَّعَكَ رَبُّكَ وَمَا قَلَىٰ", "french": "Ton Seigneur ne t'a ni abandonné ni détesté", "dutch": "Jouw Heer heeft je niet verlaten, noch veracht" },
+    { "number": 4, "arabic": "وَلَلْآخِرَةُ خَيْرٌ لَّكَ مِنَ الْأُولَىٰ", "french": "La vie future est meilleure pour toi que la vie présente", "dutch": "Het hiernamaals is beter voor jou dan het huidige leven" },
+    { "number": 5, "arabic": "وَلَسَوْفَ يُعْطِيكَ رَبُّكَ فَتَرْضَىٰ", "french": "Ton Seigneur t'accordera certes, et tu seras satisfait", "dutch": "Jouw Heer zal jou zeker geven, en jij zult tevreden zijn" },
+    { "number": 6, "arabic": "أَلَمْ يَجِدْكَ يَتِيمًا فَآوَىٰ", "french": "Ne t'a-t-Il pas trouvé orphelin, et recueilli ?", "dutch": "Heeft Hij jou niet als wees gevonden en opgevangen?" },
+    { "number": 7, "arabic": "وَوَجَدَكَ ضَالًّا فَهَدَىٰ", "french": "Ne t'a-t-Il pas trouvé égaré, et guidé ?", "dutch": "Heeft Hij jou niet dwalend gevonden en geleid?" },
+    { "number": 8, "arabic": "وَوَجَدَكَ عَائِلًا فَأَغْنَىٰ", "french": "Ne t'a-t-Il pas trouvé pauvre, et enrichi ?", "dutch": "Heeft Hij jou niet arm gevonden en verrijkt?" },
+    { "number": 9, "arabic": "فَأَمَّا الْيَتِيمَ فَلَا تَقْهَرْ", "french": "Quant à l'orphelin, ne le brime donc pas", "dutch": "Wat de wees betreft, onderdruk hem dus niet" },
+    { "number": 10, "arabic": "وَأَمَّا السَّائِلَ فَلَا تَنْهَرْ", "french": "Et quant au demandeur, ne le repousse pas", "dutch": "En wat de vrager betreft, wijs hem niet af" },
+    { "number": 11, "arabic": "وَأَمَّا بِنِعْمَةِ رَبِّكَ فَحَدِّثْ", "french": "Et quant au bienfait de ton Seigneur, proclame-le", "dutch": "En wat de gunst van jouw Heer betreft, verkondig ze" }
+  ]
+}

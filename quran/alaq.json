@@ -1,0 +1,29 @@
+{
+  "id": 96,
+  "name_ar": "العلق",
+  "name_fr": "L'Adhérence",
+  "name_nl": "De Bloedklonter",
+  "total_ayahs": 20,
+  "ayahs": [
+    { "number": 1, "arabic": "اقْرَأْ بِاسْمِ رَبِّكَ الَّذِي خَلَقَ", "french": "Lis, au nom de ton Seigneur qui a créé", "dutch": "Lees, in de naam van jouw Heer die geschapen heeft" },
+    { "number": 2, "arabic": "خَلَقَ الْإِنسَانَ مِنْ عَلَقٍ", "french": "qui a créé l'homme d'une adhérence", "dutch": "die de mens uit een bloedklonter geschapen heeft" },
+    { "number": 3, "arabic": "اقْرَأْ وَرَبُّكَ الْأَكْرَمُ", "french": "Lis ! Ton Seigneur est le Très Généreux", "dutch": "Lees! Jouw Heer is de Meest Vrijgevige" },
+    { "number": 4, "arabic": "الَّذِي عَلَّمَ بِالْقَلَمِ", "french": "qui a enseigné par la plume", "dutch": "die onderwezen heeft door middel van de pen" },
+    { "number": 5, "arabic": "عَلَّمَ الْإِنسَانَ مَا لَمْ يَعْلَمْ", "french": "a enseigné à l'homme ce qu'il ne savait pas", "dutch": "heeft de mens geleerd wat hij niet wist" },
+    { "number": 6, "arabic": "كَلَّا إِنَّ الْإِنسَانَ لَيَطْغَىٰ", "french": "Non ! En vérité, l'homme devient rebelle", "dutch": "Nee! Waarlijk, de mens overschrijdt de grenzen" },
+    { "number": 7, "arabic": "أَن رَّآهُ اسْتَغْنَىٰ", "french": "dès qu'il se sent riche", "dutch": "zodra hij zich rijk waant" },
+    { "number": 8, "arabic": "إِنَّ إِلَىٰ رَبِّكَ الرُّجْعَىٰ", "french": "Or c'est vers ton Seigneur qu'est le retour", "dutch": "Maar tot jouw Heer is de terugkeer" },
+    { "number": 9, "arabic": "أَرَأَيْتَ الَّذِي يَنْهَىٰ", "french": "As-tu vu celui qui empêche", "dutch": "Heb je hem gezien die verhindert" },
+    { "number": 10, "arabic": "عَبْدًا إِذَا صَلَّىٰ", "french": "un serviteur, quand il prie ?", "dutch": "een dienaar, wanneer hij bidt?" },
+    { "number": 11, "arabic": "أَرَأَيْتَ إِن كَانَ عَلَى الْهُدَىٰ", "french": "As-tu vu s'il est sur la bonne voie", "dutch": "Heb je gezien of hij op het rechte pad is" },
+    { "number": 12, "arabic": "أَوْ أَمَرَ بِالتَّقْوَىٰ", "french": "ou s'il ordonne la piété ?", "dutch": "of dat hij aanspoort tot vroomheid?" },
+    { "number": 13, "arabic": "أَرَأَيْتَ إِن كَذَّبَ وَتَوَلَّىٰ", "french": "As-tu vu s'il dément et se détourne", "dutch": "Heb je gezien of hij loochent en zich afwendt" },
+    { "number": 14, "arabic": "أَلَمْ يَعْلَم بِأَنَّ اللَّهَ يَرَىٰ", "french": "Ne sait-il pas qu'Allah voit tout ?", "dutch": "Weet hij dan niet dat Allah alles ziet?" },
+    { "number": 15, "arabic": "كَلَّا لَئِن لَّمْ يَنتَهِ", "french": "Non ! S'il ne cesse pas", "dutch": "Nee! Als hij niet ophoudt" },
+    { "number": 16, "arabic": "لَنَسْفَعًا بِالنَّاصِيَةِ", "french": "Nous le saisirons certainement par le toupet", "dutch": "zullen Wij hem zeker bij de haarlok grijpen" },
+    { "number": 17, "arabic": "نَاصِيَةٍ كَاذِبَةٍ خَاطِئَةٍ", "french": "un toupet menteur et pécheur", "dutch": "een leugenachtige, zondige haarlok" },
+    { "number": 18, "arabic": "فَلْيَدْعُ نَادِيَهُ", "french": "Qu'il appelle donc son assemblée", "dutch": "Laat hij dan zijn kring maar oproepen" },
+    { "number": 19, "arabic": "سَنَدْعُ الزَّبَانِيَةَ", "french": "Nous appellerons les gardiens de l'Enfer", "dutch": "Wij zullen de bewakers van de Hel oproepen" },
+    { "number": 20, "arabic": "كَلَّا لَا تُطِعْهُ وَاسْجُدْ وَاقْتَرِب", "french": "Non ! Ne lui obéis pas, prosterne-toi et rapproche-toi", "dutch": "Nee! Gehoorzaam hem niet, kniel neer en zoek toenadering" }
+  ]
+}

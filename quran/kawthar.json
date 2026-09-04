@@ -1,0 +1,27 @@
+{
+  "id": 108,
+  "name_ar": "الكوثر",
+  "name_fr": "L'Abondance",
+  "name_nl": "De Overvloed",
+  "total_ayahs": 3,
+  "ayahs": [
+    {
+      "number": 1,
+      "arabic": "إِنَّا أَعْطَيْنَاكَ الْكَوْثَرَ",
+      "french": "Nous t'avons accordé l'Abondance",
+      "dutch": "Wij hebben u de overvloed geschonken"
+    },
+    {
+      "number": 2,
+      "arabic": "فَصَلِّ لِرَبِّكَ وَانْحَرْ",
+      "french": "Accomplis donc la Salat pour ton Seigneur et sacrifie",
+      "dutch": "Bid daarom voor uw Heer en offer"
+    },
+    {
+      "number": 3,
+      "arabic": "إِنَّ شَانِئَكَ هُوَ الْأَبْتَرُ",
+      "french": "C'est bien ton ennemi qui est le sans postérité",
+      "dutch": "Voorwaar, uw vijand is degene zonder nageslacht"
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "id": 1,
+  "name_ar": "الفاتحة",
+  "name_fr": "L'Ouverture",
+  "name_nl": "De Opening",
+  "total_ayahs": 7,
+  "ayahs": [
+    {
+      "number": 1,
+      "arabic": "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+      "french": "Au nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux",
+      "dutch": "In de naam van Allah, de Meest Barmhartige, de Meest Genadevolle"
+    },
+    {
+      "number": 2,
+      "arabic": "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
+      "french": "Louange à Allah, Seigneur de l'univers",
+      "dutch": "Alle lof zij Allah, de Heer van de werelden"
+    },
+    {
+      "number": 3,
+      "arabic": "الرَّحْمَٰنِ الرَّحِيمِ",
+      "french": "Le Tout Miséricordieux, le Très Miséricordieux",
+      "dutch": "De Meest Barmhartige, de Meest Genadevolle"
+    },
+    {
+      "number": 4,
+      "arabic": "مَالِكِ يَوْمِ الدِّينِ",
+      "french": "Maître du Jour de la rétribution",
+      "dutch": "Meester van de Dag des Oordeels"
+    },
+    {
+      "number": 5,
+      "arabic": "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ",
+      "french": "C'est Toi [Seul] que nous adorons, et c'est Toi [Seul] dont nous implorons le secours",
+      "dutch": "U alleen aanbidden wij en U alleen vragen wij om hulp"
+    },
+    {
+      "number": 6,
+      "arabic": "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ",
+      "french": "Guide-nous dans le droit chemin",
+      "dutch": "Leid ons op het rechte pad"
+    },
+    {
+      "number": 7,
+      "arabic": "صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ",
+      "french": "Le chemin de ceux que Tu as comblés de faveurs, non pas de ceux qui ont encouru Ta colère, ni des égarés",
+      "dutch": "Het pad van degenen die U heeft begunstigd, niet van degenen op wie toorn rust en niet van de dwalenden"
+    }
+  ]
+}

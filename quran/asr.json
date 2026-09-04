@@ -1,0 +1,27 @@
+{
+  "id": 103,
+  "name_ar": "العصر",
+  "name_fr": "Le Temps",
+  "name_nl": "De Tijd",
+  "total_ayahs": 3,
+  "ayahs": [
+    {
+      "number": 1,
+      "arabic": "وَالْعَصْرِ",
+      "french": "Par le temps !",
+      "dutch": "Bij de tijd!"
+    },
+    {
+      "number": 2,
+      "arabic": "إِنَّ الْإِنْسَانَ لَفِي خُسْرٍ",
+      "french": "L'homme est certainement en perte",
+      "dutch": "Waarlijk, de mens is in verlies"
+    },
+    {
+      "number": 3,
+      "arabic": "إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ وَتَوَاصَوْا بِالْحَقِّ وَتَوَاصَوْا بِالصَّبْرِ",
+      "french": "sauf ceux qui croient, accomplissent de bonnes œuvres, se recommandent mutuellement la vérité et se recommandent mutuellement la patience",
+      "dutch": "behalve zij die geloven, goede daden verrichten, elkaar aansporen tot de waarheid en elkaar aansporen tot geduld"
+    }
+  ]
+}

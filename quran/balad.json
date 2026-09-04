@@ -1,0 +1,29 @@
+{
+  "id": 90,
+  "name_ar": "البلد",
+  "name_fr": "La Cité",
+  "name_nl": "De Stad",
+  "total_ayahs": 20,
+  "ayahs": [
+    { "number": 1, "arabic": "لَا أُقْسِمُ بِهَٰذَا الْبَلَدِ", "french": "Non ! Je jure par cette cité", "dutch": "Nee! Ik zweer bij deze stad" },
+    { "number": 2, "arabic": "وَأَنتَ حِلٌّ بِهَٰذَا الْبَلَدِ", "french": "et toi, tu es un résident de cette cité", "dutch": "en jij bent een bewoner van deze stad" },
+    { "number": 3, "arabic": "وَوَالِدٍ وَمَا وَلَدَ", "french": "et par un père et ce qu'il a engendré", "dutch": "en bij een vader en wat hij verwekt heeft" },
+    { "number": 4, "arabic": "لَقَدْ خَلَقْنَا الْإِنسَانَ فِي كَبَدٍ", "french": "Nous avons certes créé l'homme pour peiner", "dutch": "Wij hebben de mens geschapen tot inspanning" },
+    { "number": 5, "arabic": "أَيَحْسَبُ أَن لَّن يَقْدِرَ عَلَيْهِ أَحَدٌ", "french": "Pense-t-il que personne n'a de pouvoir sur lui ?", "dutch": "Denkt hij dat niemand macht over hem heeft?" },
+    { "number": 6, "arabic": "يَقُولُ أَهْلَكْتُ مَالًا لُّبَدًا", "french": "Il dit : « J'ai dépensé des biens considérables »", "dutch": "Hij zegt: 'Ik heb overvloedig bezit verkwist'" },
+    { "number": 7, "arabic": "أَيَحْسَبُ أَن لَّمْ يَرَهُ أَحَدٌ", "french": "Pense-t-il que personne ne l'a vu ?", "dutch": "Denkt hij dat niemand hem gezien heeft?" },
+    { "number": 8, "arabic": "أَلَمْ نَجْعَل لَّهُ عَيْنَيْنِ", "french": "Ne lui avons-Nous pas donné deux yeux", "dutch": "Hebben Wij hem geen twee ogen gegeven" },
+    { "number": 9, "arabic": "وَلِسَانًا وَشَفَتَيْنِ", "french": "une langue et deux lèvres ?", "dutch": "een tong en twee lippen?" },
+    { "number": 10, "arabic": "وَهَدَيْنَاهُ النَّجْدَيْنِ", "french": "et ne lui avons-Nous pas montré les deux voies ?", "dutch": "en hem niet de twee wegen getoond?" },
+    { "number": 11, "arabic": "فَلَا اقْتَحَمَ الْعَقَبَةَ", "french": "Or, il ne s'est pas engagé dans la voie difficile", "dutch": "Toch heeft hij de steile weg niet bestegen" },
+    { "number": 12, "arabic": "وَمَا أَدْرَاكَ مَا الْعَقَبَةُ", "french": "Et qui te fera savoir ce qu'est la voie difficile ?", "dutch": "En wat doet je weten wat de steile weg is?" },
+    { "number": 13, "arabic": "فَكُّ رَقَبَةٍ", "french": "C'est affranchir un esclave", "dutch": "Het is het bevrijden van een slaaf" },
+    { "number": 14, "arabic": "أَوْ إِطْعَامٌ فِي يَوْمٍ ذِي مَسْغَبَةٍ", "french": "ou nourrir en un jour de famine", "dutch": "of het voeden op een dag van hongersnood" },
+    { "number": 15, "arabic": "يَتِيمًا ذَا مَقْرَبَةٍ", "french": "un orphelin proche parent", "dutch": "van een naaste verwante wees" },
+    { "number": 16, "arabic": "أَوْ مِسْكِينًا ذَا مَتْرَبَةٍ", "french": "ou un pauvre couvert de poussière", "dutch": "of een arme bedekt met stof" },
+    { "number": 17, "arabic": "ثُمَّ كَانَ مِنَ الَّذِينَ آمَنُوا وَتَوَاصَوْا بِالصَّبْرِ وَتَوَاصَوْا بِالْمَرْحَمَةِ", "french": "tout en étant de ceux qui croient et se recommandent mutuellement la patience et la miséricorde", "dutch": "terwijl hij behoort tot hen die geloven en elkaar aansporen tot geduld en barmhartigheid" },
+    { "number": 18, "arabic": "أُولَٰئِكَ أَصْحَابُ الْمَيْمَنَةِ", "french": "Ceux-là sont les gens de la droite", "dutch": "Zij zijn de mensen van de rechterhand" },
+    { "number": 19, "arabic": "وَالَّذِينَ كَفَرُوا بِآيَاتِنَا هُمْ أَصْحَابُ الْمَشْأَمَةِ", "french": "Et ceux qui ont mécru en Nos signes sont les gens de la gauche", "dutch": "En zij die Onze tekenen verwierpen, zijn de mensen van de linkerhand" },
+    { "number": 20, "arabic": "عَلَيْهِمْ نَارٌ مُّؤْصَدَةٌ", "french": "Sur eux sera un Feu fermé", "dutch": "Over hen zal een gesloten Vuur zijn" }
+  ]
+}

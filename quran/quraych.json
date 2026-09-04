@@ -1,0 +1,39 @@
+{
+  "id": 106,
+  "name_ar": "قريش",
+  "name_fr": "Les Quraychites",
+  "name_nl": "De Qoeraisj",
+  "total_ayahs": 5,
+  "ayahs": [
+    {
+      "number": 1,
+      "arabic": "لِإِيلَافِ قُرَيْشٍ",
+      "french": "Pour l'habitude prise par les Quraych",
+      "dutch": "Vanwege de gewoonte van de Qoeraisj"
+    },
+    {
+      "number": 2,
+      "arabic": "إِيلَافِهِمْ رِحْلَةَ الشِّتَاءِ وَالصَّيْفِ",
+      "french": "leur habitude des voyages d'hiver et d'été",
+      "dutch": "hun gewoonte van de winter- en zomerreis"
+    },
+    {
+      "number": 3,
+      "arabic": "فَلْيَعْبُدُوا رَبَّ هَٰذَا الْبَيْتِ",
+      "french": "qu'ils adorent donc le Seigneur de cette Maison",
+      "dutch": "laten zij dan de Heer van dit Huis aanbidden"
+    },
+    {
+      "number": 4,
+      "arabic": "الَّذِي أَطْعَمَهُمْ مِنْ جُوعٍ",
+      "french": "qui les a nourris contre la faim",
+      "dutch": "Die hen tegen honger heeft gevoed"
+    },
+    {
+      "number": 5,
+      "arabic": "وَآمَنَهُمْ مِنْ خَوْفٍ",
+      "french": "et les a protégés de la peur",
+      "dutch": "en hen tegen angst heeft beveiligd"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": 105,
+  "name_ar": "الفيل",
+  "name_fr": "L'Éléphant",
+  "name_nl": "De Olifant",
+  "total_ayahs": 5,
+  "ayahs": [
+    {
+      "number": 1,
+      "arabic": "أَلَمْ تَرَ كَيْفَ فَعَلَ رَبُّكَ بِأَصْحَابِ الْفِيلِ",
+      "french": "N'as-tu pas vu comment ton Seigneur a agi envers les gens de l'éléphant ?",
+      "dutch": "Heb je niet gezien hoe je Heer heeft gehandeld met de mensen van de olifant?"
+    },
+    {
+      "number": 2,
+      "arabic": "أَلَمْ يَجْعَلْ كَيْدَهُمْ فِي تَضْلِيلٍ",
+      "french": "N'a-t-Il pas réduit à néant leur ruse ?",
+      "dutch": "Heeft Hij hun list niet doen mislukken?"
+    },
+    {
+      "number": 3,
+      "arabic": "وَأَرْسَلَ عَلَيْهِمْ طَيْرًا أَبَابِيلَ",
+      "french": "Il envoya sur eux des oiseaux par volées",
+      "dutch": "Hij zond over hen vogels in zwermen"
+    },
+    {
+      "number": 4,
+      "arabic": "تَرْمِيهِمْ بِحِجَارَةٍ مِنْ سِجِّيلٍ",
+      "french": "qui leur lançaient des pierres d'argile durcie",
+      "dutch": "die stenen van gebakken klei op hen wierpen"
+    },
+    {
+      "number": 5,
+      "arabic": "فَجَعَلَهُمْ كَعَصْفٍ مَأْكُولٍ",
+      "french": "Il les rendit ainsi semblables à une paille mâchée et dévorée",
+      "dutch": "Zo maakte Hij hen als afgekloven kaf"
+    }
+  ]
+}

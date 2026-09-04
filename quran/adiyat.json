@@ -1,0 +1,75 @@
+{
+  "id": 100,
+  "name_ar": "العاديات",
+  "name_fr": "Les Coursiers",
+  "name_nl": "De Renners",
+  "total_ayahs": 11,
+  "ayahs": [
+    {
+      "number": 1,
+      "arabic": "وَالْعَادِيَاتِ ضَبْحًا",
+      "french": "Par les coursiers haletants",
+      "dutch": "Bij de snuivende renners"
+    },
+    {
+      "number": 2,
+      "arabic": "فَالْمُورِيَاتِ قَدْحًا",
+      "french": "qui font jaillir des étincelles",
+      "dutch": "die vonken doen opspatten"
+    },
+    {
+      "number": 3,
+      "arabic": "فَالْمُغِيرَاتِ صُبْحًا",
+      "french": "qui attaquent au matin",
+      "dutch": "die 's ochtends aanvallen"
+    },
+    {
+      "number": 4,
+      "arabic": "فَأَثَرْنَ بِهِ نَقْعًا",
+      "french": "soulevant un nuage de poussière",
+      "dutch": "en zo een stofwolk doen opstijgen"
+    },
+    {
+      "number": 5,
+      "arabic": "فَوَسَطْنَ بِهِ جَمْعًا",
+      "french": "et pénétrant au cœur de la troupe ennemie",
+      "dutch": "en midden in de vijandelijke troep doordringen"
+    },
+    {
+      "number": 6,
+      "arabic": "إِنَّ الْإِنْسَانَ لِرَبِّهِ لَكَنُودٌ",
+      "french": "En vérité, l'homme est ingrat envers son Seigneur",
+      "dutch": "Waarlijk, de mens is ondankbaar tegenover zijn Heer"
+    },
+    {
+      "number": 7,
+      "arabic": "وَإِنَّهُ عَلَى ذَلِكَ لَشَهِيدٌ",
+      "french": "et lui-même en est témoin",
+      "dutch": "en hij is daar zelf getuige van"
+    },
+    {
+      "number": 8,
+      "arabic": "وَإِنَّهُ لِحُبِّ الْخَيْرِ لَشَدِيدٌ",
+      "french": "Il est vraiment ardent dans son amour des biens",
+      "dutch": "Hij is werkelijk hevig gehecht aan bezit"
+    },
+    {
+      "number": 9,
+      "arabic": "أَفَلَا يَعْلَمُ إِذَا بُعْثِرَ مَا فِي الْقُبُورِ",
+      "french": "Ne sait-il donc pas que, lorsque le contenu des tombes sera exhumé",
+      "dutch": "Weet hij dan niet dat wanneer wat in de graven is, wordt opgegraven"
+    },
+    {
+      "number": 10,
+      "arabic": "وَحُصِّلَ مَا فِي الصُّدُورِ",
+      "french": "et que ce qui est dans les poitrines sera dévoilé",
+      "dutch": "en wat in de harten is, wordt onthuld"
+    },
+    {
+      "number": 11,
+      "arabic": "إِنَّ رَبَّهُمْ بِهِمْ يَوْمَئِذٍ لَخَبِيرٌ",
+      "french": "ce jour-là, leur Seigneur sera parfaitement informé d'eux",
+      "dutch": "dat hun Heer op die Dag zeker goed van hen op de hoogte is"
+    }
+  ]
+}

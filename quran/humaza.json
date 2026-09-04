@@ -1,0 +1,63 @@
+{
+  "id": 104,
+  "name_ar": "الهمزة",
+  "name_fr": "Le Calomniateur",
+  "name_nl": "De Lasteraar",
+  "total_ayahs": 9,
+  "ayahs": [
+    {
+      "number": 1,
+      "arabic": "وَيْلٌ لِكُلِّ هُمَزَةٍ لُمَزَةٍ",
+      "french": "Malheur à tout calomniateur, médisant",
+      "dutch": "Wee elke lasteraar en spotter"
+    },
+    {
+      "number": 2,
+      "arabic": "الَّذِي جَمَعَ مَالًا وَعَدَّدَهُ",
+      "french": "qui amasse une fortune et la compte sans cesse",
+      "dutch": "die rijkdom vergaart en het telkens telt"
+    },
+    {
+      "number": 3,
+      "arabic": "يَحْسَبُ أَنَّ مَالَهُ أَخْلَدَهُ",
+      "french": "pensant que sa richesse le rendra éternel",
+      "dutch": "denkend dat zijn rijkdom hem eeuwig leven geeft"
+    },
+    {
+      "number": 4,
+      "arabic": "كَلَّا لَيُنْبَذَنَّ فِي الْحُطَمَةِ",
+      "french": "Non ! Il sera certainement jeté dans le Brasier",
+      "dutch": "Nee! Hij zal zeker in de Verpletterende geworpen worden"
+    },
+    {
+      "number": 5,
+      "arabic": "وَمَا أَدْرَاكَ مَا الْحُطَمَةُ",
+      "french": "Et qui te fera savoir ce qu'est le Brasier ?",
+      "dutch": "En wat doet je weten wat de Verpletterende is?"
+    },
+    {
+      "number": 6,
+      "arabic": "نَارُ اللَّهِ الْمُوقَدَةُ",
+      "french": "C'est le Feu attisé d'Allah",
+      "dutch": "Het is het aangestoken Vuur van Allah"
+    },
+    {
+      "number": 7,
+      "arabic": "الَّتِي تَطَّلِعُ عَلَى الْأَفْئِدَةِ",
+      "french": "qui s'élève jusqu'aux cœurs",
+      "dutch": "dat opstijgt tot in de harten"
+    },
+    {
+      "number": 8,
+      "arabic": "إِنَّهَا عَلَيْهِمْ مُؤْصَدَةٌ",
+      "french": "Il se refermera sur eux",
+      "dutch": "Het zal zich boven hen sluiten"
+    },
+    {
+      "number": 9,
+      "arabic": "فِي عَمَدٍ مُمَدَّدَةٍ",
+      "french": "en colonnes étirées",
+      "dutch": "in uitgestrekte zuilen"
+    }
+  ]
+}

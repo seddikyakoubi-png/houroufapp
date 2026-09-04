@@ -1,0 +1,28 @@
+{
+  "id": 82,
+  "name_ar": "الانفطار",
+  "name_fr": "La Rupture",
+  "name_nl": "Het Openbarsten",
+  "total_ayahs": 19,
+  "ayahs": [
+    { "number": 1, "arabic": "إِذَا السَّمَاءُ انفَطَرَتْ", "french": "Quand le ciel se fendra", "dutch": "Wanneer de hemel openbarst" },
+    { "number": 2, "arabic": "وَإِذَا الْكَوَاكِبُ انتَثَرَتْ", "french": "et quand les étoiles se disperseront", "dutch": "en wanneer de sterren zich verstrooien" },
+    { "number": 3, "arabic": "وَإِذَا الْبِحَارُ فُجِّرَتْ", "french": "et quand les mers déborderont", "dutch": "en wanneer de zeeën overstromen" },
+    { "number": 4, "arabic": "وَإِذَا الْقُبُورُ بُعْثِرَتْ", "french": "et quand les tombes seront bouleversées", "dutch": "en wanneer de graven omgekeerd worden" },
+    { "number": 5, "arabic": "عَلِمَتْ نَفْسٌ مَّا قَدَّمَتْ وَأَخَّرَتْ", "french": "chaque âme saura ce qu'elle a avancé et laissé derrière elle", "dutch": "zal elke ziel weten wat zij vooruitgezonden en achtergelaten heeft" },
+    { "number": 6, "arabic": "يَا أَيُّهَا الْإِنسَانُ مَا غَرَّكَ بِرَبِّكَ الْكَرِيمِ", "french": "Ô homme, qu'est-ce qui t'a trompé au sujet de ton Seigneur, le Généreux", "dutch": "O mens, wat heeft jou misleid aangaande jouw edelmoedige Heer" },
+    { "number": 7, "arabic": "الَّذِي خَلَقَكَ فَسَوَّاكَ فَعَدَلَكَ", "french": "qui t'a créé, formé et proportionné harmonieusement", "dutch": "die jou geschapen, gevormd en volmaakt heeft" },
+    { "number": 8, "arabic": "فِي أَيِّ صُورَةٍ مَّا شَاءَ رَكَّبَكَ", "french": "et t'a composé dans la forme qu'Il a voulue", "dutch": "en jou heeft samengesteld in de vorm die Hij wilde" },
+    { "number": 9, "arabic": "كَلَّا بَلْ تُكَذِّبُونَ بِالدِّينِ", "french": "Non ! C'est plutôt que vous traitez la Rétribution de mensonge", "dutch": "Nee! Jullie loochenen veeleer het Oordeel" },
+    { "number": 10, "arabic": "وَإِنَّ عَلَيْكُمْ لَحَافِظِينَ", "french": "alors que veillent sur vous des gardiens", "dutch": "terwijl er over jullie wakers zijn" },
+    { "number": 11, "arabic": "كِرَامًا كَاتِبِينَ", "french": "nobles, qui écrivent", "dutch": "edele schrijvers" },
+    { "number": 12, "arabic": "يَعْلَمُونَ مَا تَفْعَلُونَ", "french": "et qui savent ce que vous faites", "dutch": "die weten wat jullie doen" },
+    { "number": 13, "arabic": "إِنَّ الْأَبْرَارَ لَفِي نَعِيمٍ", "french": "Les vertueux seront certes dans un délice", "dutch": "De vromen zullen zeker in gelukzaligheid zijn" },
+    { "number": 14, "arabic": "وَإِنَّ الْفُجَّارَ لَفِي جَحِيمٍ", "french": "et les libertins seront certes dans une Fournaise", "dutch": "en de losbandigen zullen zeker in de Hel zijn" },
+    { "number": 15, "arabic": "يَصْلَوْنَهَا يَوْمَ الدِّينِ", "french": "où ils brûleront le Jour de la Rétribution", "dutch": "waarin zij zullen branden op de Dag van het Oordeel" },
+    { "number": 16, "arabic": "وَمَا هُمْ عَنْهَا بِغَائِبِينَ", "french": "et ils ne pourront s'y soustraire", "dutch": "en zij zullen er niet aan kunnen ontsnappen" },
+    { "number": 17, "arabic": "وَمَا أَدْرَاكَ مَا يَوْمُ الدِّينِ", "french": "Et qui te fera savoir ce qu'est le Jour de la Rétribution ?", "dutch": "En wat doet je weten wat de Dag van het Oordeel is?" },
+    { "number": 18, "arabic": "ثُمَّ مَا أَدْرَاكَ مَا يَوْمُ الدِّينِ", "french": "Encore une fois, qui te fera savoir ce qu'est le Jour de la Rétribution ?", "dutch": "Nogmaals, wat doet je weten wat de Dag van het Oordeel is?" },
+    { "number": 19, "arabic": "يَوْمَ لَا تَمْلِكُ نَفْسٌ لِّنَفْسٍ شَيْئًا ۖ وَالْأَمْرُ يَوْمَئِذٍ لِّلَّهِ", "french": "Le jour où nulle âme ne pourra rien pour une autre âme ; ce jour-là, le commandement appartiendra à Allah", "dutch": "De Dag waarop geen ziel iets voor een andere ziel vermag; op die Dag behoort het gezag aan Allah" }
+  ]
+}

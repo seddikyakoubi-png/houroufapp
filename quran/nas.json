@@ -1,0 +1,45 @@
+{
+  "id": 114,
+  "name_ar": "الناس",
+  "name_fr": "Les Hommes",
+  "name_nl": "De Mensen",
+  "total_ayahs": 6,
+  "ayahs": [
+    {
+      "number": 1,
+      "arabic": "قُلْ أَعُوذُ بِرَبِّ النَّاسِ",
+      "french": "Dis : Je cherche protection auprès du Seigneur des hommes",
+      "dutch": "Zeg: Ik zoek toevlucht bij de Heer van de mensen"
+    },
+    {
+      "number": 2,
+      "arabic": "مَلِكِ النَّاسِ",
+      "french": "du Roi des hommes",
+      "dutch": "De Koning van de mensen"
+    },
+    {
+      "number": 3,
+      "arabic": "إِلَٰهِ النَّاسِ",
+      "french": "du Dieu des hommes",
+      "dutch": "De God van de mensen"
+    },
+    {
+      "number": 4,
+      "arabic": "مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ",
+      "french": "contre le mal du mauvais conseiller qui se dérobe",
+      "dutch": "Tegen het kwaad van de fluisteraar die zich terugtrekt"
+    },
+    {
+      "number": 5,
+      "arabic": "الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ",
+      "french": "qui souffle le mal dans les poitrines des hommes",
+      "dutch": "Die influistert in de borsten van de mensen"
+    },
+    {
+      "number": 6,
+      "arabic": "مِنَ الْجِنَّةِ وَالنَّاسِ",
+      "french": "qu'il soit djinn ou être humain",
+      "dutch": "Van de djinn en de mensen"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": 95,
+  "name_ar": "التين",
+  "name_fr": "Le Figuier",
+  "name_nl": "De Vijg",
+  "total_ayahs": 8,
+  "ayahs": [
+    { "number": 1, "arabic": "وَالتِّينِ وَالزَّيْتُونِ", "french": "Par le figuier et l'olivier", "dutch": "Bij de vijg en de olijf" },
+    { "number": 2, "arabic": "وَطُورِ سِينِينَ", "french": "Par le mont Sinaï", "dutch": "Bij de berg Sinaï" },
+    { "number": 3, "arabic": "وَهَٰذَا الْبَلَدِ الْأَمِينِ", "french": "Et par cette cité sûre", "dutch": "En bij deze veilige stad" },
+    { "number": 4, "arabic": "لَقَدْ خَلَقْنَا الْإِنسَانَ فِي أَحْسَنِ تَقْوِيمٍ", "french": "Nous avons certes créé l'homme dans la meilleure forme", "dutch": "Wij hebben de mens geschapen in de beste vorm" },
+    { "number": 5, "arabic": "ثُمَّ رَدَدْنَاهُ أَسْفَلَ سَافِلِينَ", "french": "puis Nous l'avons ramené au plus bas degré", "dutch": "daarna brachten Wij hem terug tot het laagste niveau" },
+    { "number": 6, "arabic": "إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ فَلَهُمْ أَجْرٌ غَيْرُ مَمْنُونٍ", "french": "sauf ceux qui croient et accomplissent de bonnes œuvres : ils auront une récompense ininterrompue", "dutch": "behalve zij die geloven en goede daden verrichten: voor hen is een onophoudelijke beloning" },
+    { "number": 7, "arabic": "فَمَا يُكَذِّبُكَ بَعْدُ بِالدِّينِ", "french": "Qu'est-ce qui te fait encore démentir le Jugement ?", "dutch": "Wat doet je dan nog het Oordeel loochenen?" },
+    { "number": 8, "arabic": "أَلَيْسَ اللَّهُ بِأَحْكَمِ الْحَاكِمِينَ", "french": "Allah n'est-Il pas le plus sage des juges ?", "dutch": "Is Allah niet de Wijste der Rechters?" }
+  ]
+}

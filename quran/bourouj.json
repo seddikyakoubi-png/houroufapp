@@ -1,0 +1,31 @@
+{
+  "id": 85,
+  "name_ar": "البروج",
+  "name_fr": "Les Constellations",
+  "name_nl": "De Sterrenbeelden",
+  "total_ayahs": 22,
+  "ayahs": [
+    { "number": 1, "arabic": "وَالسَّمَاءِ ذَاتِ الْبُرُوجِ", "french": "Par le ciel aux constellations", "dutch": "Bij de hemel met de sterrenbeelden" },
+    { "number": 2, "arabic": "وَالْيَوْمِ الْمَوْعُودِ", "french": "et par le Jour promis", "dutch": "en bij de beloofde Dag" },
+    { "number": 3, "arabic": "وَشَاهِدٍ وَمَشْهُودٍ", "french": "et par le témoin et ce dont on témoigne", "dutch": "en bij de getuige en het getuigde" },
+    { "number": 4, "arabic": "قُتِلَ أَصْحَابُ الْأُخْدُودِ", "french": "Maudits furent les gens de la fosse", "dutch": "Vervloekt werden de mensen van de gracht" },
+    { "number": 5, "arabic": "النَّارِ ذَاتِ الْوَقُودِ", "french": "le feu plein de combustible", "dutch": "het vuur vol brandstof" },
+    { "number": 6, "arabic": "إِذْ هُمْ عَلَيْهَا قُعُودٌ", "french": "quand ils étaient assis auprès de lui", "dutch": "toen zij erbij zaten" },
+    { "number": 7, "arabic": "وَهُمْ عَلَىٰ مَا يَفْعَلُونَ بِالْمُؤْمِنِينَ شُهُودٌ", "french": "témoins de ce qu'ils faisaient aux croyants", "dutch": "getuige van wat zij de gelovigen aandeden" },
+    { "number": 8, "arabic": "وَمَا نَقَمُوا مِنْهُمْ إِلَّا أَن يُؤْمِنُوا بِاللَّهِ الْعَزِيزِ الْحَمِيدِ", "french": "Ils ne leur reprochaient que de croire en Allah, le Puissant, le Digne de louange", "dutch": "Zij verweten hen slechts dat zij geloofden in Allah, de Machtige, de Geprezene" },
+    { "number": 9, "arabic": "الَّذِي لَهُ مُلْكُ السَّمَاوَاتِ وَالْأَرْضِ ۚ وَاللَّهُ عَلَىٰ كُلِّ شَيْءٍ شَهِيدٌ", "french": "à qui appartient le royaume des cieux et de la terre ; et Allah est témoin de toute chose", "dutch": "aan Wie het koninkrijk der hemelen en der aarde behoort; en Allah is van alles getuige" },
+    { "number": 10, "arabic": "إِنَّ الَّذِينَ فَتَنُوا الْمُؤْمِنِينَ وَالْمُؤْمِنَاتِ ثُمَّ لَمْ يَتُوبُوا فَلَهُمْ عَذَابُ جَهَنَّمَ وَلَهُمْ عَذَابُ الْحَرِيقِ", "french": "Ceux qui ont éprouvé les croyants et les croyantes puis ne se sont pas repentis auront le châtiment de l'Enfer et le châtiment du Feu brûlant", "dutch": "Zij die de gelovige mannen en vrouwen vervolgden en zich niet bekeerden, voor hen is de bestraffing van de Hel en de bestraffing van het brandende Vuur" },
+    { "number": 11, "arabic": "إِنَّ الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ لَهُمْ جَنَّاتٌ تَجْرِي مِن تَحْتِهَا الْأَنْهَارُ ۚ ذَٰلِكَ الْفَوْزُ الْكَبِيرُ", "french": "Ceux qui croient et accomplissent de bonnes œuvres auront des jardins sous lesquels coulent les rivières : c'est le grand triomphe", "dutch": "Zij die geloven en goede daden verrichten, voor hen zijn tuinen waar rivieren onderdoor stromen: dat is de grote overwinning" },
+    { "number": 12, "arabic": "إِنَّ بَطْشَ رَبِّكَ لَشَدِيدٌ", "french": "La rigueur de ton Seigneur est certes sévère", "dutch": "De greep van jouw Heer is zeker hevig" },
+    { "number": 13, "arabic": "إِنَّهُ هُوَ يُبْدِئُ وَيُعِيدُ", "french": "C'est Lui qui commence et qui recommence [la création]", "dutch": "Hij is het die begint en herhaalt" },
+    { "number": 14, "arabic": "وَهُوَ الْغَفُورُ الْوَدُودُ", "french": "et Il est le Pardonneur, le Plein d'amour", "dutch": "en Hij is de Vergevende, de Liefdevolle" },
+    { "number": 15, "arabic": "ذُو الْعَرْشِ الْمَجِيدُ", "french": "le Maître du Trône, le Glorieux", "dutch": "de Heer van de Troon, de Roemrijke" },
+    { "number": 16, "arabic": "فَعَّالٌ لِّمَا يُرِيدُ", "french": "Il fait absolument ce qu'Il veut", "dutch": "Hij doet volkomen wat Hij wil" },
+    { "number": 17, "arabic": "هَلْ أَتَاكَ حَدِيثُ الْجُنُودِ", "french": "Le récit des armées t'est-il parvenu ?", "dutch": "Heeft het verhaal van de legers jou bereikt?" },
+    { "number": 18, "arabic": "فِرْعَوْنَ وَثَمُودَ", "french": "de Pharaon et des Thamûd ?", "dutch": "van Farao en de Thamoed?" },
+    { "number": 19, "arabic": "بَلِ الَّذِينَ كَفَرُوا فِي تَكْذِيبٍ", "french": "Mais ceux qui ont mécru persistent à démentir", "dutch": "Maar zij die ongelovig zijn, blijven loochenen" },
+    { "number": 20, "arabic": "وَاللَّهُ مِن وَرَائِهِم مُّحِيطٌ", "french": "alors qu'Allah les cerne de toutes parts", "dutch": "terwijl Allah hen van achteren omsingelt" },
+    { "number": 21, "arabic": "بَلْ هُوَ قُرْآنٌ مَّجِيدٌ", "french": "C'est plutôt un Coran glorieux", "dutch": "Het is veeleer een glorieuze Koran" },
+    { "number": 22, "arabic": "فِي لَوْحٍ مَّحْفُوظٍ", "french": "sur une Table gardée", "dutch": "op een bewaarde Tafel" }
+  ]
+}

@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حروفي - تعلم الأبجدية العربية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+
+<!-- ========== LOGIN ========== -->
+<div id="screen-login" class="screen active">
+    <div class="login-bg">
+        <div class="floating-letters">
+            <span>ا</span><span>ب</span><span>ت</span><span>ج</span><span>ح</span><span>م</span>
+        </div>
+        <div class="login-box">
+            <div class="login-logo">🌙</div>
+            <h1 class="login-title">حروفي</h1>
+            <p class="login-sub">تعلّم الأبجدية العربية بطريقة ممتعة</p>
+            <!-- من أنت؟ — Qui êtes-vous ? -->
+            <p class="role-label">من أنت؟ — Qui êtes-vous ?</p>
+            <div class="role-cards" dir="rtl">
+                <div class="role-card active" data-role="student" onclick="selectRole('student', this)">
+                    <span class="role-card-icon">👦</span>
+                    <span class="role-card-name-ar">تلميذ</span>
+                    <span class="role-card-name-fr">Élève</span>
+                </div>
+                <div class="role-card" data-role="parent" onclick="selectRole('parent', this)">
+                    <span class="role-card-icon">👪</span>
+                    <span class="role-card-name-ar">ولي الأمر</span>
+                    <span class="role-card-name-fr">Parent</span>
+                </div>
+                <div class="role-card" data-role="teacher" onclick="selectRole('teacher', this)">
+                    <span class="role-card-icon">👩‍🏫</span>
+                    <span class="role-card-name-ar">أستاذ</span>
+                    <span class="role-card-name-fr">Professeur</span>
+                </div>
+                <div class="role-card" data-role="schooladmin" onclick="selectRole('schooladmin', this)">
+                    <span class="role-card-icon">🏫</span>
+                    <span class="role-card-name-ar">مدير</span>
+                    <span class="role-card-name-fr">Directeur</span>
+                </div>
+                <div class="role-card role-card-admin" data-role="superadmin" onclick="selectRole('superadmin', this)">
+                    <span class="role-card-icon">👑</span>
+                    <span class="role-card-name-ar">المشرف</span>
+                    <span class="role-card-name-fr">Super Admin</span>
+                </div>
+            </div>
+
+            <!-- ÉLÈVE -->
+            <div id="form-student" class="login-form-block">
+                <input type="text" id="student-school-code" placeholder="🏫 رمز المدرسة (Code école)" class="login-input" dir="ltr" maxlength="20" onchange="resolveSchoolCode()">
+                <p id="school-code-result" style="display:none;font-size:14px;text-align:center;margin:5px 0;font-weight:bold"></p>
+                <input type="hidden" id="student-school">
+                <select id="student-class" class="login-input" onchange="resetStudentSelect()">
+                    <option value="">-- اختر القسم --</option>
+                </select>
+                <input type="text" id="student-code" placeholder="رمز القسم (Code de classe)" class="login-input" maxlength="20" dir="ltr" onchange="loadStudentNames()">
+                <select id="student-name-select" class="login-input" style="display:none">
+                    <option value="">-- اختر اسمك --</option>
+                </select>
+                <p id="student-list-msg" style="display:none;color:#e67e22;font-size:14px;text-align:center;margin:5px 0">⏳ Chargement de la liste...</p>
+                <div id="pin-container" style="display:none">
+                    <input type="password" id="student-pin" placeholder="🔐 Code personnel" class="login-input" maxlength="10" dir="ltr">
+                </div>
+                <button onclick="loginStudent()" class="login-btn" id="student-login-btn">ابدأ التعلم ✨</button>
+            </div>
+
+            <!-- PROF -->
+            <div id="form-teacher" class="login-form-block hidden">
+                <input type="email" id="teacher-email" placeholder="البريد الإلكتروني" class="login-input" dir="ltr">
+                <input type="password" id="teacher-pwd" placeholder="كلمة المرور" class="login-input">
+                <button onclick="loginTeacher()" class="login-btn">دخول 👩‍🏫</button>
+                <p id="teacher-first-login" class="info-text hidden">🔑 أول دخول؟ <a href="#" onclick="showFirstLogin()">انقر هنا</a></p>
+            </div>
+
+            <!-- ADMIN ÉCOLE -->
+            <div id="form-schooladmin" class="login-form-block hidden">
+                <input type="email" id="schooladmin-email" placeholder="البريد الإلكتروني" class="login-input" dir="ltr">
+                <input type="password" id="schooladmin-pwd" placeholder="كلمة المرور" class="login-input">
+                <button onclick="loginSchoolAdmin()" class="login-btn">دخول 🏫</button>
+                <button onclick="startDemoMode()" class="btn-secondary" style="margin-top:10px;width:100%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none">
+                    🎬 Voir une démo (tableau de bord directeur)
+                </button>
+            </div>
+
+            <!-- SUPER ADMIN -->
+            <div id="form-superadmin" class="login-form-block hidden">
+                <input type="password" id="superadmin-pwd" placeholder="Mot de passe Super Admin" class="login-input" dir="ltr">
+                <button onclick="loginSuperAdmin()" class="login-btn">Accès Super Admin 👨‍💼</button>
+            </div>
+
+            <p id="login-error" class="login-error hidden">❌ Erreur de connexion</p>
+        </div>
+    </div>
+</div>
+
+<!-- ========== PREMIER LOGIN PROF ========== -->
+<div id="screen-first-login" class="screen hidden">
+    <div class="login-bg">
+        <div class="login-box">
+            <div class="login-logo">🔑</div>
+            <h2 style="color:var(--primary);margin-bottom:10px">Première connexion</h2>
+            <p style="color:var(--text-light);margin-bottom:20px">Choisissez votre mot de passe</p>
+            <input type="email" id="fl-email" placeholder="Votre email" class="login-input" dir="ltr">
+            <input type="text" id="fl-code" placeholder="Code d'activation" class="login-input" dir="ltr">
+            <input type="password" id="fl-pwd1" placeholder="Nouveau mot de passe" class="login-input">
+            <input type="password" id="fl-pwd2" placeholder="Confirmer le mot de passe" class="login-input">
+            <button onclick="doFirstLogin()" class="login-btn">Créer mon compte ✅</button>
+            <button onclick="showScreen('screen-login')" class="btn-secondary" style="margin-top:10px;width:100%">← Retour</button>
+            <p id="fl-error" class="login-error hidden"></p>
+        </div>
+    </div>
+</div>
+
+<!-- ========== ÉCRAN ÉLÈVE ========== -->
+<div id="screen-menu" class="screen hidden">
+    <header class="app-header">
+        <div class="header-left"><button onclick="logout()" class="btn-logout">🚪</button></div>
+        <div class="header-center">
+            <img id="header-logo-img" class="hidden" alt="logo" style="height:48px;width:48px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-inline-end:8px;border:2px solid rgba(255,255,255,0.6);box-shadow:0 2px 6px rgba(0,0,0,0.15)">
+            <span id="header-logo-emoji" class="header-logo">🌙</span>
+            <span class="header-title">حروفي</span>
+        </div>
+        <div class="header-right"><span id="header-name" class="header-name"></span></div>
+    </header>
+    <div class="progress-section">
+        <div class="progress-wrap"><div id="progress-bar" class="progress-bar"></div></div>
+        <p id="compteur" class="compteur"></p>
+    </div>
+    <div class="tabs">
+        <button class="tab-btn active" id="tab-btn-learn" onclick="switchTab('learn',this)"><span class="tab-label">📖 تعلّم</span></button>
+        <button class="tab-btn" id="tab-btn-quiz" onclick="switchTab('quiz',this)"><span class="tab-label">🎯 اختبار</span></button>
+        <button class="tab-btn" id="tab-btn-trace" onclick="switchTab('trace',this)"><span class="tab-label">✏️ أتتبع</span></button>
+        <button class="tab-btn" id="tab-btn-exercises" onclick="switchTab('exercises',this)"><span class="tab-label">📋 تمارين</span> <span id="exercise-badge" class="notif-badge hidden">!</span></button>
+        <button class="tab-btn" id="tab-btn-vocab" onclick="switchTab('vocab',this)"><span class="tab-label">📖 مفردات</span></button>
+        <button class="tab-btn" id="tab-btn-quran" onclick="switchTab('quran',this)"><span class="tab-label">🕌 القرآن</span></button>
+    </div>
+    <div id="tab-learn" class="tab-content active">
+        <div class="grid" id="lettersGrid"></div>
+    </div>
+    <div id="tab-quiz" class="tab-content hidden">
+        <div class="quiz-intro" id="quiz-intro">
+            <div class="quiz-intro-icon">🎯</div>
+            <h2 id="quiz-title"><span class="tab-label">وقت الاختبار!</span></h2><p id="quiz-subtitle"><span class="tab-label">هل أنت مستعد؟</span></p>
+            <div class="quiz-modes">
+                <button onclick="startQuiz('image')" class="quiz-mode-btn" id="quiz-mode-image"><span class="qm-icon">🖼️</span><span class="tab-label">ما هذه الصورة؟</span></button>
+                <button onclick="startQuiz('letter')" class="quiz-mode-btn" id="quiz-mode-letter"><span class="qm-icon">🔤</span><span class="tab-label">ما هذا الحرف؟</span></button>
+                <button onclick="startQuiz('word')" class="quiz-mode-btn" id="quiz-mode-word"><span class="qm-icon">📝</span><span class="tab-label">ما هذه الكلمة؟</span></button>
+            </div>
+        </div>
+        <div id="quiz-game" class="hidden">
+            <div class="quiz-score-bar">
+                <span id="quiz-q-count">1/10</span>
+                <div class="quiz-score-pills">
+                    <span id="quiz-correct-count" class="pill green">✓ 0</span>
+                    <span id="quiz-wrong-count" class="pill red">✗ 0</span>
+                </div>
+            </div>
+            <div class="quiz-card" id="quiz-card">
+                <div id="quiz-question" class="quiz-question"></div>
+                <div id="quiz-choices" class="quiz-choices"></div>
+            </div>
+        </div>
+        <div id="quiz-result" class="hidden">
+            <div class="result-box">
+                <div id="result-emoji" class="result-emoji"></div>
+                <h2 id="result-title"></h2><p id="result-score"></p>
+                <button onclick="resetQuiz()" class="btn-primary" id="btn-quiz-reset"><span class="tab-label">🔄 إعادة</span></button>
+                <button onclick="switchTab('learn',document.querySelectorAll('.tab-btn')[0])" class="btn-secondary" id="btn-quiz-gotolearn"><span class="tab-label">📖 تعلّم</span></button>
+            </div>
+        </div>
+    </div>
+    <div id="tab-vocab" class="tab-content hidden">
+        <div class="vocab-container">
+            <!-- Category filters -->
+            <div class="vocab-filters">
+                <button class="vocab-filter-btn active" id="vocab-filter-all" onclick="filterVocab('all',this)"><span class="tab-label">🌟 الكل</span></button>
+                <button class="vocab-filter-btn" id="vocab-filter-letters" onclick="filterVocab('letters',this)"><span class="tab-label">🔤 الحروف</span></button>
+                <button class="vocab-filter-btn" id="vocab-filter-family" onclick="filterVocab('family',this)"><span class="tab-label">👨‍👩‍👧 العائلة</span></button>
+                <button class="vocab-filter-btn" id="vocab-filter-colors" onclick="filterVocab('colors',this)"><span class="tab-label">🎨 الألوان</span></button>
+                <button class="vocab-filter-btn" id="vocab-filter-body" onclick="filterVocab('body',this)"><span class="tab-label">🧍 الجسم</span></button>
+                <button class="vocab-filter-btn" id="vocab-filter-house" onclick="filterVocab('house',this)"><span class="tab-label">🏠 المنزل</span></button>
+            </div>
+            <div id="vocab-progress-bar-wrap" style="padding:0 15px 10px">
+                <div style="background:#f0f0f0;border-radius:20px;height:10px;overflow:hidden">
+                    <div id="vocab-progress-fill" style="height:100%;background:linear-gradient(90deg,var(--secondary),var(--green));transition:width 0.6s;width:0%"></div>
+                </div>
+                <p id="vocab-progress-text" style="text-align:center;font-size:13px;color:var(--text-light);margin-top:5px"></p>
+            </div>
+            <div id="vocab-grid" class="vocab-grid"></div>
+        </div>
+    </div>
+
+    <div id="tab-exercises" class="tab-content hidden">
+        <div id="exercises-list" class="exercises-list">
+            <div style="text-align:center;padding:40px;color:#aaa">⏳ Chargement...</div>
+        </div>
+    </div>
+
+    <!-- ===== ONGLET CORAN ===== -->
+    <div id="tab-quran" class="tab-content hidden">
+        <div id="quran-home" class="quran-home">
+            <div class="quran-header">
+                <div class="quran-header-icon">🕌</div>
+                <div class="quran-header-title">القرآن الكريم</div>
+                <div class="quran-header-sub">Apprentissage du Coran</div>
+            </div>
+            <div class="quran-surah-list" id="quran-surah-list">
+                <!-- Rempli par JS -->
+            </div>
+        </div>
+        <!-- Vue d'une sourate -->
+        <div id="quran-surah-view" class="hidden">
+            <div class="quran-surah-header">
+                <button onclick="showQuranHome()" class="quran-back-btn" id="quran-back-btn"><span class="tab-label">← رجوع</span></button>
+                <div>
+                    <div class="quran-surah-name" id="qsv-name-ar"></div>
+                    <div class="quran-surah-name-fr" id="qsv-name-fr"></div>
+                </div>
+                <div id="qsv-progress" class="quran-progress-badge">0 / 0</div>
+            </div>
+            <!-- Modes -->
+            <div class="quran-modes">
+                <button class="quran-mode-btn active" id="qmode-listen" onclick="setQuranMode('listen',this)"><span class="tab-label">🎧 استمع</span></button>
+                <button class="quran-mode-btn" id="qmode-read" onclick="setQuranMode('read',this)"><span class="tab-label">📖 اقرأ</span></button>
+                <button class="quran-mode-btn" id="qmode-memorize" onclick="setQuranMode('memorize',this)"><span class="tab-label">🧠 احفظ</span></button>
+                <button class="quran-mode-btn" id="qmode-quiz" onclick="setQuranMode('quiz',this)"><span class="tab-label">✅ اختبر</span></button>
+            </div>
+            <!-- Contenu selon le mode -->
+            <div id="quran-mode-content">
+                <!-- Rempli par JS selon le mode -->
+            </div>
+        </div>
+    </div>
+    <!-- ===== FIN ONGLET CORAN ===== -->
+
+    <div id="tab-trace" class="tab-content hidden">
+        <div class="trace-container">
+            <h2 class="trace-title" id="trace-title"><span class="tab-label">✏️ تتبّع الحرف</span></h2>
+            <div class="trace-letter-picker" id="trace-picker"></div>
+            <div class="trace-zone">
+                <!-- TOOLBAR -->
+                <div class="trace-toolbar">
+                    <!-- Couleurs -->
+                    <div class="trace-tool-group">
+                        <label class="tool-label" id="trace-color-label"><span class="tab-label">🎨 اللون</span></label>
+                        <input type="color" id="trace-color" value="#FF6B6B" class="color-picker" onchange="setTraceColor(this.value)">
+                        <div class="color-presets">
+                            <div class="color-dot" style="background:#FF6B6B" onclick="setTraceColor('#FF6B6B')"></div>
+                            <div class="color-dot" style="background:#1a56a0" onclick="setTraceColor('#1a56a0')"></div>
+                            <div class="color-dot" style="background:#27ae60" onclick="setTraceColor('#27ae60')"></div>
+                            <div class="color-dot" style="background:#f39c12" onclick="setTraceColor('#f39c12')"></div>
+                            <div class="color-dot" style="background:#6c5ce7" onclick="setTraceColor('#6c5ce7')"></div>
+                            <div class="color-dot" style="background:#000000" onclick="setTraceColor('#000000')"></div>
+                        </div>
+                    </div>
+                    <!-- Taille pinceau -->
+                    <div class="trace-tool-group">
+                        <label class="tool-label" id="trace-size-label"><span class="tab-label">✏️ الحجم</span></label>
+                        <input type="range" id="brush-size" min="2" max="30" value="8" class="brush-slider" oninput="setBrushSize(this.value)">
+                        <span id="brush-size-label" class="brush-size-label">8</span>
+                    </div>
+                    <!-- Mode gomme -->
+                    <div class="trace-tool-group">
+                        <button id="eraser-btn" onclick="toggleEraser()" class="btn-tool"><span class="tab-label">🗑️ ممحاة</span></button>
+                        <button onclick="clearCanvas()" class="btn-tool btn-clear" id="btn-clear-all"><span class="tab-label">🗑️ كل شيء</span></button>
+                        <button id="trace-bg-toggle" onclick="toggleTraceBg()" class="btn-tool"><span class="tab-label">📝 خطوط الكراسة</span></button>
+                    </div>
+                </div>
+
+                <!-- CANVAS -->
+                <div style="position:relative;width:300px;height:300px;margin:0 auto">
+                    <canvas id="trace-bg-canvas" width="300" height="300" style="position:absolute;top:0;left:0;border-radius:15px"></canvas>
+                    <div id="trace-guide" class="trace-guide"></div>
+                    <canvas id="trace-canvas" width="300" height="300" style="position:relative;background:transparent"></canvas>
+                </div>
+
+                <!-- ACTIONS -->
+                <div class="trace-controls">
+                    <button onclick="saveTrace()" class="btn-trace btn-save" id="btn-save-trace"><span class="tab-label">💾 احفظ</span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== ÉCRAN LETTRE ========== -->
+<div id="screen-letter" class="screen hidden">
+    <div class="letter-header">
+        <button onclick="showMenu()" class="btn-back" id="btn-back-menu"><span class="tab-label">← Menu</span></button>
+        <div class="letter-dots" id="letter-dots"></div>
+    </div>
+    <div class="letter-card">
+        <div class="letter-card-inner" id="letter-card-inner">
+            <div class="letter-face letter-front">
+                <div id="lettre" class="lettre"></div>
+                <div class="letter-forms" id="letter-forms"></div>
+            </div>
+            <div class="letter-face letter-back">
+                <div id="mot" class="mot"></div>
+                <img id="image" class="image" src="" alt="">
+            </div>
+        </div>
+    </div>
+    <div class="letter-nav">
+        <button onclick="prevLetter()" class="btn-nav">◀</button>
+        <div class="letter-actions">
+            <button onclick="flipCard()" class="btn-flip" id="btn-flip-card"><span class="tab-label">🔄 اقلب</span></button>
+            <button onclick="playSound()" class="btn-audio" id="btn-play-sound"><span class="tab-label">🔊 استمع</span></button>
+            <button onclick="markLearned()" class="btn-done" id="btn-mark-learned"><span class="tab-label">✅ فهمت!</span></button>
+        </div>
+        <button onclick="nextLetter()" class="btn-nav">▶</button>
+    </div>
+    <audio id="audio"></audio>
+</div>
+
+<!-- ========== TABLEAU DE BORD PROF ========== -->
+<div id="screen-teacher" class="screen hidden">
+    <header class="app-header teacher-header">
+        <div class="header-left"><button onclick="logout()" class="btn-logout">🚪</button></div>
+        <div class="header-center">
+            <img id="teacher-logo-img" class="hidden" alt="logo" style="height:42px;width:42px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-inline-end:8px;border:2px solid rgba(255,255,255,0.6);box-shadow:0 2px 6px rgba(0,0,0,0.15)">
+            <span id="teacher-header-name">👩‍🏫 Mon tableau de bord</span>
+        </div>
+        <div class="header-right">
+            <button onclick="exportData('teacher')" class="btn-export">📥 Export</button>
+            <button onclick="resetAllStudents()" class="btn-reset-all">🗑️ Reset</button>
+        </div>
+    </header>
+    <div class="admin-tabs">
+        <button class="admin-tab active" id="t-tab-btn-students" onclick="switchTeacherTab('t-students',this)"><span class="tab-label">👥 Élèves</span></button>
+        <button class="admin-tab" id="t-tab-btn-classlist" onclick="switchTeacherTab('t-classlist',this)"><span class="tab-label">📋 Liste de classe</span></button>
+        <button class="admin-tab" id="t-tab-btn-attendance" onclick="switchTeacherTab('t-attendance',this)"><span class="tab-label">📅 Appel</span></button>
+        <button class="admin-tab" id="t-tab-btn-exercises" onclick="switchTeacherTab('t-exercises',this)"><span class="tab-label">✏️ Exercices</span> <span id="teacher-exercise-badge" class="notif-badge hidden">!</span></button>
+        <button class="admin-tab" id="t-tab-btn-submissions" onclick="switchTeacherTab('t-submissions',this)"><span class="tab-label">📬 Travaux rendus</span> <span id="submissions-badge" class="notif-badge hidden">!</span></button>
+    </div>
+
+    <!-- ÉLÈVES -->
+    <div id="teacher-tab-t-students" class="admin-tab-content">
+        <div style="padding:15px">
+            <div class="teacher-summary" id="teacher-summary"></div>
+            <!-- Graphiques prof (compacts, sur une seule rangée) -->
+            <div class="charts-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;align-items:start">
+                <div class="chart-card" style="padding:10px">
+                    <h3 class="chart-title" id="t-chart-title-progress" style="font-size:13px;margin-bottom:6px"><span class="tab-label">📊 Progression</span></h3>
+                    <canvas id="chart-students-bar" height="110"></canvas>
+                </div>
+                <div class="chart-card" style="padding:10px">
+                    <h3 class="chart-title" id="t-chart-title-donut" style="font-size:13px;margin-bottom:6px"><span class="tab-label">🍩 État de la classe</span></h3>
+                    <canvas id="chart-class-donut" height="110"></canvas>
+                </div>
+                <div class="chart-card" style="padding:10px">
+                    <h3 class="chart-title" id="t-chart-title-hardletters" style="font-size:13px;margin-bottom:6px"><span class="tab-label">🔥 Lettres difficiles</span></h3>
+                    <canvas id="chart-letters-teacher" height="110"></canvas>
+                </div>
+            </div>
+            <!-- Tableau -->
+            <div class="teacher-table-wrap">
+                <table class="teacher-table">
+                    <thead><tr><th id="th-t-eleve"><span class="tab-label">👤 Élève</span></th><th id="th-t-progression"><span class="tab-label">📊 Progression</span></th><th id="th-t-quiz"><span class="tab-label">🏆 Quiz</span></th><th id="th-t-activite"><span class="tab-label">📅 Activité</span></th><th>⚙️</th></tr></thead>
+                    <tbody id="teacher-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- APPEL / ABSENCES PROF -->
+    <div id="teacher-tab-t-attendance" class="admin-tab-content hidden">
+        <div style="padding:15px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px">
+                <h3 style="color:var(--primary)" id="t-attendance-title"><span class="tab-label">📅 Faire l'appel</span></h3>
+                <div style="display:flex;gap:10px;align-items:center">
+                    <input type="date" id="attendance-date" class="admin-input" style="width:auto" dir="ltr">
+                    <button onclick="loadAttendance()" class="btn-admin-add" id="btn-load-attendance"><span class="tab-label">📋 Charger</span></button>
+                </div>
+            </div>
+            <div id="attendance-form"></div>
+            <div id="attendance-history" style="margin-top:25px"></div>
+        </div>
+    </div>
+
+    <!-- LISTE DE CLASSE -->
+    <div id="teacher-tab-t-classlist" class="admin-tab-content hidden">
+        <div style="padding:15px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+                <h3 id="classlist-title" style="color:var(--primary)"><span class="tab-label">📋 Liste des élèves de ma classe</span></h3>
+                <button onclick="printClassList()" class="btn-admin-add" style="background:var(--secondary)" id="btn-print-classlist"><span class="tab-label">🖨️ Imprimer</span></button>
+            </div>
+            <div id="teacher-classlist-content"></div>
+        </div>
+    </div>
+
+    <!-- EXERCICES -->
+    <div id="teacher-tab-t-exercises" class="admin-tab-content hidden">
+        <div class="admin-section">
+            <h3 id="t-createex-title"><span class="tab-label">➕ Créer un exercice</span></h3>
+            <div class="exercise-form">
+                <div class="exercise-type-select">
+                    <button class="ex-type-btn active" onclick="selectExType('letter',this)" id="ex-type-letter"><span class="tab-label">🔤 Lettre</span></button>
+                    <button class="ex-type-btn" onclick="selectExType('word',this)" id="ex-type-word"><span class="tab-label">📝 Mot</span></button>
+                    <button class="ex-type-btn" onclick="selectExType('forme',this)" id="ex-type-forme"><span class="tab-label">🔀 Formes</span></button>
+                    <button class="ex-type-btn" onclick="selectExType('free',this)" id="ex-type-free"><span class="tab-label">✏️ Libre</span></button>
+                </div>
+                <div id="ex-letter-input">
+                    <select id="ex-letter-select" class="admin-input">
+                        <option value="">-- Choisir une lettre --</option>
+                    </select>
+                </div>
+                <div id="ex-word-input" class="hidden">
+                    <input type="text" id="ex-word" placeholder="Mot à écrire (ex: بَطَّة)" class="admin-input" dir="rtl">
+                </div>
+                <div id="ex-forme-input" class="hidden">
+                    <select id="ex-forme-letter" class="admin-input">
+                        <option value="">-- اختر الحرف --</option>
+                    </select>
+                    <p style="font-size:13px;color:#888;margin-top:5px">سيُطلب من التلميذ سحب الشكل الصحيح للحرف إلى مكانه في الكلمة</p>
+                </div>
+                <div id="ex-free-input" class="hidden">
+                    <textarea id="ex-free-text" placeholder="Consigne libre (ex: Trace la lettre ب trois fois en commençant par le point)" class="admin-input" rows="3" dir="rtl" style="resize:vertical;font-family:Tajawal,Arial;font-size:16px"></textarea>
+                </div>
+                <div id="ex-target-container"></div>
+                <input type="date" id="ex-deadline" class="admin-input" dir="ltr">
+                <button onclick="createExercise()" class="btn-admin-add" id="btn-publish-exercise"><span class="tab-label">📋 Publier l'exercice</span></button>
+            </div>
+        </div>
+        <div id="teacher-exercises-list"></div>
+    </div>
+
+    <!-- TRAVAUX RENDUS -->
+    <div id="teacher-tab-t-submissions" class="admin-tab-content hidden">
+        <div id="submissions-list" style="padding:15px"></div>
+    </div>
+</div>
+
+<!-- ========== ADMIN ÉCOLE ========== -->
+<div id="screen-schooladmin" class="screen hidden">
+    <header class="app-header schooladmin-header">
+        <div class="header-left"><button onclick="logout()" class="btn-logout">🚪</button></div>
+        <div class="header-center">
+            <img id="sa-logo-img" class="hidden" alt="logo" style="height:42px;width:42px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-inline-end:8px;border:2px solid rgba(255,255,255,0.6);box-shadow:0 2px 6px rgba(0,0,0,0.15)">
+            <span id="schooladmin-title">🏫 Gestion École</span>
+        </div>
+        <div class="header-right"><button onclick="exportData('school')" class="btn-export">📥 Export</button></div>
+    </header>
+    <div class="admin-tabs">
+        <button class="admin-tab active" id="sa-tab-btn-classes" onclick="switchAdminTab('sa-classes',this)"><span class="tab-label">📚 Classes</span></button>
+        <button class="admin-tab" id="sa-tab-btn-teachers" onclick="switchAdminTab('sa-teachers',this)"><span class="tab-label">👩‍🏫 Professeurs</span></button>
+        <button class="admin-tab" id="sa-tab-btn-absences" onclick="switchAdminTab('sa-absences',this)"><span class="tab-label">📅 Absences</span></button>
+        <button class="admin-tab" id="sa-tab-btn-stats" onclick="switchAdminTab('sa-stats',this)"><span class="tab-label">📊 Statistiques</span></button>
+        <button class="admin-tab" id="sa-tab-btn-settings" onclick="switchAdminTab('sa-settings',this)"><span class="tab-label">⚙️ Paramètres</span></button>
+    </div>
+
+    <!-- CLASSES -->
+    <div id="admin-tab-sa-classes" class="admin-tab-content">
+        <div class="admin-section">
+            <h3 id="sa-addclass-title"><span class="tab-label">➕ Ajouter une classe</span></h3>
+            <div class="admin-form">
+                <input type="text" id="sa-class-name" placeholder="Nom de la classe (ex: CP-A)" class="admin-input">
+                <button onclick="saAddClass()" class="btn-admin-add" id="btn-add-class"><span class="tab-label">Ajouter 📚</span></button>
+            </div>
+        </div>
+        <div id="sa-classes-list"></div>
+
+        <!-- LISTE ÉLÈVES D'UNE CLASSE -->
+        <div id="sa-students-panel" class="hidden">
+            <div class="admin-section" style="border-left:4px solid var(--purple)">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px">
+                    <h3 id="sa-students-title"><span class="tab-label">👥 Liste des élèves</span></h3>
+                    <button onclick="closeStuPanel()" class="btn-delete" id="btn-close-stupanel"><span class="tab-label">✕ Fermer</span></button>
+                </div>
+
+                <!-- Ajout manuel -->
+                <div class="admin-form" style="margin-bottom:15px">
+                    <input type="text" id="stu-firstname" placeholder="Prénom" class="admin-input">
+                    <input type="text" id="stu-lastname" placeholder="Nom" class="admin-input">
+                    <button onclick="saAddStudent()" class="btn-admin-add" id="btn-add-student"><span class="tab-label">➕ Ajouter</span></button>
+                </div>
+
+                <!-- Import Excel -->
+                <div style="background:#f8f8f8;border-radius:12px;padding:15px;margin-bottom:15px">
+                    <p style="font-weight:700;margin-bottom:10px;color:var(--text)" id="sa-import-excel-title"><span class="tab-label">📊 Importer depuis Excel</span></p>
+                    <p style="font-size:13px;color:#888;margin-bottom:10px">Le fichier Excel doit avoir 2 colonnes : <strong>Prénom</strong> et <strong>Nom</strong></p>
+                    <input type="file" id="excel-import" accept=".xlsx,.xls,.csv" class="admin-input" style="padding:8px">
+                    <button onclick="importExcel()" class="btn-admin-add" style="margin-top:8px;background:var(--purple)" id="btn-import-excel"><span class="tab-label">📥 Importer</span></button>
+                </div>
+
+                <div id="sa-students-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFS -->
+    <div id="admin-tab-sa-teachers" class="admin-tab-content hidden">
+        <div class="admin-section">
+            <h3 id="sa-addteacher-title"><span class="tab-label">➕ Ajouter un professeur</span></h3>
+            <div class="admin-form">
+                <input type="text" id="sa-teacher-name" placeholder="Nom du professeur" class="admin-input">
+                <input type="email" id="sa-teacher-email" placeholder="Email" class="admin-input" dir="ltr">
+                <select id="sa-teacher-class" class="admin-input">
+                    <option value="">-- Classe --</option>
+                </select>
+                <button onclick="saAddTeacher()" class="btn-admin-add" id="btn-add-teacher"><span class="tab-label">Ajouter 👩‍🏫</span></button>
+            </div>
+            <p id="sa-teacher-code-result" class="code-result hidden"></p>
+        </div>
+        <div id="sa-teachers-list"></div>
+    </div>
+
+    <!-- ABSENCES DIRECTEUR -->
+    <div id="admin-tab-sa-absences" class="admin-tab-content hidden">
+        <div style="padding:15px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px">
+                <h3 style="color:var(--primary)" id="sa-absences-title"><span class="tab-label">📅 Suivi des absences</span></h3>
+                <button onclick="exportAbsences()" class="btn-export" style="background:var(--green);color:white;border:none;padding:8px 16px;border-radius:10px;cursor:pointer;font-family:Tajawal,Arial;font-weight:700" id="btn-export-absences"><span class="tab-label">📥 Export Excel</span></button>
+            </div>
+            <!-- Filtres -->
+            <div style="display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap">
+                <select id="sa-absence-class-filter" class="admin-input" style="flex:1" onchange="loadDirectorAbsences()">
+                    <option value="all">📚 Toutes les classes</option>
+                </select>
+                <input type="month" id="sa-absence-month" class="admin-input" style="flex:1" dir="ltr" onchange="loadDirectorAbsences()">
+            </div>
+            <div id="director-absences-content"></div>
+        </div>
+    </div>
+
+    <!-- STATS DIRECTEUR -->
+    <div id="admin-tab-sa-stats" class="admin-tab-content hidden">
+        <div style="padding:15px">
+            <div class="teacher-summary" id="sa-summary"></div>
+            <!-- Graphiques -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <h3 class="chart-title" id="sa-chart-title-classes"><span class="tab-label">📊 Progression par classe</span></h3>
+                    <canvas id="chart-classes" height="200"></canvas>
+                </div>
+                <div class="chart-card">
+                    <h3 class="chart-title" id="sa-chart-title-donut"><span class="tab-label">🍩 Vue globale école</span></h3>
+                    <canvas id="chart-school-donut" height="200"></canvas>
+                </div>
+            </div>
+            <div class="chart-card" style="margin:15px 0">
+                <h3 class="chart-title" id="sa-chart-title-hard"><span class="tab-label">🔥 Lettres les plus difficiles</span></h3>
+                <canvas id="chart-letters-hard" height="120"></canvas>
+            </div>
+            <div class="chart-card" style="margin:15px 0">
+                <h3 class="chart-title" id="sa-chart-title-quran"><span class="tab-label">📖 Progression Coran par classe</span></h3>
+                <canvas id="chart-classes-quran" height="200"></canvas>
+            </div>
+            <!-- Tableau détaillé -->
+            <div class="teacher-table-wrap">
+                <table class="teacher-table">
+                    <thead><tr><th id="sa-th-eleve"><span class="tab-label">👤 Élève</span></th><th id="sa-th-classe"><span class="tab-label">📚 Classe</span></th><th id="sa-th-progression"><span class="tab-label">📊 Progression</span></th><th id="sa-th-quiz"><span class="tab-label">🏆 Quiz</span></th><th id="sa-th-activite"><span class="tab-label">📅 Activité</span></th><th id="sa-th-coran"><span class="tab-label">📖 Coran</span></th><th>✉️</th></tr></thead>
+                    <tbody id="sa-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- PARAMÈTRES -->
+    <div id="admin-tab-sa-settings" class="admin-tab-content hidden">
+        <div class="admin-section" style="max-width:500px">
+            <h3 id="sa-settings-logo-title"><span class="tab-label">🎨 Personnalisation de l'école</span></h3>
+            <p style="color:#888;font-size:14px;margin-bottom:15px">
+                Ajoutez le logo de votre école : il apparaîtra dans l'application pour vos élèves, vos professeurs et vous-même.
+            </p>
+            <div style="text-align:center;margin-bottom:15px">
+                <img id="sa-logo-preview" src="" alt="Aperçu du logo" style="height:90px;width:90px;border-radius:50%;object-fit:cover;border:3px solid #eee;display:none">
+                <div id="sa-logo-placeholder" style="height:90px;width:90px;border-radius:50%;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto">🏫</div>
+            </div>
+            <input type="url" id="sa-logo-url" placeholder="https://exemple.com/logo-ecole.png" class="login-input" dir="ltr" oninput="saPreviewLogo()">
+            <p style="color:#aaa;font-size:12px;margin:6px 0 15px">Collez le lien d'une image (PNG/JPG). Vous pouvez héberger votre logo gratuitement sur un service comme imgur.com si vous n'avez pas encore de lien.</p>
+            <button onclick="saSaveLogo()" class="login-btn" id="btn-save-logo"><span class="tab-label">💾 Enregistrer le logo</span></button>
+        </div>
+
+        <div class="admin-section" style="max-width:500px;margin-top:20px">
+            <h3 id="sa-settings-code-title"><span class="tab-label">🔑 Code de votre école</span></h3>
+            <p style="color:#888;font-size:14px;margin-bottom:15px">
+                Communiquez ce code à vos élèves : ils le saisiront à la connexion pour rejoindre votre école, sans jamais voir la liste des autres écoles inscrites sur la plateforme.
+            </p>
+            <div style="text-align:center;background:#f1effb;border-radius:14px;padding:18px">
+                <span id="sa-school-code-display" style="font-size:26px;font-weight:900;color:var(--primary);letter-spacing:2px">—</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== SUPER ADMIN ========== -->
+<div id="screen-superadmin" class="screen hidden">
+    <header class="app-header superadmin-header">
+        <div class="header-left"><button onclick="logout()" class="btn-logout">🚪</button></div>
+        <div class="header-center"><span>👨‍💼 Super Admin</span></div>
+        <div class="header-right"><button onclick="exportData('super')" class="btn-export">📥 Export</button></div>
+    </header>
+    <div class="admin-tabs">
+        <button class="admin-tab active" onclick="switchAdminTab('sup-schools',this)">🏫 Écoles</button>
+        <button class="admin-tab" onclick="switchAdminTab('sup-stats',this)">📊 Statistiques</button>
+    </div>
+
+    <!-- ÉCOLES -->
+    <div id="admin-tab-sup-schools" class="admin-tab-content">
+        <div class="admin-section">
+            <h3>➕ Ajouter une école</h3>
+            <div class="admin-form">
+                <input type="text" id="sup-school-name" placeholder="Nom de l'école" class="admin-input">
+                <input type="text" id="sup-school-city" placeholder="Ville" class="admin-input">
+                <input type="email" id="sup-admin-email" placeholder="Email Admin école" class="admin-input" dir="ltr">
+                <input type="password" id="sup-admin-pwd" placeholder="Mot de passe Admin école" class="admin-input" dir="ltr">
+                <select id="sup-school-lang" class="admin-input">
+                    <option value="">🇸🇦 Arabe uniquement (par défaut)</option>
+                    <option value="fr">🇫🇷 + Français</option>
+                    <option value="nl">🇳🇱 + Néerlandais</option>
+                    <option value="en">🇬🇧 + Anglais</option>
+                    <option value="es">🇪🇸 + Espagnol</option>
+                </select>
+                <button onclick="supAddSchool()" class="btn-admin-add">Créer l'école 🏫</button>
+            </div>
+            <p id="sup-school-result" class="code-result hidden"></p>
+        </div>
+        <div id="sup-schools-list"></div>
+    </div>
+
+    <!-- STATS GLOBALES -->
+    <div id="admin-tab-sup-stats" class="admin-tab-content hidden">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:15px 15px 0;flex-wrap:wrap;gap:10px">
+            <h3 style="color:var(--primary)">📊 Statistiques globales</h3>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button onclick="resetAllData()" class="btn-reset-all" style="background:#e74c3c">
+                    🗑️ Réinitialiser toutes les données
+                </button>
+                <button onclick="resetOrphanStudents()" class="btn-sm-add" style="background:#e67e22">
+                    🧹 Nettoyer données invalides
+                </button>
+            </div>
+        </div>
+        <div style="padding:15px">
+            <div class="teacher-summary" id="sup-summary"></div>
+            <div class="teacher-table-wrap">
+                <table class="teacher-table">
+                    <thead><tr><th>👤 Élève</th><th>🏫 École</th><th>📚 Classe</th><th>📊 Progression</th><th>🏆 Quiz</th><th>📅 Activité</th><th>⚙️</th></tr></thead>
+                    <tbody id="sup-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== ÉCRAN PARENT (lecture seule) ========== -->
+<div id="screen-parent" class="screen hidden">
+    <header class="app-header">
+        <div class="header-left"><button onclick="logout()" class="btn-logout">🚪</button></div>
+        <div class="header-center">
+            <img id="parent-logo-img" class="hidden" alt="logo" style="height:44px;width:44px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-inline-end:8px">
+            <span class="header-title">👪 <span id="parent-header-title">متابعة ولي الأمر</span></span>
+        </div>
+        <div class="header-right"><span id="parent-student-name" class="header-name"></span></div>
+    </header>
+    <div id="parent-dashboard-content" style="padding:16px;max-width:700px;margin:0 auto"></div>
+</div>
+
+<!-- ========== FENÊTRE : ENVOYER UN MESSAGE AU PARENT ========== -->
+<div id="modal-message" class="screen hidden" style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center">
+    <div style="background:#fff;border-radius:18px;padding:24px;max-width:420px;width:90%;max-height:85vh;overflow-y:auto">
+        <h3 style="color:var(--primary);margin-bottom:6px">✉️ رسالة لولي أمر <span id="msg-student-name"></span></h3>
+        <p style="color:#888;font-size:13px;margin-bottom:14px">Ce message sera visible par le parent dans son espace de suivi.</p>
+        <select id="msg-category" class="admin-input" style="margin-bottom:10px">
+            <option value="general">📋 عام / Général</option>
+            <option value="absence">📅 غياب / Absence</option>
+            <option value="conduite">⚠️ سلوك / Comportement</option>
+            <option value="felicitation">🌟 تهنئة / Félicitation</option>
+        </select>
+        <textarea id="msg-text" class="admin-input" rows="4" placeholder="Écrivez votre message ici..." style="resize:vertical"></textarea>
+        <div style="display:flex;gap:10px;margin-top:14px">
+            <button onclick="closeMessageModal()" class="btn-secondary" style="flex:1">Annuler</button>
+            <button onclick="sendParentMessage()" class="login-btn" style="flex:1;margin:0">📤 إرسال / Envoyer</button>
+        </div>
+    </div>
+</div>
+
+<!-- BADGE -->
+<div id="badge-bravo" class="badge-bravo hidden">
+    <div class="badge-content">
+        <div class="badge-stars">⭐⭐⭐</div>
+        <div class="badge-text">🎉 أحسنت! 🎉</div>
+        <div class="badge-sub">تعلّمت كل الحروف!</div>
+    </div>
+</div>
+
+<script type="module" src="script.js"></script>
+</body>
+</html>

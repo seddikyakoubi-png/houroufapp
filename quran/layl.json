@@ -1,0 +1,30 @@
+{
+  "id": 92,
+  "name_ar": "الليل",
+  "name_fr": "La Nuit",
+  "name_nl": "De Nacht",
+  "total_ayahs": 21,
+  "ayahs": [
+    { "number": 1, "arabic": "وَاللَّيْلِ إِذَا يَغْشَىٰ", "french": "Par la nuit quand elle enveloppe tout", "dutch": "Bij de nacht wanneer hij alles omhult" },
+    { "number": 2, "arabic": "وَالنَّهَارِ إِذَا تَجَلَّىٰ", "french": "Et par le jour quand il resplendit", "dutch": "En bij de dag wanneer hij schittert" },
+    { "number": 3, "arabic": "وَمَا خَلَقَ الذَّكَرَ وَالْأُنثَىٰ", "french": "Et par Celui qui a créé le mâle et la femelle", "dutch": "En bij Wie het mannelijke en het vrouwelijke geschapen heeft" },
+    { "number": 4, "arabic": "إِنَّ سَعْيَكُمْ لَشَتَّىٰ", "french": "Vos efforts sont divers", "dutch": "Jullie inspanningen zijn zeer uiteenlopend" },
+    { "number": 5, "arabic": "فَأَمَّا مَنْ أَعْطَىٰ وَاتَّقَىٰ", "french": "Quant à celui qui donne et craint Allah", "dutch": "Wat betreft hem die geeft en godvrezend is" },
+    { "number": 6, "arabic": "وَصَدَّقَ بِالْحُسْنَىٰ", "french": "et déclare vraie la plus belle récompense", "dutch": "en het allerbeste als waarheid bevestigt" },
+    { "number": 7, "arabic": "فَسَنُيَسِّرُهُ لِلْيُسْرَىٰ", "french": "Nous lui faciliterons la voie du bonheur", "dutch": "Hem zullen Wij de weg naar het gemak vergemakkelijken" },
+    { "number": 8, "arabic": "وَأَمَّا مَن بَخِلَ وَاسْتَغْنَىٰ", "french": "Et quant à celui qui est avare et se dispense d'Allah", "dutch": "En wat betreft hem die gierig is en zich onafhankelijk waant" },
+    { "number": 9, "arabic": "وَكَذَّبَ بِالْحُسْنَىٰ", "french": "et dément la plus belle récompense", "dutch": "en het allerbeste loochent" },
+    { "number": 10, "arabic": "فَسَنُيَسِّرُهُ لِلْعُسْرَىٰ", "french": "Nous lui faciliterons la voie de la difficulté", "dutch": "Hem zullen Wij de weg naar de moeilijkheid vergemakkelijken" },
+    { "number": 11, "arabic": "وَمَا يُغْنِي عَنْهُ مَالُهُ إِذَا تَرَدَّىٰ", "french": "Et sa richesse ne lui servira à rien quand il sombrera", "dutch": "En zijn rijkdom zal hem niet baten wanneer hij ten onder gaat" },
+    { "number": 12, "arabic": "إِنَّ عَلَيْنَا لَلْهُدَىٰ", "french": "C'est à Nous, certes, de guider", "dutch": "Het is zeker aan Ons om te leiden" },
+    { "number": 13, "arabic": "وَإِنَّ لَنَا لَلْآخِرَةَ وَالْأُولَىٰ", "french": "et à Nous appartiennent la vie future et la vie d'ici-bas", "dutch": "en aan Ons behoort het hiernamaals en het ondermaanse" },
+    { "number": 14, "arabic": "فَأَنذَرْتُكُمْ نَارًا تَلَظَّىٰ", "french": "Je vous ai donc avertis d'un Feu qui flamboie", "dutch": "Ik heb jullie dus gewaarschuwd voor een laaiend Vuur" },
+    { "number": 15, "arabic": "لَا يَصْلَاهَا إِلَّا الْأَشْقَى", "french": "où ne brûlera que le plus misérable", "dutch": "waarin slechts de meest ellendige zal branden" },
+    { "number": 16, "arabic": "الَّذِي كَذَّبَ وَتَوَلَّىٰ", "french": "celui qui a démenti et s'est détourné", "dutch": "die geloochend heeft en zich afgewend heeft" },
+    { "number": 17, "arabic": "وَسَيُجَنَّبُهَا الْأَتْقَى", "french": "Mais le plus pieux en sera écarté", "dutch": "Maar de meest vrome zal ervan weggehouden worden" },
+    { "number": 18, "arabic": "الَّذِي يُؤْتِي مَالَهُ يَتَزَكَّىٰ", "french": "celui qui donne ses biens pour se purifier", "dutch": "die zijn bezit geeft om zich te zuiveren" },
+    { "number": 19, "arabic": "وَمَا لِأَحَدٍ عِندَهُ مِن نِّعْمَةٍ تُجْزَىٰ", "french": "sans chercher à être récompensé pour un bienfait rendu", "dutch": "zonder een gunst te zoeken die vergolden moet worden" },
+    { "number": 20, "arabic": "إِلَّا ابْتِغَاءَ وَجْهِ رَبِّهِ الْأَعْلَىٰ", "french": "si ce n'est le désir de plaire à son Seigneur, le Très-Haut", "dutch": "behalve het zoeken naar het Aangezicht van zijn Heer, de Allerhoogste" },
+    { "number": 21, "arabic": "وَلَسَوْفَ يَرْضَىٰ", "french": "et il sera bientôt satisfait", "dutch": "en hij zal weldra tevreden zijn" }
+  ]
+}
