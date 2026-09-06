@@ -340,6 +340,9 @@ const DYNAMIC_I18N = {
     nextAyah:         { fr:"Suivant",   nl:"Volgende", en:"Next",     es:"Siguiente" },
     listenFullSurah:  { fr:"Écouter la sourate complète", nl:"Luister naar de volledige soera", en:"Listen to the whole surah", es:"Escuchar la sura completa" },
     readingInProgress:{ fr:"Lecture en cours...", nl:"Bezig met lezen...", en:"Reading...", es:"Leyendo..." },
+    pauseReading:     { fr:"Pause",   nl:"Pauzeren", en:"Pause",  es:"Pausa" },
+    resumeReading:    { fr:"Reprendre", nl:"Hervatten", en:"Resume", es:"Reanudar" },
+    stopReading:      { fr:"Arrêter",  nl:"Stoppen",  en:"Stop",   es:"Detener" },
 };
 
 // Petit helper pour les textes bilingues générés dynamiquement en JS (hors boutons/onglets statiques).
@@ -3961,8 +3964,10 @@ function getAudioCtx() {
   return window._houroufAudioCtx;
 }
 
-// Retourne true si la lecture a réussi, false si le fichier est introuvable/invalide
-window.playNormalizedAudio = function (path) {
+// Charge et prépare un fichier audio (fetch + décodage + calcul du gain) SANS le jouer.
+// Permet de précharger le verset suivant pendant que le verset actuel joue encore,
+// pour éliminer le temps mort entre deux versets.
+function loadNormalizedBuffer(path) {
   return new Promise(async (resolve) => {
     try {
       const ctx = getAudioCtx();
@@ -3971,7 +3976,6 @@ window.playNormalizedAudio = function (path) {
       const arrayBuffer = await response.arrayBuffer();
       const audioBuffer = await ctx.decodeAudioData(arrayBuffer);
 
-      // Mesurer le pic sonore (échantillonnage léger pour rester rapide)
       let peak = 0;
       for (let c = 0; c < audioBuffer.numberOfChannels; c++) {
         const data = audioBuffer.getChannelData(c);
@@ -3981,19 +3985,34 @@ window.playNormalizedAudio = function (path) {
         }
       }
       const gainValue = peak > 0.01 ? Math.min(TARGET_PEAK / peak, MAX_GAIN) : 1;
-
-      const source = ctx.createBufferSource();
-      source.buffer = audioBuffer;
-      const gainNode = ctx.createGain();
-      gainNode.gain.value = gainValue;
-      source.connect(gainNode);
-      gainNode.connect(ctx.destination);
-      source.onended = () => resolve(true);
-      source.start(0);
+      resolve({ audioBuffer, gainValue });
     } catch (err) {
-      resolve(false);
+      resolve(null);
     }
   });
+}
+
+// Joue un buffer déjà chargé par loadNormalizedBuffer(). Résout à la fin de la lecture.
+function playLoadedBuffer(loaded) {
+  return new Promise((resolve) => {
+    if (!loaded) { resolve(false); return; }
+    const ctx = getAudioCtx();
+    const source = ctx.createBufferSource();
+    source.buffer = loaded.audioBuffer;
+    const gainNode = ctx.createGain();
+    gainNode.gain.value = loaded.gainValue;
+    source.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    source.onended = () => resolve(true);
+    source.start(0);
+    window._currentQuranSource = source;
+  });
+}
+
+// Retourne true si la lecture a réussi, false si le fichier est introuvable/invalide
+window.playNormalizedAudio = async function (path) {
+  const loaded = await loadNormalizedBuffer(path);
+  return playLoadedBuffer(loaded);
 };
 
 window.speakAyah = async () => {
@@ -4064,7 +4083,9 @@ function renderReadMode() {
           </div>`;
       }).join("")}
     </div>
-    <button onclick="speakFullSurah()" class="q-btn-listen" id="btn-speak-full-surah" style="margin-top:16px">🔊 <span id="btn-speak-full-surah-label">${bi("استمع للسورة كاملة","listenFullSurah")}</span></button>
+    <div id="full-surah-controls">
+      <button onclick="speakFullSurah()" class="q-btn-listen" id="btn-speak-full-surah" style="margin-top:16px">🔊 <span id="btn-speak-full-surah-label">${bi("استمع للسورة كاملة","listenFullSurah")}</span></button>
+    </div>
   `;
 }
 
@@ -4073,20 +4094,62 @@ window.selectAyahFromRead = (i) => {
   setQuranMode("listen", document.getElementById("qmode-listen"));
 };
 
-window.speakFullSurah = async () => {
-  const btn = document.getElementById("btn-speak-full-surah");
-  if (btn) { btn.disabled = true; btn.innerHTML = `⏸️ <span id="btn-speak-full-surah-label">${bi("جاري القراءة...","readingInProgress")}</span>`; }
+// État de lecture de la sourate complète (pause/reprise/arrêt)
+window.fullSurahPlayback = { paused: false, stopped: false, playing: false };
 
-  // Lire la Bassmala en premier (MP3 dédié si présent, sinon synthèse vocale)
-  const basmalaOk = await window.playNormalizedAudio(`quran/audio/basmala.mp3`);
-  if (!basmalaOk) {
+function waitWhilePausedFullSurah() {
+  return new Promise((resolve) => {
+    const check = () => {
+      if (!window.fullSurahPlayback.paused) resolve();
+      else setTimeout(check, 150);
+    };
+    check();
+  });
+}
+
+// ⏸️ / ▶️ Met en pause ou reprend la lecture en cours (garde la position exacte dans le verset)
+window.togglePauseFullSurah = () => {
+  window.fullSurahPlayback.paused = !window.fullSurahPlayback.paused;
+  const ctx = window._houroufAudioCtx;
+  if (ctx) { window.fullSurahPlayback.paused ? ctx.suspend() : ctx.resume(); }
+  const label = document.getElementById("btn-speak-full-surah-label");
+  if (label) label.textContent = window.fullSurahPlayback.paused ? bi("متابعة","resumeReading") : bi("إيقاف مؤقت","pauseReading");
+  const btn = document.getElementById("btn-speak-full-surah");
+  if (btn) btn.firstChild.textContent = window.fullSurahPlayback.paused ? "▶️ " : "⏸️ ";
+};
+
+// ⏹️ Arrête complètement la lecture (revient au bouton de départ)
+window.stopFullSurah = () => {
+  window.fullSurahPlayback.stopped = true;
+  window.fullSurahPlayback.paused = false;
+  const ctx = window._houroufAudioCtx;
+  if (ctx) ctx.resume();
+  if (window._currentQuranSource) { try { window._currentQuranSource.stop(); } catch(e) {} }
+};
+
+window.speakFullSurah = async () => {
+  window.fullSurahPlayback = { paused: false, stopped: false, playing: true };
+  renderFullSurahControls(true);
+
+  // Charger + jouer la Bassmala (MP3 dédié si présent, sinon synthèse vocale)
+  const basmalaLoaded = await loadNormalizedBuffer(`quran/audio/basmala.mp3`);
+  if (basmalaLoaded) {
+    await playLoadedBuffer(basmalaLoaded);
+  } else {
     window.speakArabic("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ");
     await new Promise(r => setTimeout(r, 2000));
   }
-  await new Promise(r => setTimeout(r, 500)); // pause après la Bassmala
+  await new Promise(r => setTimeout(r, 500));
+  await waitWhilePausedFullSurah();
 
-  // Jouer les MP3 en séquence, un par un, avec volume normalisé et surlignage synchronisé
-  for (let i = 0; i < currentSurahData.ayahs.length; i++) {
+  const ayahs = currentSurahData.ayahs;
+  // 🚀 Précharger le 1er verset pendant que la Bassmala vient de se terminer
+  let nextBufferPromise = loadNormalizedBuffer(`quran/audio/${currentSurah.id}_${ayahs[0].number}.mp3`);
+
+  for (let i = 0; i < ayahs.length; i++) {
+    if (window.fullSurahPlayback.stopped) break;
+    await waitWhilePausedFullSurah();
+
     // ✨ Surligner le verset en cours et faire défiler la page vers lui
     document.querySelectorAll(".quran-full-ayah.now-playing").forEach(el => el.classList.remove("now-playing"));
     const ayahEl = document.getElementById(`read-ayah-${i}`);
@@ -4098,22 +4161,44 @@ window.speakFullSurah = async () => {
       ayahEl.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
-    const ayah = currentSurahData.ayahs[i];
-    const mp3Path = `quran/audio/${currentSurah.id}_${ayah.number}.mp3`;
-    const ok = await window.playNormalizedAudio(mp3Path);
-    if (!ok) {
-      // Fallback synthèse vocale pour cet ayah
-      window.speakArabic(ayah.arabic);
+    const loaded = await nextBufferPromise;
+    // 🚀 Lancer dès maintenant le préchargement du verset SUIVANT, pendant que celui-ci joue
+    if (i + 1 < ayahs.length) {
+      nextBufferPromise = loadNormalizedBuffer(`quran/audio/${currentSurah.id}_${ayahs[i + 1].number}.mp3`);
+    }
+
+    if (loaded) {
+      await playLoadedBuffer(loaded);
+    } else {
+      window.speakArabic(ayahs[i].arabic);
       await new Promise(r => setTimeout(r, 2000));
     }
 
-    // Retirer le surlignage juste avant la pause, pour bien marquer la transition
     if (ayahEl) { ayahEl.classList.remove("now-playing"); ayahEl.style.background = ""; }
-    await new Promise(r => setTimeout(r, 500)); // pause entre les ayahs
+    if (window.fullSurahPlayback.stopped) break;
+    await new Promise(r => setTimeout(r, 500));
+    await waitWhilePausedFullSurah();
   }
 
-  if (btn) { btn.disabled = false; btn.innerHTML = `🔊 <span id="btn-speak-full-surah-label">${bi("استمع للسورة كاملة","listenFullSurah")}</span>`; }
+  window.fullSurahPlayback.playing = false;
+  renderFullSurahControls(false);
 };
+
+// Affiche soit le bouton "Écouter" de départ, soit les boutons Pause/Arrêt pendant la lecture
+function renderFullSurahControls(isPlaying) {
+  const container = document.getElementById("full-surah-controls");
+  if (!container) return;
+  if (isPlaying) {
+    container.innerHTML = `
+      <button onclick="togglePauseFullSurah()" class="q-btn-listen" id="btn-speak-full-surah" style="margin-top:16px">⏸️ <span id="btn-speak-full-surah-label">${bi("إيقاف مؤقت","pauseReading")}</span></button>
+      <button onclick="stopFullSurah()" class="q-btn-repeat" style="margin-top:16px">⏹️ ${bi("إنهاء","stopReading")}</button>
+    `;
+  } else {
+    container.innerHTML = `
+      <button onclick="speakFullSurah()" class="q-btn-listen" id="btn-speak-full-surah" style="margin-top:16px">🔊 <span id="btn-speak-full-surah-label">${bi("استمع للسورة كاملة","listenFullSurah")}</span></button>
+    `;
+  }
+}
 
 // ===== MODE MÉMORISATION =====
 function renderMemorizeMode() {
