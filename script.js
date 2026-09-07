@@ -220,6 +220,9 @@ window.loadClasses = async () => {
 // ===== TRADUCTION DES NOMS DE FONCTIONNALITÉS (fixée par école à la création) =====
 // Affiche : emoji + arabe + " / " + langue choisie (élève), ou emoji + langue choisie (prof/directeur, base FR)
 const FEATURE_I18N = {
+    // Écran d'accueil (avant toute connexion)
+    "login-sub":       { emoji:"", ar:"تعلّم الأبجدية العربية بطريقة ممتعة", fr:"Apprends l'alphabet arabe de façon amusante", nl:"Leer het Arabische alfabet op een leuke manier", en:"Learn the Arabic alphabet in a fun way", es:"Aprende el alfabeto árabe de forma divertida" },
+    "role-label-text": { emoji:"", ar:"من أنت؟", fr:"Qui es-tu ?", nl:"Wie ben je?", en:"Who are you?", es:"¿Quién eres?" },
     // Onglets élève (arabe toujours affiché + langue secondaire)
     "tab-btn-learn":      { emoji:"📖", ar:"تعلّم",  fr:"Apprendre",        nl:"Leren",            en:"Learn",       es:"Aprender" },
     "tab-btn-quiz":       { emoji:"🎯", ar:"اختبار", fr:"Quiz",             nl:"Quiz",             en:"Quiz",        es:"Cuestionario" },
@@ -438,6 +441,10 @@ window.resolveSchoolCode = async () => {
     resultEl.textContent = `✅ ${entry[1].name} - ${entry[1].city}`;
     resultEl.style.color = "#27ae60";
     resultEl.style.display = "block";
+    // ✅ Applique dès maintenant le logo et le bilinguisme (arabe + langue de l'école),
+    // sans attendre la connexion complète — visible dès la saisie du code.
+    applySchoolBranding(entry[1]);
+    applyFeatureTranslations(entry[1]?.uiLang);
     await window.loadClasses();
     window.resetStudentSelect();
 };
@@ -606,18 +613,14 @@ window.loadStudentNames = async () => {
     }
 };
 
-// ✅ Afficher le champ PIN si l élève en a un (toujours affiché en mode parent, pour forcer la vérification)
+// ✅ Le champ PIN reste toujours visible en permanence (élève et parent) — on vide juste
+// sa valeur au changement de sélection, sans jamais le masquer.
 window.showPinFieldIfNeeded = async (sid, cid, name) => {
     const pinContainer = document.getElementById("pin-container");
-    if (!pinContainer || !name) { if(pinContainer) pinContainer.style.display="none"; return; }
-    const studentId = sid + "_" + cid + "_" + name;
-    const data = await getStudentData(studentId);
-    if (data.pin || selectedRole === "parent") {
-        pinContainer.style.display = "block";
-        document.getElementById("student-pin").value = "";
-    } else {
-        pinContainer.style.display = "none";
-    }
+    if (!pinContainer) return;
+    pinContainer.style.display = "block";
+    const pinInput = document.getElementById("student-pin");
+    if (pinInput) pinInput.value = "";
 };
 
 window.loginTeacher = async () => {

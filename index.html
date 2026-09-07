@@ -20,9 +20,9 @@
         <div class="login-box">
             <div class="login-logo">🌙</div>
             <h1 class="login-title">حروفي</h1>
-            <p class="login-sub">تعلّم الأبجدية العربية بطريقة ممتعة</p>
+            <p class="login-sub" id="login-sub"><span class="tab-label">تعلّم الأبجدية العربية بطريقة ممتعة</span></p>
             <!-- من أنت؟ — Qui êtes-vous ? -->
-            <p class="role-label">من أنت؟ — Qui êtes-vous ?</p>
+            <p class="role-label" id="role-label-text"><span class="tab-label">من أنت؟</span></p>
             <div class="role-cards" dir="rtl">
                 <div class="role-card active" data-role="student" onclick="selectRole('student', this)">
                     <span class="role-card-icon">👦</span>
@@ -64,7 +64,7 @@
                     <option value="">-- اختر اسمك --</option>
                 </select>
                 <p id="student-list-msg" style="display:none;color:#e67e22;font-size:14px;text-align:center;margin:5px 0">⏳ Chargement de la liste...</p>
-                <div id="pin-container" style="display:none">
+                <div id="pin-container">
                     <input type="password" id="student-pin" placeholder="🔐 Code personnel" class="login-input" maxlength="10" dir="ltr">
                 </div>
                 <button onclick="loginStudent()" class="login-btn" id="student-login-btn">ابدأ التعلم ✨</button>
