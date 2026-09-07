@@ -781,15 +781,87 @@ function showEncouragementToast(text, count) {
     }, 3000);
 }
 
+// ===== ANIMATION DE CÉLÉBRATION PAR NIVEAU =====
+// Niveau 1 (5 lettres) → 5 éléments, niveau 2 (10 lettres) → 10 éléments, etc.
+// Alterne entre deux styles : "montée" façon ballons, et "explosion" façon feu d'artifice.
+const LEVEL_ANIM_EMOJIS = ["🎈", "❤️", "⭐", "🎉", "🌟", "🏆", "🎊", "💫", "🌈", "🔥"];
+
+function injectLevelAnimStyles() {
+    if (document.getElementById("level-anim-styles")) return;
+    const style = document.createElement("style");
+    style.id = "level-anim-styles";
+    style.textContent = `
+        @keyframes levelAnimRise {
+            0%   { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+            80%  { opacity: 1; }
+            100% { transform: translate(var(--drift), -110vh) rotate(var(--spin)); opacity: 0; }
+        }
+        @keyframes levelAnimBurst {
+            0%   { transform: translate(0, 0) scale(0.5); opacity: 1; }
+            70%  { opacity: 1; }
+            100% { transform: translate(var(--dx), var(--dy)) scale(1); opacity: 0; }
+        }
+        .level-anim-item { position: fixed; z-index: 9998; pointer-events: none; will-change: transform, opacity; }
+    `;
+    document.head.appendChild(style);
+}
+
+// level = 1, 2, 3... (calculé à partir du nombre de lettres apprises ÷ 5)
+function launchLevelAnimation(level) {
+    injectLevelAnimStyles();
+    const emoji = LEVEL_ANIM_EMOJIS[(level - 1) % LEVEL_ANIM_EMOJIS.length];
+    const count = Math.min(level * 5, 40); // plafond pour rester fluide aux niveaux avancés
+    const isRiseStyle = level % 2 === 1; // niveaux impairs = "ballons" montants, pairs = "feu d'artifice"
+
+    for (let i = 0; i < count; i++) {
+        const el = document.createElement("div");
+        el.className = "level-anim-item";
+        el.textContent = emoji;
+        el.style.fontSize = (22 + Math.random() * 20) + "px";
+
+        if (isRiseStyle) {
+            // 🎈 Style "ballons" : montée depuis le bas de l'écran, avec une légère dérive
+            const startX = Math.random() * 100;
+            const drift = (Math.random() * 160 - 80) + "px";
+            const duration = 3 + Math.random() * 2;
+            const spin = (Math.random() * 60 - 30) + "deg";
+            el.style.left = startX + "vw";
+            el.style.bottom = "-40px";
+            el.style.setProperty("--drift", drift);
+            el.style.setProperty("--spin", spin);
+            el.style.animation = `levelAnimRise ${duration}s ease-in ${Math.random() * 0.6}s forwards`;
+        } else {
+            // 🎆 Style "feu d'artifice" : explosion depuis un point aléatoire vers l'extérieur
+            const originX = 20 + Math.random() * 60; // vw
+            const originY = 20 + Math.random() * 40; // vh
+            const angle = Math.random() * Math.PI * 2;
+            const distance = 80 + Math.random() * 140;
+            const dx = Math.cos(angle) * distance + "px";
+            const dy = Math.sin(angle) * distance + 60 + "px"; // + gravité légère
+            const duration = 1 + Math.random() * 0.8;
+            el.style.left = originX + "vw";
+            el.style.top = originY + "vh";
+            el.style.setProperty("--dx", dx);
+            el.style.setProperty("--dy", dy);
+            el.style.animation = `levelAnimBurst ${duration}s ease-out ${Math.random() * 0.5}s forwards`;
+        }
+
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 6000);
+    }
+}
+
 window.markLearned=async()=>{
     const data=await getStudentData(currentUser);
     if(!data.learned.includes(letterIndex)){
         data.learned.push(letterIndex);data.lastActivity=new Date().toISOString();data.schoolId=currentSchoolId;data.classId=currentClassId;
         await saveStudentData(currentUser,data);
-        // 🎉 Encouragement verbal tous les 5 lettres apprises
+        // 🎉 Encouragement verbal + animation tous les 5 lettres apprises
         if (data.learned.length % 5 === 0) {
+            const level = data.learned.length / 5;
             const enc = ENCOURAGEMENT_PHRASES[Math.floor(Math.random() * ENCOURAGEMENT_PHRASES.length)];
             showEncouragementToast(enc.text, data.learned.length);
+            launchLevelAnimation(level);
             // ✅ Utilise votre enregistrement en priorité, synthèse vocale en repli si le fichier n'existe pas encore
             window.playNormalizedAudio(enc.file).then(ok => { if (!ok) window.speakArabic(enc.text); });
         }
