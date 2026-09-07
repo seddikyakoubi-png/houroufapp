@@ -2028,6 +2028,11 @@ window.closeStuPanel = () => {
     currentClassForStudents = null;
 };
 
+// 🔐 Génère un code personnel à 4 chiffres pour un nouvel élève (utilisé par l'ajout manuel et l'import Excel)
+function generateRandomPin() {
+    return String(Math.floor(1000 + Math.random() * 9000));
+}
+
 async function loadStudentsList(classId) {
     const snap = await getDoc(doc(db, "ecoles", currentSchoolId));
     const school = snap.data();
@@ -2040,20 +2045,28 @@ async function loadStudentsList(classId) {
         return;
     }
 
+    // 🔐 Récupérer le code personnel de chaque élève pour l'afficher directement
+    const studentIds = students.map(name => `${currentSchoolId}_${classId}_${name}`);
+    const pins = await Promise.all(studentIds.map(id => getStudentData(id)));
+
     el.innerHTML = `
         <table class="teacher-table">
-            <thead><tr><th>#</th><th>👤 Prénom + Nom</th><th>⚙️</th></tr></thead>
+            <thead><tr><th>#</th><th>👤 Prénom + Nom</th><th>🔐 Code personnel (élève & parent)</th><th>⚙️</th></tr></thead>
             <tbody>
                 ${students.map((name, i) => `
                     <tr>
                         <td style="color:#aaa">${i+1}</td>
                         <td><strong>${name}</strong></td>
+                        <td>${pins[i]?.pin
+                            ? `<span class="code-badge">🔑 ${pins[i].pin}</span> <button class="btn-pin-student" onclick="setPinForStudent('${studentIds[i]}', '${name.replace(/'/g,"\\'")}')" title="Modifier le code">✏️</button>`
+                            : `<button class="btn-admin-add" style="padding:4px 10px;font-size:13px" onclick="setPinForStudent('${studentIds[i]}', '${name.replace(/'/g,"\\'")}')">🔐 Générer un code</button>`
+                        }</td>
                         <td><button onclick="saRemoveStudent('${classId}', ${i})" class="btn-delete">🗑️</button></td>
                     </tr>
                 `).join("")}
             </tbody>
         </table>
-        <p style="color:#888;font-size:13px;margin-top:10px;text-align:center">${students.length} élève(s) inscrit(s)</p>
+        <p style="color:#888;font-size:13px;margin-top:10px;text-align:center">${students.length} élève(s) inscrit(s) — communiquez le code personnel à chaque élève et à son parent</p>
     `;
 }
 
@@ -2076,6 +2089,14 @@ window.saAddStudent = async () => {
 
     school.classes[currentClassForStudents].students.push(fullName);
     await setDoc(doc(db, "ecoles", currentSchoolId), school);
+
+    // 🔐 Génère automatiquement un code personnel pour ce nouvel élève, dès sa création
+    const newStudentId = `${currentSchoolId}_${currentClassForStudents}_${fullName}`;
+    const newStudentData = await getStudentData(newStudentId);
+    newStudentData.pin = generateRandomPin();
+    newStudentData.schoolId = currentSchoolId;
+    newStudentData.classId = currentClassForStudents;
+    await saveStudentData(newStudentId, newStudentData);
 
     document.getElementById("stu-firstname").value = "";
     document.getElementById("stu-lastname").value = "";
@@ -2134,15 +2155,26 @@ window.importExcel = async () => {
 
             // Add only new ones
             let added = 0;
+            const newlyAdded = [];
             students.forEach(name => {
                 if (!existing.find(e => e.toLowerCase() === name.toLowerCase())) {
-                    existing.push(name); added++;
+                    existing.push(name); added++; newlyAdded.push(name);
                 }
             });
             school.classes[currentClassForStudents].students = existing;
             await setDoc(doc(db, "ecoles", currentSchoolId), school);
 
-            alert(`✅ ${added} élève(s) importé(s) !\n${students.length - added} doublon(s) ignoré(s).`);
+            // 🔐 Génère automatiquement un code personnel pour chaque élève nouvellement importé
+            for (const name of newlyAdded) {
+                const studentId = `${currentSchoolId}_${currentClassForStudents}_${name}`;
+                const studentData = await getStudentData(studentId);
+                studentData.pin = generateRandomPin();
+                studentData.schoolId = currentSchoolId;
+                studentData.classId = currentClassForStudents;
+                await saveStudentData(studentId, studentData);
+            }
+
+            alert(`✅ ${added} élève(s) importé(s), chacun avec un code personnel généré automatiquement !\n${students.length - added} doublon(s) ignoré(s).`);
             document.getElementById("excel-import").value = "";
             await loadStudentsList(currentClassForStudents);
             await saLoadClasses(school);
