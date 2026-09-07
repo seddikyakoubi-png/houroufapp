@@ -197,13 +197,16 @@ window.selectRole = (role,btn) => {
     const formRole = role === "parent" ? "student" : role; // le parent réutilise le même formulaire que l'élève
     ["student","teacher","schooladmin","superadmin"].forEach(r=>document.getElementById("form-"+r).classList.toggle("hidden",r!==formRole));
     const loginBtn = document.getElementById("student-login-btn");
+    const pinInput = document.getElementById("student-pin");
     if (loginBtn && formRole === "student") {
         if (role === "parent") {
             loginBtn.textContent = "👁️ عرض متابعة ابني / Voir le suivi";
             loginBtn.setAttribute("onclick", "loginParent()");
+            if (pinInput) pinInput.placeholder = "🔐 رمز ولي الأمر (Code parent)";
         } else {
             loginBtn.textContent = "ابدأ التعلم ✨";
             loginBtn.setAttribute("onclick", "loginStudent()");
+            if (pinInput) pinInput.placeholder = "🔐 رمز التلميذ (Code élève)";
         }
     }
 };
@@ -509,11 +512,11 @@ window.loginParent = async () => {
     if(classData.code!==code){showError("رمز القسم غير صحيح ❌");return;}
     const studentId=sid+"_"+cid+"_"+selectedName;
     const studentData=await getStudentData(studentId);
-    // 🔒 Le code personnel est OBLIGATOIRE pour l'accès parent (contrairement à l'élève),
-    // afin qu'un tiers ne puisse pas consulter les données d'un autre enfant sans autorisation.
-    if(!studentData.pin){showError("لا يوجد رمز شخصي لهذا التلميذ بعد. اطلب من المعلم إنشاءه 🔐");return;}
-    if(!personalPin){showError("أدخل الرمز الشخصي لابنك 🔐");return;}
-    if(studentData.pin!==personalPin){showError("الرمز الشخصي غير صحيح ❌");return;}
+    // 🔒 Le code parent est DIFFÉRENT du code élève, pour un contrôle et un suivi efficaces :
+    // l'élève ne peut pas voir/deviner le code de son propre parent.
+    if(!studentData.parentPin){showError("لا يوجد رمز خاص بولي الأمر بعد لهذا التلميذ. اطلب من المعلم إنشاءه 🔐");return;}
+    if(!personalPin){showError("أدخل رمز ولي الأمر 🔐");return;}
+    if(studentData.parentPin!==personalPin){showError("رمز ولي الأمر غير صحيح ❌");return;}
     currentUser=studentId; currentRole="parent"; currentSchoolId=sid; currentClassId=cid;
     document.getElementById("parent-student-name").textContent = selectedName;
     // Logo de l'école dans l'en-tête parent
@@ -986,25 +989,51 @@ window.sendParentMessage = async () => {
     alert("✅ تم إرسال الرسالة! / Message envoyé !");
 };
 
-// ✅ Attribuer/modifier le code personnel d un élève
+// ✅ Attribuer/modifier le code ÉLÈVE (différent du code parent, pour un suivi parental fiable)
 window.setPinForStudent = async (studentId, studentName) => {
     const data = await getStudentData(studentId);
     const currentPin = data.pin || "";
     const msg = currentPin
-        ? `🔐 ${studentName} a déjà un code: ${currentPin}
-Nouveau code (laisser vide pour supprimer):`
-        : `🔓 Créer un code personnel pour ${studentName}:`;
+        ? `🔐 كود التلميذ ${studentName} الحالي: ${currentPin}
+الكود الجديد (اتركه فارغاً للحذف):`
+        : `🔓 إنشاء كود التلميذ لـ ${studentName}:`;
     const newPin = prompt(msg, currentPin);
     if (newPin === null) return; // Annulé
     data.pin = newPin.trim() || null;
     if (!data.pin) delete data.pin;
     await saveStudentData(studentId, data);
     await loadTeacherDashboard();
+    await refreshStudentsListIfOpen();
     alert(newPin.trim()
-        ? `✅ Code ${newPin.trim()} attribué à ${studentName}`
-        : `🔓 Code supprimé pour ${studentName}`
+        ? `✅ كود التلميذ ${newPin.trim()} — ${studentName}`
+        : `🔓 تم حذف كود التلميذ لـ ${studentName}`
     );
 };
+
+// ✅ Attribuer/modifier le code PARENT (indépendant du code élève, pour que le parent
+// garde son propre accès de suivi, séparé de celui de son enfant)
+window.setParentPinForStudent = async (studentId, studentName) => {
+    const data = await getStudentData(studentId);
+    const currentPin = data.parentPin || "";
+    const msg = currentPin
+        ? `👪 كود ولي أمر ${studentName} الحالي: ${currentPin}
+الكود الجديد (اتركه فارغاً للحذف):`
+        : `🔓 إنشاء كود ولي الأمر لـ ${studentName}:`;
+    const newPin = prompt(msg, currentPin);
+    if (newPin === null) return; // Annulé
+    data.parentPin = newPin.trim() || null;
+    if (!data.parentPin) delete data.parentPin;
+    await saveStudentData(studentId, data);
+    await refreshStudentsListIfOpen();
+    alert(newPin.trim()
+        ? `✅ كود ولي الأمر ${newPin.trim()} — ${studentName}`
+        : `🔓 تم حذف كود ولي الأمر لـ ${studentName}`
+    );
+};
+
+function refreshStudentsListIfOpen() {
+    return currentClassForStudents ? loadStudentsList(currentClassForStudents) : Promise.resolve();
+}
 window.resetAllStudents=async()=>{
     if(!confirm("⚠️ Effacer TOUS les élèves de cette classe ?"))return;
     const all=await getAllStudents();
@@ -2028,9 +2057,16 @@ window.closeStuPanel = () => {
     currentClassForStudents = null;
 };
 
-// 🔐 Génère un code personnel à 4 chiffres pour un nouvel élève (utilisé par l'ajout manuel et l'import Excel)
+// 🔐 Génère un code personnel à 4 chiffres pour un nouvel élève ou parent
 function generateRandomPin() {
     return String(Math.floor(1000 + Math.random() * 9000));
+}
+// Génère deux codes DIFFÉRENTS l'un de l'autre (élève / parent), pour un suivi parental fiable
+function generateDistinctPins() {
+    const studentPin = generateRandomPin();
+    let parentPin;
+    do { parentPin = generateRandomPin(); } while (parentPin === studentPin);
+    return { studentPin, parentPin };
 }
 
 async function loadStudentsList(classId) {
@@ -2051,22 +2087,26 @@ async function loadStudentsList(classId) {
 
     el.innerHTML = `
         <table class="teacher-table">
-            <thead><tr><th>#</th><th>👤 Prénom + Nom</th><th>🔐 Code personnel (élève & parent)</th><th>⚙️</th></tr></thead>
+            <thead><tr><th>#</th><th>👤 Prénom + Nom</th><th>🔐 Code élève</th><th>👪 Code parent</th><th>⚙️</th></tr></thead>
             <tbody>
                 ${students.map((name, i) => `
                     <tr>
                         <td style="color:#aaa">${i+1}</td>
                         <td><strong>${name}</strong></td>
                         <td>${pins[i]?.pin
-                            ? `<span class="code-badge">🔑 ${pins[i].pin}</span> <button class="btn-pin-student" onclick="setPinForStudent('${studentIds[i]}', '${name.replace(/'/g,"\\'")}')" title="Modifier le code">✏️</button>`
-                            : `<button class="btn-admin-add" style="padding:4px 10px;font-size:13px" onclick="setPinForStudent('${studentIds[i]}', '${name.replace(/'/g,"\\'")}')">🔐 Générer un code</button>`
+                            ? `<span class="code-badge">🔑 ${pins[i].pin}</span> <button class="btn-pin-student" onclick="setPinForStudent('${studentIds[i]}', '${name.replace(/'/g,"\\'")}')" title="Modifier le code élève">✏️</button>`
+                            : `<button class="btn-admin-add" style="padding:4px 10px;font-size:13px" onclick="setPinForStudent('${studentIds[i]}', '${name.replace(/'/g,"\\'")}')">🔐 Générer</button>`
+                        }</td>
+                        <td>${pins[i]?.parentPin
+                            ? `<span class="code-badge" style="background:#f1effb;color:#5b4fc4">🔑 ${pins[i].parentPin}</span> <button class="btn-pin-student" onclick="setParentPinForStudent('${studentIds[i]}', '${name.replace(/'/g,"\\'")}')" title="Modifier le code parent">✏️</button>`
+                            : `<button class="btn-admin-add" style="padding:4px 10px;font-size:13px;background:#8e54e9" onclick="setParentPinForStudent('${studentIds[i]}', '${name.replace(/'/g,"\\'")}')">👪 Générer</button>`
                         }</td>
                         <td><button onclick="saRemoveStudent('${classId}', ${i})" class="btn-delete">🗑️</button></td>
                     </tr>
                 `).join("")}
             </tbody>
         </table>
-        <p style="color:#888;font-size:13px;margin-top:10px;text-align:center">${students.length} élève(s) inscrit(s) — communiquez le code personnel à chaque élève et à son parent</p>
+        <p style="color:#888;font-size:13px;margin-top:10px;text-align:center">${students.length} élève(s) inscrit(s) — le code élève et le code parent sont différents, communiquez chacun à la bonne personne</p>
     `;
 }
 
@@ -2090,10 +2130,12 @@ window.saAddStudent = async () => {
     school.classes[currentClassForStudents].students.push(fullName);
     await setDoc(doc(db, "ecoles", currentSchoolId), school);
 
-    // 🔐 Génère automatiquement un code personnel pour ce nouvel élève, dès sa création
+    // 🔐 Génère automatiquement 2 codes DIFFÉRENTS pour ce nouvel élève (élève + parent), dès sa création
     const newStudentId = `${currentSchoolId}_${currentClassForStudents}_${fullName}`;
     const newStudentData = await getStudentData(newStudentId);
-    newStudentData.pin = generateRandomPin();
+    const { studentPin, parentPin } = generateDistinctPins();
+    newStudentData.pin = studentPin;
+    newStudentData.parentPin = parentPin;
     newStudentData.schoolId = currentSchoolId;
     newStudentData.classId = currentClassForStudents;
     await saveStudentData(newStudentId, newStudentData);
@@ -2164,17 +2206,19 @@ window.importExcel = async () => {
             school.classes[currentClassForStudents].students = existing;
             await setDoc(doc(db, "ecoles", currentSchoolId), school);
 
-            // 🔐 Génère automatiquement un code personnel pour chaque élève nouvellement importé
+            // 🔐 Génère automatiquement 2 codes DIFFÉRENTS (élève + parent) pour chaque élève nouvellement importé
             for (const name of newlyAdded) {
                 const studentId = `${currentSchoolId}_${currentClassForStudents}_${name}`;
                 const studentData = await getStudentData(studentId);
-                studentData.pin = generateRandomPin();
+                const { studentPin, parentPin } = generateDistinctPins();
+                studentData.pin = studentPin;
+                studentData.parentPin = parentPin;
                 studentData.schoolId = currentSchoolId;
                 studentData.classId = currentClassForStudents;
                 await saveStudentData(studentId, studentData);
             }
 
-            alert(`✅ ${added} élève(s) importé(s), chacun avec un code personnel généré automatiquement !\n${students.length - added} doublon(s) ignoré(s).`);
+            alert(`✅ ${added} élève(s) importé(s), chacun avec ses 2 codes (élève + parent) générés automatiquement !\n${students.length - added} doublon(s) ignoré(s).`);
             document.getElementById("excel-import").value = "";
             await loadStudentsList(currentClassForStudents);
             await saLoadClasses(school);
