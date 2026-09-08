@@ -274,10 +274,29 @@
                 </div>
 
                 <!-- CANVAS -->
-                <div style="position:relative;width:300px;height:300px;margin:0 auto">
-                    <canvas id="trace-bg-canvas" width="300" height="300" style="position:absolute;top:0;left:0;border-radius:15px"></canvas>
+                <div style="position:relative;width:380px;max-width:92vw;aspect-ratio:1/1;margin:0 auto">
+                    <canvas id="trace-bg-canvas" width="380" height="380" style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:15px"></canvas>
                     <div id="trace-guide" class="trace-guide"></div>
-                    <canvas id="trace-canvas" width="300" height="300" style="position:relative;background:transparent"></canvas>
+                    <canvas id="trace-canvas" width="380" height="380" style="position:relative;width:100%;height:100%;background:transparent;cursor:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2232%22 height=%2232%22 viewBox=%220 0 32 32%22><text x=%220%22 y=%2226%22 font-size=%2226%22>✏️</text></svg>') 2 28, auto"></canvas>
+                </div>
+
+                <!-- ÉCRITURE AUTOMATIQUE DES 4 FORMES -->
+                <div class="trace-autowrite" style="margin-top:22px;padding:16px;background:#f8f7ff;border-radius:16px">
+                    <h3 style="font-size:15px;color:var(--primary);margin-bottom:12px;text-align:center" id="autowrite-title"><span class="tab-label">🖊️ الكتابة التلقائية للحرف</span></h3>
+                    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:12px">
+                        <select id="autowrite-letter-select" class="admin-input" style="max-width:160px"></select>
+                        <select id="autowrite-form-select" class="admin-input" style="max-width:180px">
+                            <option value="0">🔵 أول الكلمة</option>
+                            <option value="1">🟢 وسط الكلمة</option>
+                            <option value="2">🟠 آخر الكلمة (متصلة)</option>
+                            <option value="3">🟣 آخر الكلمة (منفصلة)</option>
+                        </select>
+                        <button onclick="playAutoWrite()" class="btn-admin-add" id="btn-autowrite-play">▶️ عرض الكتابة</button>
+                    </div>
+                    <div style="position:relative;width:220px;max-width:70vw;aspect-ratio:1/1;margin:0 auto;background:#fff;border-radius:14px;border:2px dashed #ddd">
+                        <svg id="autowrite-svg" viewBox="0 0 220 220" style="width:100%;height:100%"></svg>
+                    </div>
+                    <p style="font-size:12px;color:#999;text-align:center;margin-top:8px">اختر حرفًا وشكلاً، ثم اضغط \"عرض الكتابة\" لمشاهدة الحرف يُكتب تلقائيًا</p>
                 </div>
 
                 <!-- ACTIONS -->

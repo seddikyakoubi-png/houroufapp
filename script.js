@@ -273,6 +273,7 @@ const FEATURE_I18N = {
     "qmode-quiz":      { emoji:"✅", ar:"اختبر", fr:"Tester",    nl:"Testen",    en:"Test",     es:"Probar" },
     // Écran Tracé
     "trace-title":       { emoji:"✏️", ar:"تتبّع الحرف", fr:"Tracer la lettre", nl:"Letter natrekken", en:"Trace the letter", es:"Trazar la letra" },
+    "autowrite-title":   { emoji:"🖊️", ar:"الكتابة التلقائية للحرف", fr:"Écriture automatique de la lettre", nl:"Automatisch schrijven van de letter", en:"Automatic letter writing", es:"Escritura automática de la letra" },
     "trace-color-label": { emoji:"🎨", ar:"اللون", fr:"Couleur",  nl:"Kleur",  en:"Color",  es:"Color" },
     "trace-size-label":  { emoji:"✏️", ar:"الحجم", fr:"Taille",   nl:"Grootte",en:"Size",   es:"Tamaño" },
     "eraser-btn":        { emoji:"🗑️", ar:"ممحاة", fr:"Gomme",    nl:"Gum",    en:"Eraser", es:"Borrador" },
@@ -915,9 +916,53 @@ function initTrace(){
     // Use enhanced canvas setup
     setupEnhancedCanvas("trace-canvas");
     drawNotebookBg();
+
+    // 🖊️ Remplir le sélecteur de lettre pour l'écriture automatique
+    const awSelect = document.getElementById("autowrite-letter-select");
+    if (awSelect && awSelect.options.length === 0) {
+        lettres.forEach(item => {
+            const opt = document.createElement("option");
+            opt.value = item.l;
+            opt.textContent = item.l;
+            awSelect.appendChild(opt);
+        });
+    }
 }
 window.clearCanvas=()=>{const c=document.getElementById("trace-canvas");c.getContext("2d").clearRect(0,0,c.width,c.height);};
 window.saveTrace=()=>{const c=document.getElementById("trace-canvas");const a=document.createElement("a");a.download="trace_"+lettres[traceSelectedLetter].l+".png";a.href=c.toDataURL();a.click();};
+
+// ===== ÉCRITURE AUTOMATIQUE D'UNE FORME DE LETTRE =====
+// ⚠️ Il ne s'agit pas d'un véritable tracé du geste calligraphique (ordre exact des traits),
+// mais d'une animation de révélation progressive de la forme choisie, de droite à gauche
+// (sens de l'écriture arabe), pour donner un repère visuel à l'élève.
+window.playAutoWrite = () => {
+    const letterChar = document.getElementById("autowrite-letter-select").value;
+    const formIdx = parseInt(document.getElementById("autowrite-form-select").value, 10);
+    const data = formesMots[letterChar];
+    if (!data) return;
+    const formText = data.formes[formIdx];
+
+    const svg = document.getElementById("autowrite-svg");
+    svg.innerHTML = `
+        <defs><clipPath id="revealClip"><rect id="revealRect" x="220" y="0" width="0" height="220"></rect></clipPath></defs>
+        <text x="110" y="150" font-size="110" text-anchor="middle" fill="#3D348B" font-family="Tajawal, Arial" clip-path="url(#revealClip)">${formText}</text>
+    `;
+    const rect = document.getElementById("revealRect");
+    const btn = document.getElementById("btn-autowrite-play");
+    if (btn) btn.disabled = true;
+
+    const duration = 1800; // ms
+    const start = performance.now();
+    function step(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const w = t * 220;
+        rect.setAttribute("width", w);
+        rect.setAttribute("x", 220 - w); // révélation de droite à gauche
+        if (t < 1) requestAnimationFrame(step);
+        else if (btn) btn.disabled = false;
+    }
+    requestAnimationFrame(step);
+};
 
 // TABLEAU PROF
 async function loadTeacherDashboard(){
