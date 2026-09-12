@@ -969,7 +969,9 @@ window.playAutoWrite = () => {
     const formIdx = parseInt(document.getElementById("autowrite-form-select").value, 10);
     const data = formesMots[letterChar];
     if (!data) return;
-    const formText = data.formes[formIdx];
+    // 🔤 On retire les harakats (تشكيل) pour ne montrer QUE la forme de la lettre,
+    // quelle que soit la lettre choisie — ces données servent aussi à l'exercice "أشكال" (inchangé).
+    const formText = data.formes[formIdx].replace(/[\u064B-\u065F\u0670]/g, "");
 
     const svg = document.getElementById("autowrite-svg");
     // ✏️ ر، ز، و sont visuellement plus fidèles avec une légère obliquité et un corps un peu plus resserré
