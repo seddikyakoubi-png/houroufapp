@@ -450,6 +450,36 @@ window.saSaveLogo = async () => {
 
 // ✅ Résout le code d'école saisi par l'élève en schoolId réel, sans jamais exposer
 // la liste des autres écoles (contrairement à l'ancienne liste déroulante).
+// 🏫 Affiche le logo de l'école en grand plan, juste après la saisie du code, avec un effet
+// d'apparition marquant — puis remplace définitivement l'icône lune de l'écran d'accueil.
+function showSchoolLogoReveal(school) {
+    const url = school?.logoUrl?.trim();
+    if (!url) return; // pas de logo configuré pour cette école, rien à révéler
+
+    // Remplace définitivement l'icône 🌙 en haut de l'écran d'accueil par le logo de l'école
+    const mainLogo = document.getElementById("login-logo-main");
+    if (mainLogo) {
+        mainLogo.innerHTML = `<img src="${url}" alt="logo" style="width:64px;height:64px;border-radius:50%;object-fit:cover;box-shadow:0 4px 14px rgba(0,0,0,0.15)">`;
+    }
+
+    // Grand plan temporaire, animé, par-dessus tout le reste
+    const overlay = document.createElement("div");
+    overlay.style.cssText = "position:fixed;inset:0;z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,0.75);backdrop-filter:blur(4px);opacity:0;transition:opacity 0.35s";
+    overlay.innerHTML = `
+        <img src="${url}" alt="logo" style="width:180px;height:180px;border-radius:50%;object-fit:cover;box-shadow:0 12px 40px rgba(0,0,0,0.25);border:4px solid #fff;transform:scale(0.6);transition:transform 0.45s cubic-bezier(.34,1.56,.64,1)">
+        <p style="margin-top:16px;font-size:20px;font-weight:900;color:#3D348B;text-align:center;padding:0 20px">${school.name || ""}</p>
+    `;
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => {
+        overlay.style.opacity = "1";
+        overlay.querySelector("img").style.transform = "scale(1)";
+    });
+    setTimeout(() => {
+        overlay.style.opacity = "0";
+        setTimeout(() => overlay.remove(), 400);
+    }, 1800);
+}
+
 window.resolveSchoolCode = async () => {
     const codeInput = document.getElementById("student-school-code");
     const resultEl = document.getElementById("school-code-result");
@@ -478,6 +508,7 @@ window.resolveSchoolCode = async () => {
     // sans attendre la connexion complète — visible dès la saisie du code.
     applySchoolBranding(entry[1]);
     applyFeatureTranslations(entry[1]?.uiLang);
+    showSchoolLogoReveal(entry[1]);
     await window.loadClasses();
     window.resetStudentSelect();
 };
@@ -728,6 +759,8 @@ window.logout = ()=>{
     if(window.speechSynthesis) window.speechSynthesis.cancel();
     currentUser=null;currentRole=null;currentSchoolId=null;currentClassId=null;selectedRole="student";isDemoMode=false;
     applyFeatureTranslations(""); // reset : évite qu'une langue d'école reste affichée pour le prochain utilisateur
+    const mainLogo = document.getElementById("login-logo-main");
+    if (mainLogo) mainLogo.innerHTML = "🌙"; // revient à l'icône par défaut pour le prochain utilisateur (appareil partagé)
     ["student-code","teacher-email","teacher-pwd","schooladmin-email","schooladmin-pwd","superadmin-pwd"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
     document.querySelectorAll(".role-btn, .role-card").forEach(b=>b.classList.remove("active"));
     const stuBtn = document.querySelector(".role-btn[data-role='student'], .role-card[data-role='student']");
