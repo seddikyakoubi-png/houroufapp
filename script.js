@@ -99,9 +99,9 @@ const formesMots = {
     "ا": { mots:["أَسَد",    "سَاق",     "سَمَا",   "سَمَا"],    formes:["أَ",   "ـا",   "ـا",   "ا"]   },
     "د": { mots:["دُبّ",     "وَلَد",    "وَلَد",   "جَهَاد"],   formes:["دُ",   "ـد",   "ـد",   "دْ"]  },
     "ذ": { mots:["ذِئْب",    "أُذُن",    "أُذُن",   "نَبَذ"],    formes:["ذِ",   "ـذُ",  "ـذُ",  "ذْ"]  },
-    "ر": { mots:["رُمَّان",  "شَرَف",    "نَهَر",   "مِحْوَر"] ,    formes:["رُ",   "ـر",   "ـر",   "رْ"]  },
-    "ز": { mots:["زَرَافَة", "مِيزَان",  "خَبَز",   "خَبَاز"] ,    formes:["زَ",   "ـز",   "ـز",   "زْ"]  },
-    "و": { mots:["وَرْدَة",  "لَوْن",    "دَلْو",   "دَلْو"],    formes:["وَ",   "ـو",   "ـوْ",  "وْ"]  },
+    "ر": { mots:["رُمَّان",  "شَرَف",    "نَهَر",   "مِحْوَر"] ,    formes:["ر",   "ـر",   "ـر",   "ر"]  },
+    "ز": { mots:["زَرَافَة", "مِيزَان",  "خَبَز",   "خَبَاز"] ,    formes:["ز",   "ـز",   "ـز",   "ز"]  },
+    "و": { mots:["وَرْدَة",  "لَوْن",    "دَلْو",   "دَلْو"],    formes:["و",   "ـو",   "ـو",   "و"]  },
 };
 
 const lettres = [
@@ -322,6 +322,10 @@ const FEATURE_I18N = {
     "sa-settings-logo-title": { emoji:"🎨", ar:"تخصيص المدرسة", fr:"Personnalisation de l'école", nl:"Personalisatie van de school", en:"School customization", es:"Personalización de la escuela" },
     "btn-save-logo":     { emoji:"💾", ar:"حفظ الشعار", fr:"Enregistrer le logo", nl:"Logo opslaan", en:"Save the logo", es:"Guardar el logo" },
     "sa-settings-code-title": { emoji:"🔑", ar:"رمز مدرستك", fr:"Code de votre école", nl:"Code van uw school", en:"Your school code", es:"Código de su escuela" },
+    "sa-import-excel-note":   { emoji:"", ar:"الملف يجب أن يحتوي على عمودين: الاسم الأول واسم العائلة", fr:"Le fichier doit avoir 2 colonnes : Prénom et Nom", nl:"Het bestand moet 2 kolommen hebben: Voornaam en Achternaam", en:"The file must have 2 columns: First name and Last name", es:"El archivo debe tener 2 columnas: Nombre y Apellido" },
+    "sa-logo-help":           { emoji:"", ar:"الصقوا رابط صورة (PNG/JPG). يمكنكم استضافة الشعار مجانًا عبر خدمة مثل imgur.com إذا لم يكن لديكم رابط بعد", fr:"Collez le lien d'une image (PNG/JPG). Vous pouvez héberger votre logo gratuitement sur imgur.com si vous n'avez pas encore de lien.", nl:"Plak de link van een afbeelding (PNG/JPG). U kunt uw logo gratis hosten via imgur.com als u nog geen link hebt.", en:"Paste the link of an image (PNG/JPG). You can host your logo for free on imgur.com if you don't have a link yet.", es:"Pegue el enlace de una imagen (PNG/JPG). Puede alojar su logo gratis en imgur.com si aún no tiene un enlace." },
+    "msg-modal-note":         { emoji:"", ar:"هذه الرسالة ستكون مرئية لولي الأمر في مساحة المتابعة الخاصة به", fr:"Ce message sera visible par le parent dans son espace de suivi.", nl:"Dit bericht zal zichtbaar zijn voor de ouder in zijn opvolgingsruimte.", en:"This message will be visible to the parent in their tracking space.", es:"Este mensaje será visible para el padre en su espacio de seguimiento." },
+    "msg-cancel-btn":         { emoji:"", ar:"إلغاء", fr:"Annuler", nl:"Annuleren", en:"Cancel", es:"Cancelar" },
 };
 
 // Langue secondaire actuellement active (mémorisée pour être réutilisée par d'autres fonctions,
@@ -350,6 +354,10 @@ const DYNAMIC_I18N = {
     pauseReading:     { fr:"Pause",   nl:"Pauzeren", en:"Pause",  es:"Pausa" },
     resumeReading:    { fr:"Reprendre", nl:"Hervatten", en:"Resume", es:"Reanudar" },
     stopReading:      { fr:"Arrêter",  nl:"Stoppen",  en:"Stop",   es:"Detener" },
+    noClasses:        { fr:"Aucune classe — ajoutez-en une", nl:"Geen klas — voeg er een toe", en:"No class — add one", es:"Ninguna clase — añada una" },
+    noExercisesCreated: { fr:"Aucun exercice créé", nl:"Geen oefening aangemaakt", en:"No exercise created", es:"Ningún ejercicio creado" },
+    noSubmissions:    { fr:"Aucun travail rendu", nl:"Geen ingeleverd werk", en:"No submitted work", es:"Ningún trabajo entregado" },
+    noStudentsYet:    { fr:"Aucun élève — ajoutez-en ci-dessus", nl:"Geen leerling — voeg er hierboven een toe", en:"No student — add one above", es:"Ningún alumno — añada uno arriba" },
 };
 
 // Petit helper pour les textes bilingues générés dynamiquement en JS (hors boutons/onglets statiques).
@@ -361,6 +369,26 @@ function bi(arText, key) {
 
 // Applique la langue secondaire figée de l'école (uiLang: "" | "fr" | "nl" | "en" | "es") aux noms de fonctionnalités.
 // L'arabe reste TOUJOURS affiché (élève, professeur, directeur) ; la langue choisie s'ajoute à côté.
+// Traduction des PLACEHOLDERS de champs de saisie (élément → texte arabe + langue choisie)
+const PLACEHOLDER_I18N = {
+    "stu-firstname":     { ar:"الاسم الأول", fr:"Prénom",   nl:"Voornaam",  en:"First name", es:"Nombre" },
+    "stu-lastname":      { ar:"اسم العائلة", fr:"Nom",      nl:"Achternaam",en:"Last name",  es:"Apellido" },
+    "sa-class-name":     { ar:"اسم الفصل (مثال: CP-A)", fr:"Nom de la classe (ex: CP-A)", nl:"Naam van de klas (bv. CP-A)", en:"Class name (e.g. CP-A)", es:"Nombre de la clase (ej. CP-A)" },
+    "sa-teacher-name":   { ar:"اسم المعلم", fr:"Nom du professeur", nl:"Naam van de leerkracht", en:"Teacher's name", es:"Nombre del profesor" },
+    "ex-word":           { ar:"كلمة يجب كتابتها (مثال: بَطَّة)", fr:"Mot à écrire (ex: بَطَّة)", nl:"Te schrijven woord (bv. بَطَّة)", en:"Word to write (e.g. بَطَّة)", es:"Palabra a escribir (ej. بَطَّة)" },
+    "ex-free-text":      { ar:"تعليمة حرة (مثال: تتبّع حرف ب ثلاث مرات بدءًا من النقطة)", fr:"Consigne libre (ex: Trace la lettre ب trois fois en commençant par le point)", nl:"Vrije instructie (bv. Trek de letter ب drie keer, begin bij het punt)", en:"Free instruction (e.g. Trace the letter ب three times starting from the dot)", es:"Instrucción libre (ej. Traza la letra ب tres veces empezando por el punto)" },
+    "msg-text":          { ar:"اكتب رسالتك هنا...", fr:"Écrivez votre message ici...", nl:"Schrijf hier uw bericht...", en:"Write your message here...", es:"Escriba su mensaje aquí..." },
+};
+
+// Applique la traduction des placeholders selon la langue de l'école (rappelle currentUILang)
+function applyPlaceholderTranslations() {
+    Object.entries(PLACEHOLDER_I18N).forEach(([id, data]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.placeholder = currentUILang && data[currentUILang] ? `${data.ar} / ${data[currentUILang]}` : data.ar;
+    });
+}
+
 function applyFeatureTranslations(uiLang) {
     currentUILang = uiLang || "";
     Object.entries(FEATURE_I18N).forEach(([id, data]) => {
@@ -372,6 +400,7 @@ function applyFeatureTranslations(uiLang) {
             ? `${prefix}${data.ar} / ${data[uiLang]}`
             : `${prefix}${data.ar}`;
     });
+    applyPlaceholderTranslations();
 }
 
 
@@ -824,7 +853,7 @@ function launchLevelAnimation(level) {
         const el = document.createElement("div");
         el.className = "level-anim-item";
         el.textContent = emoji;
-        el.style.fontSize = (22 + Math.random() * 20) + "px";
+        el.style.fontSize = (40 + Math.random() * 28) + "px";
 
         if (isRiseStyle) {
             // 🎈 Style "ballons" : montée depuis le bas de l'écran, avec une légère dérive
@@ -889,7 +918,7 @@ function showQuestion(){
     document.getElementById("quiz-correct-count").textContent="✓ "+quizCorrect;
     document.getElementById("quiz-wrong-count").textContent="✗ "+quizWrong;
     const qEl=document.getElementById("quiz-question");qEl.innerHTML="";
-    if(quizMode==="image"){const i=document.createElement("img");i.src=q.item.img;i.className="q-img";qEl.appendChild(i);}
+    if(quizMode==="image"){const i=document.createElement("img");i.src=q.item.img;i.className="q-img";i.style.cssText="width:min(60vw,260px);height:min(60vw,260px);object-fit:cover;border-radius:18px";qEl.appendChild(i);}
     else if(quizMode==="letter"){const s=document.createElement("span");s.className="q-letter";s.textContent=q.item.l;qEl.appendChild(s);}
     else{const s=document.createElement("span");s.className="q-word";s.textContent=q.item.mot;qEl.appendChild(s);}
     const ce=document.getElementById("quiz-choices");ce.innerHTML="";
@@ -943,9 +972,12 @@ window.playAutoWrite = () => {
     const formText = data.formes[formIdx];
 
     const svg = document.getElementById("autowrite-svg");
+    // ✏️ ر، ز، و sont visuellement plus fidèles avec une légère obliquité et un corps un peu plus resserré
+    const isSlantedLetter = ["ر", "ز", "و"].includes(letterChar);
+    const textStyle = isSlantedLetter ? `font-style:italic;transform:scale(1,0.9);transform-origin:110px 150px;` : "";
     svg.innerHTML = `
         <defs><clipPath id="revealClip"><rect id="revealRect" x="220" y="0" width="0" height="220"></rect></clipPath></defs>
-        <text x="110" y="150" font-size="110" text-anchor="middle" fill="#3D348B" font-family="Tajawal, Arial" clip-path="url(#revealClip)">${formText}</text>
+        <text x="110" y="150" font-size="110" text-anchor="middle" fill="#3D348B" font-family="Tajawal, Arial" style="${textStyle}" clip-path="url(#revealClip)">${formText}</text>
     `;
     const rect = document.getElementById("revealRect");
     const btn = document.getElementById("btn-autowrite-play");
@@ -1261,7 +1293,7 @@ function loadDemoDashboard({school, teachers, students}){
 async function saLoadClasses(school){
     const classes=school?.classes?Object.entries(school.classes):[];
     const el=document.getElementById("sa-classes-list");
-    el.innerHTML=classes.length===0?`<p style="color:#aaa;padding:20px">Aucune classe — ajoutez-en une</p>`:
+    el.innerHTML=classes.length===0?`<p style="color:#aaa;padding:20px">${bi("لا يوجد فصل — أضيفوا واحدًا","noClasses")}</p>`:
     classes.map(([cid,cl])=>{
         const stuCount=cl.students?cl.students.length:0;
         return `<div class="school-card"><div class="school-card-header"><strong>📚 ${cl.name}</strong><div style="display:flex;align-items:center;gap:8px"><span class="code-badge">🔑 ${cl.code||"N/A"}</span><button onclick="openStuPanel('${cid}','${cl.name}')" class="btn-sm-add" style="background:var(--purple)">👥 ${stuCount} élève(s)</button><button onclick="saDeleteClass('${cid}')" class="btn-delete">🗑️</button></div></div><p style="color:#888;font-size:13px;margin:5px 0 0 0">Code à donner aux élèves : <strong style="color:#e67e22;font-size:16px">${cl.code||"N/A"}</strong></p></div>`;
@@ -1664,7 +1696,7 @@ async function loadTeacherExercises() {
     const subs = await getSubmissions();
     const el = document.getElementById("teacher-exercises-list");
     if (!el) return;
-    if (mine.length === 0) { el.innerHTML = `<p style="color:#aaa;padding:20px;text-align:center">Aucun exercice créé</p>`; return; }
+    if (mine.length === 0) { el.innerHTML = `<p style="color:#aaa;padding:20px;text-align:center">${bi("لم يتم إنشاء أي تمرين","noExercisesCreated")}</p>`; return; }
 
     el.innerHTML = mine.sort((a,b) => b[1].createdAt.localeCompare(a[1].createdAt)).map(([id, ex]) => {
         const subsForEx = Object.values(subs).filter(s => s.exerciceId === id);
@@ -1725,7 +1757,7 @@ async function loadSubmissions() {
     const badge = document.getElementById("submissions-badge");
     if (badge) { badge.textContent = newSubs.length; badge.classList.toggle("hidden", newSubs.length === 0); }
 
-    if (mine.length === 0) { el.innerHTML = `<p style="color:#aaa;padding:20px;text-align:center">Aucun travail rendu</p>`; return; }
+    if (mine.length === 0) { el.innerHTML = `<p style="color:#aaa;padding:20px;text-align:center">${bi("لا يوجد عمل مُسلَّم","noSubmissions")}</p>`; return; }
 
     // Group by exercise
     const grouped = {};
@@ -2122,7 +2154,7 @@ async function loadStudentsList(classId) {
     const el = document.getElementById("sa-students-list");
 
     if (students.length === 0) {
-        el.innerHTML = `<p style="color:#aaa;text-align:center;padding:20px">Aucun élève — ajoutez-en ci-dessus</p>`;
+        el.innerHTML = `<p style="color:#aaa;text-align:center;padding:20px">${bi("لا يوجد تلاميذ — أضيفوهم أعلاه","noStudentsYet")}</p>`;
         return;
     }
 

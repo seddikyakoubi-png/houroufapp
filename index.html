@@ -503,7 +503,7 @@
                 <!-- Import Excel -->
                 <div style="background:#f8f8f8;border-radius:12px;padding:15px;margin-bottom:15px">
                     <p style="font-weight:700;margin-bottom:10px;color:var(--text)" id="sa-import-excel-title"><span class="tab-label">📊 Importer depuis Excel</span></p>
-                    <p style="font-size:13px;color:#888;margin-bottom:10px">Le fichier Excel doit avoir 2 colonnes : <strong>Prénom</strong> et <strong>Nom</strong></p>
+                    <p style="font-size:13px;color:#888;margin-bottom:10px" id="sa-import-excel-note"><span class="tab-label">الملف يجب أن يحتوي على عمودين: الاسم الأول واسم العائلة</span></p>
                     <input type="file" id="excel-import" accept=".xlsx,.xls,.csv" class="admin-input" style="padding:8px">
                     <button onclick="importExcel()" class="btn-admin-add" style="margin-top:8px;background:var(--purple)" id="btn-import-excel"><span class="tab-label">📥 Importer</span></button>
                 </div>
@@ -593,7 +593,7 @@
                 <div id="sa-logo-placeholder" style="height:90px;width:90px;border-radius:50%;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto">🏫</div>
             </div>
             <input type="url" id="sa-logo-url" placeholder="https://exemple.com/logo-ecole.png" class="login-input" dir="ltr" oninput="saPreviewLogo()">
-            <p style="color:#aaa;font-size:12px;margin:6px 0 15px">Collez le lien d'une image (PNG/JPG). Vous pouvez héberger votre logo gratuitement sur un service comme imgur.com si vous n'avez pas encore de lien.</p>
+            <p style="color:#aaa;font-size:12px;margin:6px 0 15px" id="sa-logo-help"><span class="tab-label">الصقوا رابط صورة (PNG/JPG). يمكنكم استضافة الشعار مجانًا عبر خدمة مثل imgur.com إذا لم يكن لديكم رابط بعد</span></p>
             <button onclick="saSaveLogo()" class="login-btn" id="btn-save-logo"><span class="tab-label">💾 Enregistrer le logo</span></button>
         </div>
 
@@ -686,7 +686,7 @@
 <div id="modal-message" class="screen hidden" style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center">
     <div style="background:#fff;border-radius:18px;padding:24px;max-width:420px;width:90%;max-height:85vh;overflow-y:auto">
         <h3 style="color:var(--primary);margin-bottom:6px">✉️ رسالة لولي أمر <span id="msg-student-name"></span></h3>
-        <p style="color:#888;font-size:13px;margin-bottom:14px">Ce message sera visible par le parent dans son espace de suivi.</p>
+        <p style="color:#888;font-size:13px;margin-bottom:14px" id="msg-modal-note"><span class="tab-label">هذه الرسالة ستكون مرئية لولي الأمر في مساحة المتابعة الخاصة به</span></p>
         <select id="msg-category" class="admin-input" style="margin-bottom:10px">
             <option value="general">📋 عام / Général</option>
             <option value="absence">📅 غياب / Absence</option>
@@ -695,7 +695,7 @@
         </select>
         <textarea id="msg-text" class="admin-input" rows="4" placeholder="Écrivez votre message ici..." style="resize:vertical"></textarea>
         <div style="display:flex;gap:10px;margin-top:14px">
-            <button onclick="closeMessageModal()" class="btn-secondary" style="flex:1">Annuler</button>
+            <button onclick="closeMessageModal()" class="btn-secondary" style="flex:1" id="msg-cancel-btn"><span class="tab-label">إلغاء / Annuler</span></button>
             <button onclick="sendParentMessage()" class="login-btn" style="flex:1;margin:0">📤 إرسال / Envoyer</button>
         </div>
     </div>
