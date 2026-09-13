@@ -1155,6 +1155,9 @@ window.resetAllStudents=async()=>{
 
 // ADMIN ÉCOLE
 async function loadSchoolAdminDashboard(){
+    // 🔒 Fermer tout panneau "élèves de la classe" resté ouvert d'une session précédente
+    // (ex: une autre école), pour ne jamais afficher des données d'un autre établissement.
+    window.closeStuPanel();
     let school=(await getDoc(doc(db,"ecoles",currentSchoolId))).data();
     await saLoadClasses(school); await saLoadTeachers(school); await saLoadStats();
     const logoInput=document.getElementById("sa-logo-url");
