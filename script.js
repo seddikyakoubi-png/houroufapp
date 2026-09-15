@@ -3,6 +3,7 @@
 // ============================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAqAf5DBg6MudvVcajvWM514OYHp9IGPL8",
@@ -14,6 +15,7 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
+const storage = getStorage(app);
 
 const SUPER_ADMIN_PASSWORD = "Hourouf@SuperAdmin2025";
 
@@ -239,6 +241,7 @@ const FEATURE_I18N = {
     "t-tab-btn-attendance":  { emoji:"📅", ar:"الحضور",     fr:"Appel",            nl:"Aanwezigheid",     en:"Attendance",  es:"Asistencia" },
     "t-tab-btn-exercises":   { emoji:"✏️", ar:"تمارين",     fr:"Exercices",        nl:"Oefeningen",       en:"Exercises",   es:"Ejercicios" },
     "t-tab-btn-submissions": { emoji:"📬", ar:"الأعمال المُسلَّمة", fr:"Travaux rendus",   nl:"Ingeleverd werk",  en:"Submissions", es:"Trabajos entregados" },
+    "t-tab-btn-recordings":  { emoji:"🎙️", ar:"التسجيلات الصوتية", fr:"Enregistrements",  nl:"Opnames",          en:"Recordings",  es:"Grabaciones" },
     // Onglets directeur (arabe + langue choisie, base FR si aucune langue)
     "sa-tab-btn-classes":  { emoji:"📚", ar:"الفصول",     fr:"Classes",       nl:"Klassen",       en:"Classes",      es:"Clases" },
     "sa-tab-btn-teachers": { emoji:"👩‍🏫", ar:"المعلمون",   fr:"Professeurs",   nl:"Leerkrachten",  en:"Teachers",     es:"Profesores" },
@@ -358,6 +361,15 @@ const DYNAMIC_I18N = {
     noExercisesCreated: { fr:"Aucun exercice créé", nl:"Geen oefening aangemaakt", en:"No exercise created", es:"Ningún ejercicio creado" },
     noSubmissions:    { fr:"Aucun travail rendu", nl:"Geen ingeleverd werk", en:"No submitted work", es:"Ningún trabajo entregado" },
     noStudentsYet:    { fr:"Aucun élève — ajoutez-en ci-dessus", nl:"Geen leerling — voeg er hierboven een toe", en:"No student — add one above", es:"Ningún alumno — añada uno arriba" },
+    recDone:          { fr:"Enregistré ! Réécoutez-vous puis envoyez", nl:"Opgenomen! Beluister uzelf en verstuur", en:"Recorded! Listen back then send", es:"¡Grabado! Escúchate y envía" },
+    recInProgress:    { fr:"Enregistrement en cours...", nl:"Bezig met opnemen...", en:"Recording...", es:"Grabando..." },
+    recMicError:      { fr:"Impossible d'accéder au microphone", nl:"Kan geen toegang krijgen tot de microfoon", en:"Cannot access the microphone", es:"No se puede acceder al micrófono" },
+    recSending:       { fr:"Envoi en cours...", nl:"Bezig met verzenden...", en:"Sending...", es:"Enviando..." },
+    recSent:          { fr:"Envoyé au professeur avec succès !", nl:"Succesvol verzonden naar de leerkracht!", en:"Successfully sent to the teacher!", es:"¡Enviado con éxito al profesor!" },
+    recSendError:     { fr:"Échec de l'envoi, réessayez", nl:"Verzenden mislukt, probeer opnieuw", en:"Sending failed, try again", es:"Error al enviar, inténtelo de nuevo" },
+    noRecordingsYet:  { fr:"Aucun enregistrement pour l'instant", nl:"Nog geen opnames", en:"No recordings yet", es:"Aún no hay grabaciones" },
+    reviewed:         { fr:"Écouté", nl:"Beluisterd", en:"Reviewed", es:"Revisado" },
+    markReviewed:     { fr:"Marquer comme écouté", nl:"Markeren als beluisterd", en:"Mark as reviewed", es:"Marcar como revisado" },
 };
 
 // Petit helper pour les textes bilingues générés dynamiquement en JS (hors boutons/onglets statiques).
@@ -1070,6 +1082,96 @@ function buildHeatmap(students,gridId){
 }
 window.resetOneStudent=async id=>{if(!confirm("Réinitialiser cet élève ?"))return;await delStudent(id);await loadTeacherDashboard();};
 
+// ===================================================================
+// 🎙️ ENREGISTREMENT VOCAL DE L'ÉLÈVE (Coran, Vocabulaire, Lettres)
+// L'élève peut lire un texte, s'enregistrer, se réécouter,
+// et envoyer son enregistrement au professeur pour correction.
+// ===================================================================
+let mediaRecorder = null;
+let recordedChunks = [];
+let recordedBlob = null;
+let recordingContext = null; // { type: "quran"|"vocab"|"letter", itemId, itemLabel, refText }
+
+window.openRecordingWidget = (type, itemId, itemLabel, refText) => {
+    recordingContext = { type, itemId, itemLabel, refText };
+    recordedBlob = null;
+    document.getElementById("rec-item-label").textContent = itemLabel;
+    document.getElementById("rec-item-text").textContent = refText || "";
+    document.getElementById("rec-status").textContent = "";
+    document.getElementById("rec-playback").classList.add("hidden");
+    document.getElementById("rec-send-btn").classList.add("hidden");
+    document.getElementById("rec-start-btn").classList.remove("hidden");
+    document.getElementById("rec-stop-btn").classList.add("hidden");
+    document.getElementById("modal-recording").classList.remove("hidden");
+};
+
+window.closeRecordingWidget = () => {
+    if (mediaRecorder && mediaRecorder.state === "recording") mediaRecorder.stop();
+    document.getElementById("modal-recording").classList.add("hidden");
+};
+
+window.startRecording = async () => {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        recordedChunks = [];
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
+        mediaRecorder.onstop = () => {
+            recordedBlob = new Blob(recordedChunks, { type: "audio/webm" });
+            const audioUrl = URL.createObjectURL(recordedBlob);
+            const player = document.getElementById("rec-audio-player");
+            player.src = audioUrl;
+            document.getElementById("rec-playback").classList.remove("hidden");
+            document.getElementById("rec-send-btn").classList.remove("hidden");
+            document.getElementById("rec-status").textContent = bi("✅ تم التسجيل! استمع إليه ثم أرسله", "recDone");
+            stream.getTracks().forEach(t => t.stop());
+        };
+        mediaRecorder.start();
+        document.getElementById("rec-status").textContent = bi("🔴 جاري التسجيل...", "recInProgress");
+        document.getElementById("rec-start-btn").classList.add("hidden");
+        document.getElementById("rec-stop-btn").classList.remove("hidden");
+    } catch (err) {
+        document.getElementById("rec-status").textContent = bi("❌ تعذّر الوصول إلى الميكروفون", "recMicError");
+    }
+};
+
+window.stopRecording = () => {
+    if (mediaRecorder && mediaRecorder.state === "recording") mediaRecorder.stop();
+    document.getElementById("rec-stop-btn").classList.add("hidden");
+    document.getElementById("rec-start-btn").classList.remove("hidden");
+};
+
+window.sendRecordingToTeacher = async () => {
+    if (!recordedBlob || !recordingContext) return;
+    const btn = document.getElementById("rec-send-btn");
+    btn.disabled = true;
+    document.getElementById("rec-status").textContent = bi("⏳ جاري الإرسال...", "recSending");
+    try {
+        const path = `recordings/${currentUser}/${recordingContext.type}_${recordingContext.itemId}_${Date.now()}.webm`;
+        const storageRef = ref(storage, path);
+        await uploadBytes(storageRef, recordedBlob);
+        const url = await getDownloadURL(storageRef);
+
+        const data = await getStudentData(currentUser);
+        if (!data.recordings) data.recordings = [];
+        data.recordings.push({
+            date: new Date().toISOString(),
+            type: recordingContext.type,
+            itemLabel: recordingContext.itemLabel,
+            refText: recordingContext.refText || "",
+            url,
+            reviewed: false,
+        });
+        await saveStudentData(currentUser, data);
+
+        document.getElementById("rec-status").textContent = bi("📤 تم الإرسال إلى المعلم بنجاح!", "recSent");
+        btn.classList.add("hidden");
+    } catch (err) {
+        document.getElementById("rec-status").textContent = bi("❌ فشل الإرسال، حاول مجددًا", "recSendError");
+        btn.disabled = false;
+    }
+};
+
 // ✅ MESSAGES POUR LES PARENTS
 let messageTargetStudentId = null;
 window.openMessageModal = (studentId, studentName) => {
@@ -1566,6 +1668,7 @@ window.switchTeacherTab = (name, btn) => {
     if (name === "t-submissions") loadSubmissions();
     if (name === "t-classlist") loadTeacherClassList();
     if (name === "t-attendance") initAttendanceTab();
+    if (name === "t-recordings") loadRecordingsList();
 };
 
 // ====== EXERCISE TYPE SELECT ======
@@ -1782,7 +1885,58 @@ window.deleteExercise = async id => {
     await loadTeacherExercises();
 };
 
-// ====== LOAD SUBMISSIONS ======
+// ====== ENREGISTREMENTS VOCAUX (élèves → professeur) ======
+async function loadRecordingsList() {
+    const all = await getAllStudents();
+    const mine = Object.entries(all).filter(([id, d]) => {
+        const byF = d.schoolId === currentSchoolId && d.classId === currentClassId;
+        const byId = id.includes(currentSchoolId) && id.includes(currentClassId);
+        return byF || byId;
+    });
+
+    // Rassembler tous les enregistrements, avec le nom de l'élève, triés du plus récent au plus ancien
+    const items = [];
+    mine.forEach(([id, d]) => {
+        (d.recordings || []).forEach((rec, idx) => {
+            const prefix = `${currentSchoolId}_${currentClassId}_`;
+            const name = id.startsWith(prefix) ? id.slice(prefix.length) : id;
+            items.push({ studentId: id, name, idx, ...rec });
+        });
+    });
+    items.sort((a, b) => b.date.localeCompare(a.date));
+
+    const badge = document.getElementById("recordings-badge");
+    const unreviewed = items.filter(i => !i.reviewed).length;
+    if (badge) { badge.textContent = unreviewed; badge.classList.toggle("hidden", unreviewed === 0); }
+
+    const el = document.getElementById("recordings-list");
+    if (!el) return;
+    if (items.length === 0) {
+        el.innerHTML = `<p style="color:#aaa;padding:20px;text-align:center">${bi("لا توجد تسجيلات بعد","noRecordingsYet")}</p>`;
+        return;
+    }
+
+    const typeIcons = { quran: "📖", vocab: "🔤", letter: "✏️" };
+    el.innerHTML = items.map((it) => `
+        <div class="submission-group" style="opacity:${it.reviewed ? 0.6 : 1}">
+            <h3 class="submission-group-title">${typeIcons[it.type] || "🎙️"} ${it.itemLabel} ${it.refText ? "— " + it.refText : ""}</h3>
+            <p style="font-size:13px;color:#888;margin:4px 0 8px">👤 ${it.name} · 📅 ${new Date(it.date).toLocaleDateString("fr-FR")} ${it.reviewed ? "· ✅ " + bi("تمّت المراجعة","reviewed") : ""}</p>
+            <audio src="${it.url}" controls style="width:100%;margin-bottom:8px"></audio>
+            ${!it.reviewed ? `<button onclick="markRecordingReviewed('${it.studentId}', ${it.idx})" class="btn-admin-add" style="padding:6px 14px;font-size:13px">✅ ${bi("وضع علامة كمُراجَع","markReviewed")}</button>` : ""}
+        </div>
+    `).join("");
+}
+
+window.markRecordingReviewed = async (studentId, idx) => {
+    const data = await getStudentData(studentId);
+    if (data.recordings && data.recordings[idx]) {
+        data.recordings[idx].reviewed = true;
+        await saveStudentData(studentId, data);
+        await loadRecordingsList();
+    }
+};
+
+
 async function loadSubmissions() {
     const subs = await getSubmissions();
     const exs = await getExercises();
@@ -4001,6 +4155,7 @@ window.openVocabCard = async (id) => {
             </div>
             <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
                 <button onclick="playVocabSound('${word.son}')" class="btn-audio">🔊 استمع</button>
+                <button onclick="openRecordingWidget('vocab', '${id}', '${word.mot}', '${word.mot}')" class="btn-audio" style="background:linear-gradient(135deg,#e74c3c,#c0392b)">🎙️</button>
                 ${!learned
                     ? `<button onclick="markVocabLearned('${id}')" class="btn-done">✅ تعلّمت هذه الكلمة</button>`
                     : `<div style="color:var(--green);font-weight:700;padding:12px 20px;background:#e8f8ec;border-radius:25px">✅ تعلّمتها!</div>`
@@ -4198,6 +4353,7 @@ function renderListenMode() {
     <div class="quran-listen-controls">
       <button onclick="repeatAyah()" class="q-btn-repeat">🔁 كرر</button>
       <button onclick="speakAyah()" class="q-btn-listen">🔊 استمع</button>
+      <button onclick="openRecordingWidget('quran', '${currentSurah.id}_${ayah.number}', '${currentSurahData.name_ar} — الآية ${ayah.number}', '${ayah.arabic.replace(/'/g, "\\'")}')" class="q-btn-listen" style="background:linear-gradient(135deg,#e74c3c,#c0392b)">🎙️</button>
     </div>
     <div class="quran-nav">
       <button onclick="prevAyah()" class="q-nav-btn" ${isFirst ? "disabled" : ""}>→ ${bi("السابقة","prevAyah")}</button>

@@ -331,6 +331,7 @@
         <div class="letter-actions">
             <button onclick="flipCard()" class="btn-flip" id="btn-flip-card"><span class="tab-label">🔄 اقلب</span></button>
             <button onclick="playSound()" class="btn-audio" id="btn-play-sound"><span class="tab-label">🔊 استمع</span></button>
+            <button onclick="openRecordingWidget('letter', lettres[letterIndex].l, lettres[letterIndex].l, lettres[letterIndex].l)" class="btn-audio" style="background:linear-gradient(135deg,#e74c3c,#c0392b)">🎙️</button>
             <button onclick="markLearned()" class="btn-done" id="btn-mark-learned"><span class="tab-label">✅ فهمت!</span></button>
         </div>
         <button onclick="nextLetter()" class="btn-nav">▶</button>
@@ -357,6 +358,7 @@
         <button class="admin-tab" id="t-tab-btn-attendance" onclick="switchTeacherTab('t-attendance',this)"><span class="tab-label">📅 Appel</span></button>
         <button class="admin-tab" id="t-tab-btn-exercises" onclick="switchTeacherTab('t-exercises',this)"><span class="tab-label">✏️ Exercices</span> <span id="teacher-exercise-badge" class="notif-badge hidden">!</span></button>
         <button class="admin-tab" id="t-tab-btn-submissions" onclick="switchTeacherTab('t-submissions',this)"><span class="tab-label">📬 Travaux rendus</span> <span id="submissions-badge" class="notif-badge hidden">!</span></button>
+        <button class="admin-tab" id="t-tab-btn-recordings" onclick="switchTeacherTab('t-recordings',this)"><span class="tab-label">🎙️ Enregistrements</span> <span id="recordings-badge" class="notif-badge hidden">!</span></button>
     </div>
 
     <!-- ÉLÈVES -->
@@ -453,6 +455,11 @@
     <!-- TRAVAUX RENDUS -->
     <div id="teacher-tab-t-submissions" class="admin-tab-content hidden">
         <div id="submissions-list" style="padding:15px"></div>
+    </div>
+
+    <!-- ENREGISTREMENTS VOCAUX -->
+    <div id="teacher-tab-t-recordings" class="admin-tab-content hidden">
+        <div id="recordings-list" style="padding:15px"></div>
     </div>
 </div>
 
@@ -698,6 +705,29 @@
             <button onclick="closeMessageModal()" class="btn-secondary" style="flex:1" id="msg-cancel-btn"><span class="tab-label">إلغاء / Annuler</span></button>
             <button onclick="sendParentMessage()" class="login-btn" style="flex:1;margin:0">📤 إرسال / Envoyer</button>
         </div>
+    </div>
+</div>
+
+<!-- ========== FENÊTRE : ENREGISTREMENT VOCAL DE L'ÉLÈVE ========== -->
+<div id="modal-recording" class="screen hidden" style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center">
+    <div style="background:#fff;border-radius:18px;padding:24px;max-width:420px;width:90%;max-height:85vh;overflow-y:auto;text-align:center">
+        <h3 style="color:var(--primary);margin-bottom:6px">🎙️ سجّل صوتك</h3>
+        <p id="rec-item-label" style="font-weight:700;color:var(--text);margin-bottom:8px"></p>
+        <p id="rec-item-text" style="font-size:22px;color:var(--primary);margin-bottom:16px;line-height:1.8"></p>
+
+        <div style="display:flex;gap:10px;justify-content:center;margin-bottom:14px">
+            <button onclick="startRecording()" id="rec-start-btn" class="login-btn" style="margin:0;background:linear-gradient(135deg,#e74c3c,#c0392b)">🔴 ابدأ التسجيل</button>
+            <button onclick="stopRecording()" id="rec-stop-btn" class="login-btn hidden" style="margin:0;background:#555">⏹️ إيقاف</button>
+        </div>
+
+        <p id="rec-status" style="font-size:14px;color:#888;min-height:20px;margin-bottom:10px"></p>
+
+        <div id="rec-playback" class="hidden" style="margin-bottom:16px">
+            <audio id="rec-audio-player" controls style="width:100%"></audio>
+        </div>
+
+        <button onclick="sendRecordingToTeacher()" id="rec-send-btn" class="login-btn hidden" style="margin-bottom:10px;background:linear-gradient(135deg,#43e97b,#38f9d7)">📤 إرسال للمعلم</button>
+        <button onclick="closeRecordingWidget()" class="btn-secondary" style="width:100%">إغلاق / Fermer</button>
     </div>
 </div>
 
