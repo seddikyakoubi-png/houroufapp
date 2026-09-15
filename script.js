@@ -3,7 +3,6 @@
 // ============================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAqAf5DBg6MudvVcajvWM514OYHp9IGPL8",
@@ -15,7 +14,6 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
-const storage = getStorage(app);
 
 const SUPER_ADMIN_PASSWORD = "Hourouf@SuperAdmin2025";
 
@@ -370,6 +368,7 @@ const DYNAMIC_I18N = {
     noRecordingsYet:  { fr:"Aucun enregistrement pour l'instant", nl:"Nog geen opnames", en:"No recordings yet", es:"Aún no hay grabaciones" },
     reviewed:         { fr:"Écouté", nl:"Beluisterd", en:"Reviewed", es:"Revisado" },
     markReviewed:     { fr:"Marquer comme écouté", nl:"Markeren als beluisterd", en:"Mark as reviewed", es:"Marcar como revisado" },
+    recTooLong:       { fr:"Enregistrement trop long, refaites un extrait plus court", nl:"Opname te lang, maak een kortere opname", en:"Recording too long, make a shorter one", es:"Grabación demasiado larga, hazla más corta" },
 };
 
 // Petit helper pour les textes bilingues générés dynamiquement en JS (hors boutons/onglets statiques).
@@ -1122,8 +1121,15 @@ window.startRecording = async () => {
             const player = document.getElementById("rec-audio-player");
             player.src = audioUrl;
             document.getElementById("rec-playback").classList.remove("hidden");
-            document.getElementById("rec-send-btn").classList.remove("hidden");
-            document.getElementById("rec-status").textContent = bi("✅ تم التسجيل! استمع إليه ثم أرسله", "recDone");
+            // ⚠️ Chaque document Firestore est limité à 1 Mo : on bloque l'envoi si l'enregistrement
+            // est trop long (le stockage se fait directement dans Firestore, sans service payant).
+            if (recordedBlob.size > 700 * 1024) {
+                document.getElementById("rec-status").textContent = bi("⚠️ التسجيل طويل جدًا، سجّل مقطعًا أقصر", "recTooLong");
+                document.getElementById("rec-send-btn").classList.add("hidden");
+            } else {
+                document.getElementById("rec-send-btn").classList.remove("hidden");
+                document.getElementById("rec-status").textContent = bi("✅ تم التسجيل! استمع إليه ثم أرسله", "recDone");
+            }
             stream.getTracks().forEach(t => t.stop());
         };
         mediaRecorder.start();
@@ -1147,10 +1153,14 @@ window.sendRecordingToTeacher = async () => {
     btn.disabled = true;
     document.getElementById("rec-status").textContent = bi("⏳ جاري الإرسال...", "recSending");
     try {
-        const path = `recordings/${currentUser}/${recordingContext.type}_${recordingContext.itemId}_${Date.now()}.webm`;
-        const storageRef = ref(storage, path);
-        await uploadBytes(storageRef, recordedBlob);
-        const url = await getDownloadURL(storageRef);
+        // ✅ Pas de Firebase Storage (payant depuis 2026) : on convertit l'audio en base64
+        // et on le stocke directement dans Firestore (gratuit), l'enregistrement étant très court.
+        const base64Url = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(recordedBlob);
+        });
 
         const data = await getStudentData(currentUser);
         if (!data.recordings) data.recordings = [];
@@ -1159,7 +1169,7 @@ window.sendRecordingToTeacher = async () => {
             type: recordingContext.type,
             itemLabel: recordingContext.itemLabel,
             refText: recordingContext.refText || "",
-            url,
+            url: base64Url,
             reviewed: false,
         });
         await saveStudentData(currentUser, data);
@@ -4155,7 +4165,7 @@ window.openVocabCard = async (id) => {
             </div>
             <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
                 <button onclick="playVocabSound('${word.son}')" class="btn-audio">🔊 استمع</button>
-                <button onclick="openRecordingWidget('vocab', '${id}', '${word.mot}', '${word.mot}')" class="btn-audio" style="background:linear-gradient(135deg,#e74c3c,#c0392b)">🎙️</button>
+                <button onclick="closeVocabModal(); openRecordingWidget('vocab', '${id}', '${word.mot}', '${word.mot}')" class="btn-audio" style="background:linear-gradient(135deg,#e74c3c,#c0392b)">🎙️</button>
                 ${!learned
                     ? `<button onclick="markVocabLearned('${id}')" class="btn-done">✅ تعلّمت هذه الكلمة</button>`
                     : `<div style="color:var(--green);font-weight:700;padding:12px 20px;background:#e8f8ec;border-radius:25px">✅ تعلّمتها!</div>`
