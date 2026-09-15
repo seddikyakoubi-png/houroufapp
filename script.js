@@ -2,7 +2,7 @@
 //  حروفي - Multi-École avec Admin par École
 // ============================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAqAf5DBg6MudvVcajvWM514OYHp9IGPL8",
@@ -1154,7 +1154,11 @@ window.sendRecordingToTeacher = async () => {
     document.getElementById("rec-status").textContent = bi("⏳ جاري الإرسال...", "recSending");
     try {
         // ✅ Pas de Firebase Storage (payant depuis 2026) : on convertit l'audio en base64
-        // et on le stocke directement dans Firestore (gratuit), l'enregistrement étant très court.
+        // et on le stocke directement dans Firestore (gratuit).
+        // ⚠️ Chaque enregistrement est stocké comme un DOCUMENT SÉPARÉ dans une sous-collection
+        // (eleves/{id}/recordings/{recordingId}) plutôt que dans un tableau du document principal.
+        // Sinon, la limite de 1 Mo par document Firestore est vite atteinte après 1 ou 2 envois,
+        // et tous les envois suivants échouent silencieusement.
         const base64Url = await new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result);
@@ -1162,9 +1166,7 @@ window.sendRecordingToTeacher = async () => {
             reader.readAsDataURL(recordedBlob);
         });
 
-        const data = await getStudentData(currentUser);
-        if (!data.recordings) data.recordings = [];
-        data.recordings.push({
+        await addDoc(collection(db, "eleves", currentUser, "recordings"), {
             date: new Date().toISOString(),
             type: recordingContext.type,
             itemLabel: recordingContext.itemLabel,
@@ -1172,7 +1174,6 @@ window.sendRecordingToTeacher = async () => {
             url: base64Url,
             reviewed: false,
         });
-        await saveStudentData(currentUser, data);
 
         document.getElementById("rec-status").textContent = bi("📤 تم الإرسال إلى المعلم بنجاح!", "recSent");
         btn.classList.add("hidden");
@@ -1904,15 +1905,17 @@ async function loadRecordingsList() {
         return byF || byId;
     });
 
-    // Rassembler tous les enregistrements, avec le nom de l'élève, triés du plus récent au plus ancien
+    // Rassembler tous les enregistrements (sous-collection par élève), avec le nom de l'élève,
+    // triés du plus récent au plus ancien
     const items = [];
-    mine.forEach(([id, d]) => {
-        (d.recordings || []).forEach((rec, idx) => {
-            const prefix = `${currentSchoolId}_${currentClassId}_`;
-            const name = id.startsWith(prefix) ? id.slice(prefix.length) : id;
-            items.push({ studentId: id, name, idx, ...rec });
+    await Promise.all(mine.map(async ([id, d]) => {
+        const prefix = `${currentSchoolId}_${currentClassId}_`;
+        const name = id.startsWith(prefix) ? id.slice(prefix.length) : id;
+        const snap = await getDocs(collection(db, "eleves", id, "recordings"));
+        snap.forEach(docSnap => {
+            items.push({ studentId: id, name, recordingId: docSnap.id, ...docSnap.data() });
         });
-    });
+    }));
     items.sort((a, b) => b.date.localeCompare(a.date));
 
     const badge = document.getElementById("recordings-badge");
@@ -1932,18 +1935,14 @@ async function loadRecordingsList() {
             <h3 class="submission-group-title">${typeIcons[it.type] || "🎙️"} ${it.itemLabel} ${it.refText ? "— " + it.refText : ""}</h3>
             <p style="font-size:13px;color:#888;margin:4px 0 8px">👤 ${it.name} · 📅 ${new Date(it.date).toLocaleDateString("fr-FR")} ${it.reviewed ? "· ✅ " + bi("تمّت المراجعة","reviewed") : ""}</p>
             <audio src="${it.url}" controls style="width:100%;margin-bottom:8px"></audio>
-            ${!it.reviewed ? `<button onclick="markRecordingReviewed('${it.studentId}', ${it.idx})" class="btn-admin-add" style="padding:6px 14px;font-size:13px">✅ ${bi("وضع علامة كمُراجَع","markReviewed")}</button>` : ""}
+            ${!it.reviewed ? `<button onclick="markRecordingReviewed('${it.studentId}', '${it.recordingId}')" class="btn-admin-add" style="padding:6px 14px;font-size:13px">✅ ${bi("وضع علامة كمُراجَع","markReviewed")}</button>` : ""}
         </div>
     `).join("");
 }
 
-window.markRecordingReviewed = async (studentId, idx) => {
-    const data = await getStudentData(studentId);
-    if (data.recordings && data.recordings[idx]) {
-        data.recordings[idx].reviewed = true;
-        await saveStudentData(studentId, data);
-        await loadRecordingsList();
-    }
+window.markRecordingReviewed = async (studentId, recordingId) => {
+    await updateDoc(doc(db, "eleves", studentId, "recordings", recordingId), { reviewed: true });
+    await loadRecordingsList();
 };
 
 
