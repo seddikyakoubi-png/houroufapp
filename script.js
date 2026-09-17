@@ -819,6 +819,10 @@ window.switchTab=(name,btn)=>{
 
 // LETTRE
 async function openLetter(i){letterIndex=i;isFlipped=false;document.getElementById("letter-card-inner").classList.remove("flipped");showScreen("screen-letter");loadLetter();await buildDots();}
+window.recordCurrentLetter = () => {
+    const l = lettres[letterIndex].l;
+    openRecordingWidget('letter', l, l, l);
+};
 function loadLetter(){
     const item=lettres[letterIndex];
     document.getElementById("lettre").textContent=item.l;

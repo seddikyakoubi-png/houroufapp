@@ -331,7 +331,7 @@
         <div class="letter-actions">
             <button onclick="flipCard()" class="btn-flip" id="btn-flip-card"><span class="tab-label">🔄 اقلب</span></button>
             <button onclick="playSound()" class="btn-audio" id="btn-play-sound"><span class="tab-label">🔊 استمع</span></button>
-            <button onclick="openRecordingWidget('letter', lettres[letterIndex].l, lettres[letterIndex].l, lettres[letterIndex].l)" class="btn-audio" style="background:linear-gradient(135deg,#e74c3c,#c0392b)">🎙️</button>
+            <button onclick="recordCurrentLetter()" class="btn-audio" style="background:linear-gradient(135deg,#e74c3c,#c0392b)">🎙️</button>
             <button onclick="markLearned()" class="btn-done" id="btn-mark-learned"><span class="tab-label">✅ فهمت!</span></button>
         </div>
         <button onclick="nextLetter()" class="btn-nav">▶</button>
