@@ -369,6 +369,16 @@ const DYNAMIC_I18N = {
     reviewed:         { fr:"Écouté", nl:"Beluisterd", en:"Reviewed", es:"Revisado" },
     markReviewed:     { fr:"Marquer comme écouté", nl:"Markeren als beluisterd", en:"Mark as reviewed", es:"Marcar como revisado" },
     recTooLong:       { fr:"Enregistrement trop long, refaites un extrait plus court", nl:"Opname te lang, maak een kortere opname", en:"Recording too long, make a shorter one", es:"Grabación demasiado larga, hazla más corta" },
+    recAutoStopped:   { fr:"Enregistrement arrêté automatiquement (durée maximale atteinte)", nl:"Opname automatisch gestopt (maximale duur bereikt)", en:"Recording stopped automatically (maximum duration reached)", es:"Grabación detenida automáticamente (duración máxima alcanzada)" },
+    delete:           { fr:"Supprimer", nl:"Verwijderen", en:"Delete", es:"Eliminar" },
+    confirmDeleteRecording: { fr:"Supprimer cet enregistrement ?", nl:"Deze opname verwijderen?", en:"Delete this recording?", es:"¿Eliminar esta grabación?" },
+    noMessagesYet:    { fr:"Aucun message pour le moment, commencez la conversation ✍️", nl:"Nog geen berichten, begin het gesprek ✍️", en:"No messages yet, start the conversation ✍️", es:"Aún no hay mensajes, empieza la conversación ✍️" },
+    noAnnouncementsYet: { fr:"Aucune annonce pour le moment", nl:"Nog geen mededelingen", en:"No announcements yet", es:"Aún no hay anuncios" },
+    forTeachers:      { fr:"pour les professeurs", nl:"voor leerkrachten", en:"for teachers", es:"para profesores" },
+    forParents:       { fr:"pour les parents", nl:"voor ouders", en:"for parents", es:"para padres" },
+    chooseTeacher:    { fr:"Choisir un professeur", nl:"Kies een leerkracht", en:"Choose a teacher", es:"Elige un profesor" },
+    chooseStudent:    { fr:"Choisir un élève", nl:"Kies een leerling", en:"Choose a student", es:"Elige un alumno" },
+    confirmDeleteAnn: { fr:"Supprimer cette annonce ?", nl:"Deze mededeling verwijderen?", en:"Delete this announcement?", es:"¿Eliminar este anuncio?" },
 };
 
 // Petit helper pour les textes bilingues générés dynamiquement en JS (hors boutons/onglets statiques).
@@ -601,6 +611,7 @@ window.loginParent = async () => {
 // Construit le tableau de bord en lecture seule pour le parent
 async function loadParentDashboard(studentId, studentName) {
     const data = await getStudentData(studentId);
+    const school = (await getDoc(doc(db,"ecoles",currentSchoolId))).data() || {};
     const pct = Math.round((data.learned?.length || 0) / lettres.length * 100);
     const qm = data.quranMemorized || {};
     const totalQuranAyahs = typeof SURAHS !== "undefined" ? SURAHS.reduce((a,s)=>a+s.ayahs,0) : 0;
@@ -610,6 +621,7 @@ async function loadParentDashboard(studentId, studentName) {
     const avgQuiz = sc.length > 0 ? Math.round(sc.reduce((a,s)=>a+(s.score/s.total*100),0)/sc.length) : null;
     const lastActivity = data.lastActivity ? new Date(data.lastActivity).toLocaleDateString("fr-FR") : "لا يوجد نشاط بعد";
     const messages = (data.parentMessages || []).slice().sort((a,b)=>b.date.localeCompare(a.date));
+    const anns = (school.announcements || []).filter(a => a.target === "parents").slice().reverse();
 
     const catInfo = {
         general:     { icon: "📋", label: "عام / Général",         color: "#667eea" },
@@ -632,7 +644,7 @@ async function loadParentDashboard(studentId, studentName) {
             <p style="color:#555">${lastActivity}</p>
         </div>
 
-        <div class="admin-section">
+        <div class="admin-section" style="margin-bottom:20px">
             <h3 style="margin-bottom:10px">✉️ رسائل المدرسة / Messages de l'école</h3>
             ${messages.length === 0
                 ? `<p style="color:#aaa;text-align:center;padding:20px 0">لا توجد رسائل حالياً<br>Aucun message pour le moment</p>`
@@ -649,7 +661,29 @@ async function loadParentDashboard(studentId, studentName) {
                 }).join("")
             }
         </div>
+
+        <div class="admin-section" style="margin-bottom:20px">
+            <h3 style="margin-bottom:10px">📢 إعلانات الإدارة / Annonces de la direction</h3>
+            ${anns.length === 0
+                ? `<p style="color:#aaa;text-align:center;padding:14px 0">لا توجد إعلانات حالياً</p>`
+                : anns.map(a => `<div style="border-bottom:1px solid #f0f0f0;padding:10px 0">
+                        <p style="font-size:12px;color:#888;margin:0 0 4px">${a.authorName || ""} · ${new Date(a.date).toLocaleDateString("fr-FR")}</p>
+                        <p style="margin:0;white-space:pre-wrap">${a.text}</p>
+                    </div>`).join("")
+            }
+        </div>
+
+        <div class="admin-section">
+            <h3 style="margin-bottom:10px">💬 محادثة مع الإدارة / Discussion avec la direction</h3>
+            <div id="parent-thread-box" style="max-height:280px;overflow-y:auto;padding:8px 4px;margin-bottom:10px"></div>
+            <div style="display:flex;gap:8px">
+                <textarea id="parent-thread-input" class="admin-input" rows="2" style="flex:1;resize:none" placeholder="اكتب رسالتك هنا..."></textarea>
+                <button onclick="parentSendMsg()" class="btn-admin-add" style="align-self:flex-end">📤</button>
+            </div>
+        </div>
     `;
+    document.getElementById("parent-thread-box").innerHTML = threadHtml(data.thread || [], "parent");
+    await updateDoc(doc(db,"eleves",studentId), { annLastSeen: new Date().toISOString(), threadLastSeen: new Date().toISOString() }).catch(()=>{});
 }
 
 // Load student names when class code is entered
@@ -1048,6 +1082,7 @@ window.playAutoWrite = () => {
 
 // TABLEAU PROF
 async function loadTeacherDashboard(){
+    updateTeacherCommsBadge();
     const all=await getAllStudents();
     const mine=Object.entries(all).filter(([id,d])=>{ const byF=d.schoolId===currentSchoolId&&d.classId===currentClassId; const byId=id.includes(currentSchoolId)&&id.includes(currentClassId); return byF||byId; });
     const avg=mine.length>0?Math.round(mine.reduce((a,[,d])=>a+(d.learned.length/lettres.length*100),0)/mine.length):0;
@@ -1093,6 +1128,13 @@ window.resetOneStudent=async id=>{if(!confirm("Réinitialiser cet élève ?"))re
 let mediaRecorder = null;
 let recordedChunks = [];
 let recordedBlob = null;
+let recordingTimerInterval = null;
+let recordingStartTime = null;
+// 24 kbps suffit largement pour de la voix (pas de musique) et permet des enregistrements
+// bien plus longs pour le même poids de fichier que le débit par défaut du navigateur.
+const RECORDING_BITRATE = 24000;
+// Marge de sécurité sous les ~233s théoriques (700 Ko / 3 Ko par seconde à 24 kbps)
+const MAX_RECORDING_SECONDS = 180;
 let recordingContext = null; // { type: "quran"|"vocab"|"letter", itemId, itemLabel, refText }
 
 window.openRecordingWidget = (type, itemId, itemLabel, refText) => {
@@ -1101,6 +1143,7 @@ window.openRecordingWidget = (type, itemId, itemLabel, refText) => {
     document.getElementById("rec-item-label").textContent = itemLabel;
     document.getElementById("rec-item-text").textContent = refText || "";
     document.getElementById("rec-status").textContent = "";
+    document.getElementById("rec-timer").classList.add("hidden");
     document.getElementById("rec-playback").classList.add("hidden");
     document.getElementById("rec-send-btn").classList.add("hidden");
     document.getElementById("rec-start-btn").classList.remove("hidden");
@@ -1110,16 +1153,39 @@ window.openRecordingWidget = (type, itemId, itemLabel, refText) => {
 
 window.closeRecordingWidget = () => {
     if (mediaRecorder && mediaRecorder.state === "recording") mediaRecorder.stop();
+    if (recordingTimerInterval) { clearInterval(recordingTimerInterval); recordingTimerInterval = null; }
     document.getElementById("modal-recording").classList.add("hidden");
 };
 
+function formatRecTime(sec) {
+    const m = Math.floor(sec / 60), s = sec % 60;
+    return `${m}:${s < 10 ? "0" : ""}${s}`;
+}
+
 window.startRecording = async () => {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+                // AGC (réglage automatique du volume) désactivé : c'est lui qui causait
+                // la baisse progressive du volume pendant les enregistrements plus longs.
+                autoGainControl: false,
+                echoCancellation: true,
+                noiseSuppression: true
+            }
+        });
         recordedChunks = [];
-        mediaRecorder = new MediaRecorder(stream);
+        // On tente un débit réduit (adapté à la voix) pour permettre des enregistrements plus longs ;
+        // si le navigateur ne supporte pas l'option, on retombe sur les réglages par défaut.
+        try {
+            mediaRecorder = new MediaRecorder(stream, { audioBitsPerSecond: RECORDING_BITRATE });
+        } catch (e) {
+            mediaRecorder = new MediaRecorder(stream);
+        }
         mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
         mediaRecorder.onstop = () => {
+            clearInterval(recordingTimerInterval);
+            recordingTimerInterval = null;
+            document.getElementById("rec-timer").classList.add("hidden");
             recordedBlob = new Blob(recordedChunks, { type: "audio/webm" });
             const audioUrl = URL.createObjectURL(recordedBlob);
             const player = document.getElementById("rec-audio-player");
@@ -1127,6 +1193,8 @@ window.startRecording = async () => {
             document.getElementById("rec-playback").classList.remove("hidden");
             // ⚠️ Chaque document Firestore est limité à 1 Mo : on bloque l'envoi si l'enregistrement
             // est trop long (le stockage se fait directement dans Firestore, sans service payant).
+            // Ce cas ne devrait plus arriver grâce au débit réduit + arrêt automatique ci-dessus,
+            // mais on garde ce filet de sécurité au cas où le navigateur ignore le débit demandé.
             if (recordedBlob.size > 700 * 1024) {
                 document.getElementById("rec-status").textContent = bi("⚠️ التسجيل طويل جدًا، سجّل مقطعًا أقصر", "recTooLong");
                 document.getElementById("rec-send-btn").classList.add("hidden");
@@ -1137,6 +1205,18 @@ window.startRecording = async () => {
             stream.getTracks().forEach(t => t.stop());
         };
         mediaRecorder.start();
+        recordingStartTime = Date.now();
+        const timerEl = document.getElementById("rec-timer");
+        timerEl.classList.remove("hidden");
+        timerEl.textContent = `⏱️ ${formatRecTime(0)} / ${formatRecTime(MAX_RECORDING_SECONDS)}`;
+        recordingTimerInterval = setInterval(() => {
+            const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
+            timerEl.textContent = `⏱️ ${formatRecTime(elapsed)} / ${formatRecTime(MAX_RECORDING_SECONDS)}`;
+            if (elapsed >= MAX_RECORDING_SECONDS) {
+                window.stopRecording();
+                document.getElementById("rec-status").textContent = bi("⏹️ تم إيقاف التسجيل تلقائيًا (الحد الأقصى للمدة)", "recAutoStopped");
+            }
+        }, 500);
         document.getElementById("rec-status").textContent = bi("🔴 جاري التسجيل...", "recInProgress");
         document.getElementById("rec-start-btn").classList.add("hidden");
         document.getElementById("rec-stop-btn").classList.remove("hidden");
@@ -1293,6 +1373,7 @@ async function loadSchoolAdminDashboard(){
         }
         codeDisplay.textContent = isDemoMode ? "ECO-DEMO" : (school?.code || "—");
     }
+    updateDirCommsBadge();
 }
 
 // ================================================================
@@ -1544,6 +1625,7 @@ window.switchAdminTab=(name,btn)=>{
     document.querySelectorAll(".admin-tab-content").forEach(t=>t.classList.add("hidden"));
     document.getElementById("admin-tab-"+name).classList.remove("hidden");
     if(name==="sa-absences") initDirectorAbsences();
+    if(name==="sa-comms") loadDirectorComms();
 };
 
 // SUPER ADMIN
@@ -1684,6 +1766,7 @@ window.switchTeacherTab = (name, btn) => {
     if (name === "t-classlist") loadTeacherClassList();
     if (name === "t-attendance") initAttendanceTab();
     if (name === "t-recordings") loadRecordingsList();
+    if (name === "t-comms") loadTeacherComms();
 };
 
 // ====== EXERCISE TYPE SELECT ======
@@ -1900,7 +1983,228 @@ window.deleteExercise = async id => {
     await loadTeacherExercises();
 };
 
-// ====== ENREGISTREMENTS VOCAUX (élèves → professeur) ======
+// ====== COMMUNICATION (annonces diffusées + messages directs) ======
+// Stockage simple, cohérent avec le système existant "parentMessages" :
+// - Annonces du directeur : tableau `announcements` dans le document de l'école
+// - Messages directeur ↔ prof : tableau `thread` dans le document du prof (profs/{email})
+// - Messages directeur ↔ parent : tableau `thread` dans le document de l'élève (eleves/{id})
+
+function threadHtml(thread, mySide) {
+    if (!thread || thread.length === 0) return `<p style="color:#aaa;padding:14px;text-align:center;font-size:13px">${bi("لا توجد رسائل بعد، ابدأ المحادثة ✍️","noMessagesYet")}</p>`;
+    return thread.map(m => `
+        <div style="display:flex;justify-content:${m.from === mySide ? "flex-end" : "flex-start"};margin-bottom:8px">
+            <div style="max-width:78%;padding:8px 13px;border-radius:14px;background:${m.from === mySide ? "var(--primary)" : "#f0f0f0"};color:${m.from === mySide ? "#fff" : "#333"}">
+                <p style="margin:0;font-size:14px;white-space:pre-wrap">${m.text}</p>
+                <p style="margin:3px 0 0;font-size:10px;opacity:0.7">${new Date(m.date).toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})}</p>
+            </div>
+        </div>`).join("");
+}
+
+// ---------- CÔTÉ DIRECTEUR ----------
+async function loadDirectorComms() {
+    const school = (await getDoc(doc(db,"ecoles",currentSchoolId))).data();
+    const anns = (school.announcements || []).map((a,i) => ({...a, i})).slice().reverse();
+    const annEl = document.getElementById("dir-announcements-list");
+    if (annEl) {
+        annEl.innerHTML = anns.length === 0
+            ? `<p style="color:#aaa;padding:10px">${bi("لا توجد إعلانات بعد","noAnnouncementsYet")}</p>`
+            : anns.map(a => `
+                <div style="border-bottom:1px solid #f0f0f0;padding:10px 0">
+                    <p style="font-size:12px;color:#888;margin:0 0 4px">${a.target === "teachers" ? "👩‍🏫 " + bi("للمعلمين","forTeachers") : "👪 " + bi("لأولياء الأمور","forParents")} · ${new Date(a.date).toLocaleDateString("fr-FR")}</p>
+                    <p style="margin:0 0 6px;white-space:pre-wrap">${a.text}</p>
+                    <button onclick="deleteAnnouncement(${a.i})" class="btn-delete" style="padding:4px 10px;font-size:12px">🗑️ ${bi("حذف","delete")}</button>
+                </div>`).join("");
+    }
+
+    const teachers = await getTeachers();
+    const myTeachers = Object.entries(teachers).filter(([,d]) => d.schoolId === currentSchoolId);
+    const teacherSel = document.getElementById("dir-teacher-select");
+    if (teacherSel) {
+        const prevVal = teacherSel.value;
+        teacherSel.innerHTML = `<option value="">-- ${bi("اختر معلمًا","chooseTeacher")} --</option>` +
+            myTeachers.map(([email,d]) => `<option value="${email}">${d.name || email}</option>`).join("");
+        teacherSel.value = prevVal;
+    }
+
+    const students = await getAllStudents();
+    const prefix = `${currentSchoolId}_`;
+    const myStudents = Object.entries(students).filter(([id]) => id.startsWith(prefix));
+    const studentSel = document.getElementById("dir-student-select");
+    if (studentSel) {
+        const prevVal = studentSel.value;
+        studentSel.innerHTML = `<option value="">-- ${bi("اختر تلميذًا","chooseStudent")} --</option>` +
+            myStudents.map(([id,d]) => `<option value="${id}">${id.slice(prefix.length)} (${d.classId || ""})</option>`).join("");
+        studentSel.value = prevVal;
+    }
+
+    await window.dirLoadTeacherThread();
+    await window.dirLoadParentThread();
+
+    // Marquer les réponses comme vues (réinitialise le badge)
+    await updateDoc(doc(db,"school_admins",currentUser), { dirThreadLastSeen: new Date().toISOString() });
+    const badge = document.getElementById("dir-comms-badge");
+    if (badge) badge.classList.add("hidden");
+}
+
+window.sendAnnouncement = async (target) => {
+    const ta = document.getElementById("ann-compose-text");
+    const text = ta.value.trim();
+    if (!text) return;
+    const ref = doc(db,"ecoles",currentSchoolId);
+    const school = (await getDoc(ref)).data();
+    const anns = school.announcements || [];
+    anns.push({ text, date: new Date().toISOString(), target, authorName: school.name ? ("إدارة " + school.name) : "الإدارة" });
+    await updateDoc(ref, { announcements: anns });
+    ta.value = "";
+    await loadDirectorComms();
+};
+
+window.deleteAnnouncement = async (index) => {
+    if (!confirm(bi("حذف هذا الإعلان؟","confirmDeleteAnn"))) return;
+    const ref = doc(db,"ecoles",currentSchoolId);
+    const school = (await getDoc(ref)).data();
+    const anns = school.announcements || [];
+    anns.splice(index, 1);
+    await updateDoc(ref, { announcements: anns });
+    await loadDirectorComms();
+};
+
+window.dirLoadTeacherThread = async () => {
+    const email = document.getElementById("dir-teacher-select")?.value;
+    const box = document.getElementById("dir-thread-box-teacher");
+    if (!box) return;
+    if (!email) { box.innerHTML = ""; return; }
+    const d = (await getDoc(doc(db,"profs",email))).data() || {};
+    box.innerHTML = threadHtml(d.thread || [], "director");
+};
+
+window.dirSendTeacherMsg = async () => {
+    const email = document.getElementById("dir-teacher-select")?.value;
+    const ta = document.getElementById("dir-thread-input-teacher");
+    const text = ta.value.trim();
+    if (!email || !text) return;
+    const ref = doc(db,"profs",email);
+    const d = (await getDoc(ref)).data() || {};
+    const thread = d.thread || [];
+    thread.push({ from: "director", text, date: new Date().toISOString() });
+    await updateDoc(ref, { thread });
+    ta.value = "";
+    await window.dirLoadTeacherThread();
+};
+
+window.dirLoadParentThread = async () => {
+    const id = document.getElementById("dir-student-select")?.value;
+    const box = document.getElementById("dir-thread-box-parent");
+    if (!box) return;
+    if (!id) { box.innerHTML = ""; return; }
+    const d = await getStudentData(id);
+    box.innerHTML = threadHtml(d.thread || [], "director");
+};
+
+window.dirSendParentMsg = async () => {
+    const id = document.getElementById("dir-student-select")?.value;
+    const ta = document.getElementById("dir-thread-input-parent");
+    const text = ta.value.trim();
+    if (!id || !text) return;
+    const d = await getStudentData(id);
+    d.thread = d.thread || [];
+    d.thread.push({ from: "director", text, date: new Date().toISOString() });
+    await saveStudentData(id, d);
+    ta.value = "";
+    await window.dirLoadParentThread();
+};
+
+async function computeDirCommsUnread() {
+    const admin = (await getDoc(doc(db,"school_admins",currentUser))).data() || {};
+    const lastSeen = admin.dirThreadLastSeen || "1970-01-01T00:00:00.000Z";
+    let count = 0;
+    const teachers = await getTeachers();
+    Object.entries(teachers).filter(([,d]) => d.schoolId === currentSchoolId).forEach(([,d]) => {
+        const th = d.thread || [];
+        if (th.length && th[th.length-1].from === "teacher" && th[th.length-1].date > lastSeen) count++;
+    });
+    const students = await getAllStudents();
+    const prefix = `${currentSchoolId}_`;
+    Object.entries(students).filter(([id]) => id.startsWith(prefix)).forEach(([,d]) => {
+        const th = d.thread || [];
+        if (th.length && th[th.length-1].from === "parent" && th[th.length-1].date > lastSeen) count++;
+    });
+    return count;
+}
+
+async function updateDirCommsBadge() {
+    const n = await computeDirCommsUnread();
+    const badge = document.getElementById("dir-comms-badge");
+    if (badge) { badge.textContent = n; badge.classList.toggle("hidden", n === 0); }
+}
+
+// ---------- CÔTÉ PROFESSEUR ----------
+async function loadTeacherComms() {
+    const school = (await getDoc(doc(db,"ecoles",currentSchoolId))).data() || {};
+    const anns = (school.announcements || []).filter(a => a.target === "teachers").slice().reverse();
+    const annEl = document.getElementById("teacher-announcements-list");
+    if (annEl) {
+        annEl.innerHTML = anns.length === 0
+            ? `<p style="color:#aaa;padding:10px">${bi("لا توجد إعلانات","noAnnouncementsYet")}</p>`
+            : anns.map(a => `
+                <div style="border-bottom:1px solid #f0f0f0;padding:10px 0">
+                    <p style="font-size:12px;color:#888;margin:0 0 4px">📢 ${a.authorName || ""} · ${new Date(a.date).toLocaleDateString("fr-FR")}</p>
+                    <p style="margin:0;white-space:pre-wrap">${a.text}</p>
+                </div>`).join("");
+    }
+
+    const ref = doc(db,"profs",currentUser);
+    const data = (await getDoc(ref)).data() || {};
+    const box = document.getElementById("teacher-thread-box");
+    if (box) box.innerHTML = threadHtml(data.thread || [], "teacher");
+
+    await updateDoc(ref, { annLastSeen: new Date().toISOString(), threadLastSeen: new Date().toISOString() });
+    const badge = document.getElementById("teacher-comms-badge");
+    if (badge) badge.classList.add("hidden");
+}
+
+window.teacherSendMsg = async () => {
+    const ta = document.getElementById("teacher-thread-input");
+    const text = ta.value.trim();
+    if (!text) return;
+    const ref = doc(db,"profs",currentUser);
+    const d = (await getDoc(ref)).data() || {};
+    const thread = d.thread || [];
+    thread.push({ from: "teacher", text, date: new Date().toISOString() });
+    await updateDoc(ref, { thread });
+    ta.value = "";
+    await loadTeacherComms();
+};
+
+async function updateTeacherCommsBadge() {
+    const data = (await getDoc(doc(db,"profs",currentUser))).data() || {};
+    const school = (await getDoc(doc(db,"ecoles",currentSchoolId))).data() || {};
+    const annLastSeen = data.annLastSeen || "1970-01-01T00:00:00.000Z";
+    const threadLastSeen = data.threadLastSeen || "1970-01-01T00:00:00.000Z";
+    let n = (school.announcements || []).filter(a => a.target === "teachers" && a.date > annLastSeen).length;
+    const th = data.thread || [];
+    if (th.length && th[th.length-1].from === "director" && th[th.length-1].date > threadLastSeen) n++;
+    const badge = document.getElementById("teacher-comms-badge");
+    if (badge) { badge.textContent = n; badge.classList.toggle("hidden", n === 0); }
+}
+
+// ---------- CÔTÉ PARENT ----------
+window.parentSendMsg = async () => {
+    const ta = document.getElementById("parent-thread-input");
+    const text = ta.value.trim();
+    if (!text || !currentUser) return;
+    const d = await getStudentData(currentUser);
+    d.thread = d.thread || [];
+    d.thread.push({ from: "parent", text, date: new Date().toISOString() });
+    await saveStudentData(currentUser, d);
+    ta.value = "";
+    await loadParentDashboard(currentUser, document.getElementById("parent-student-name").textContent);
+};
+
+
+let recordingsCache = [];
+let recordingsFilter = { status: "all", type: "all" };
+
 async function loadRecordingsList() {
     const all = await getAllStudents();
     const mine = Object.entries(all).filter(([id, d]) => {
@@ -1909,8 +2213,7 @@ async function loadRecordingsList() {
         return byF || byId;
     });
 
-    // Rassembler tous les enregistrements (sous-collection par élève), avec le nom de l'élève,
-    // triés du plus récent au plus ancien
+    // Rassembler tous les enregistrements (sous-collection par élève), avec le nom de l'élève
     const items = [];
     await Promise.all(mine.map(async ([id, d]) => {
         const prefix = `${currentSchoolId}_${currentClassId}_`;
@@ -1921,32 +2224,92 @@ async function loadRecordingsList() {
         });
     }));
     items.sort((a, b) => b.date.localeCompare(a.date));
+    recordingsCache = items;
 
     const badge = document.getElementById("recordings-badge");
     const unreviewed = items.filter(i => !i.reviewed).length;
     if (badge) { badge.textContent = unreviewed; badge.classList.toggle("hidden", unreviewed === 0); }
 
+    renderRecordingsList();
+}
+
+window.setRecordingsFilter = (kind, value, btn) => {
+    recordingsFilter[kind] = value;
+    const container = kind === "status" ? "rec-status-filters" : "rec-type-filters";
+    document.querySelectorAll(`#${container} .vocab-filter-btn`).forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    renderRecordingsList();
+};
+
+function renderRecordingsList() {
     const el = document.getElementById("recordings-list");
     if (!el) return;
+
+    let items = recordingsCache;
+    if (recordingsFilter.status === "unreviewed") items = items.filter(i => !i.reviewed);
+    if (recordingsFilter.type !== "all") items = items.filter(i => i.type === recordingsFilter.type);
+
     if (items.length === 0) {
         el.innerHTML = `<p style="color:#aaa;padding:20px;text-align:center">${bi("لا توجد تسجيلات بعد","noRecordingsYet")}</p>`;
         return;
     }
 
+    // Regrouper par élève : celui avec le plus d'enregistrements non-écoutés en premier
+    const byStudent = new Map();
+    items.forEach(it => {
+        if (!byStudent.has(it.studentId)) byStudent.set(it.studentId, { name: it.name, items: [] });
+        byStudent.get(it.studentId).items.push(it);
+    });
+    const students = [...byStudent.values()].sort((a, b) => {
+        const unA = a.items.filter(i => !i.reviewed).length, unB = b.items.filter(i => !i.reviewed).length;
+        return unB - unA || a.name.localeCompare(b.name);
+    });
+
     const typeIcons = { quran: "📖", vocab: "🔤", letter: "✏️" };
-    el.innerHTML = items.map((it) => `
-        <div class="submission-group" style="opacity:${it.reviewed ? 0.6 : 1}">
-            <h3 class="submission-group-title">${typeIcons[it.type] || "🎙️"} ${it.itemLabel} ${it.refText ? "— " + it.refText : ""}</h3>
-            <p style="font-size:13px;color:#888;margin:4px 0 8px">👤 ${it.name} · 📅 ${new Date(it.date).toLocaleDateString("fr-FR")} ${it.reviewed ? "· ✅ " + bi("تمّت المراجعة","reviewed") : ""}</p>
-            <audio src="${it.url}" controls style="width:100%;margin-bottom:8px"></audio>
-            ${!it.reviewed ? `<button onclick="markRecordingReviewed('${it.studentId}', '${it.recordingId}')" class="btn-admin-add" style="padding:6px 14px;font-size:13px">✅ ${bi("وضع علامة كمُراجَع","markReviewed")}</button>` : ""}
-        </div>
-    `).join("");
+    el.innerHTML = students.map(st => {
+        const unCount = st.items.filter(i => !i.reviewed).length;
+        return `
+        <details class="submission-group" ${unCount > 0 ? "open" : ""} style="margin-bottom:14px;border:1px solid #eee;border-radius:12px;padding:10px 14px">
+            <summary style="cursor:pointer;font-weight:800;color:var(--primary);display:flex;align-items:center;gap:8px">
+                👤 ${st.name}
+                <span style="font-size:13px;color:#888;font-weight:400">(${st.items.length})</span>
+                ${unCount > 0 ? `<span class="notif-badge">${unCount}</span>` : ""}
+            </summary>
+            <div style="margin-top:10px">
+                ${st.items.map(it => `
+                    <div style="opacity:${it.reviewed ? 0.6 : 1};padding:10px 0;border-top:1px solid #f0f0f0">
+                        <h4 style="font-size:15px;margin:0 0 4px">${typeIcons[it.type] || "🎙️"} ${it.itemLabel} ${it.refText ? "— " + it.refText : ""}</h4>
+                        <p style="font-size:12px;color:#888;margin:0 0 8px">📅 ${new Date(it.date).toLocaleDateString("fr-FR")} ${it.reviewed ? "· ✅ " + bi("تمّت المراجعة","reviewed") : ""}</p>
+                        <audio src="${it.url}" controls style="width:100%;margin-bottom:8px"></audio>
+                        <div style="display:flex;gap:8px">
+                            ${!it.reviewed ? `<button onclick="markRecordingReviewed('${it.studentId}', '${it.recordingId}')" class="btn-admin-add" style="padding:6px 14px;font-size:13px">✅ ${bi("وضع علامة كمُراجَع","markReviewed")}</button>` : ""}
+                            <button onclick="deleteRecording('${it.studentId}', '${it.recordingId}')" class="btn-delete" style="padding:6px 14px;font-size:13px">🗑️ ${bi("حذف","delete")}</button>
+                        </div>
+                    </div>
+                `).join("")}
+            </div>
+        </details>`;
+    }).join("");
 }
 
 window.markRecordingReviewed = async (studentId, recordingId) => {
     await updateDoc(doc(db, "eleves", studentId, "recordings", recordingId), { reviewed: true });
-    await loadRecordingsList();
+    const it = recordingsCache.find(i => i.studentId === studentId && i.recordingId === recordingId);
+    if (it) it.reviewed = true;
+    const badge = document.getElementById("recordings-badge");
+    const unreviewed = recordingsCache.filter(i => !i.reviewed).length;
+    if (badge) { badge.textContent = unreviewed; badge.classList.toggle("hidden", unreviewed === 0); }
+    renderRecordingsList();
+};
+
+window.deleteRecording = async (studentId, recordingId) => {
+    if (!confirm(bi("حذف هذا التسجيل؟","confirmDeleteRecording"))) return;
+    await deleteDoc(doc(db, "eleves", studentId, "recordings", recordingId));
+    recordingsCache = recordingsCache.filter(i => !(i.studentId === studentId && i.recordingId === recordingId));
+    const badge = document.getElementById("recordings-badge");
+    const unreviewed = recordingsCache.filter(i => !i.reviewed).length;
+    if (badge) { badge.textContent = unreviewed; badge.classList.toggle("hidden", unreviewed === 0); }
+    renderRecordingsList();
 };
 
 

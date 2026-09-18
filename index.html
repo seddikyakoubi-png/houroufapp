@@ -359,6 +359,7 @@
         <button class="admin-tab" id="t-tab-btn-exercises" onclick="switchTeacherTab('t-exercises',this)"><span class="tab-label">✏️ Exercices</span> <span id="teacher-exercise-badge" class="notif-badge hidden">!</span></button>
         <button class="admin-tab" id="t-tab-btn-submissions" onclick="switchTeacherTab('t-submissions',this)"><span class="tab-label">📬 Travaux rendus</span> <span id="submissions-badge" class="notif-badge hidden">!</span></button>
         <button class="admin-tab" id="t-tab-btn-recordings" onclick="switchTeacherTab('t-recordings',this)"><span class="tab-label">🎙️ Enregistrements</span> <span id="recordings-badge" class="notif-badge hidden">!</span></button>
+        <button class="admin-tab" id="t-tab-btn-comms" onclick="switchTeacherTab('t-comms',this)"><span class="tab-label">📢 Communication</span> <span id="teacher-comms-badge" class="notif-badge hidden">!</span></button>
     </div>
 
     <!-- ÉLÈVES -->
@@ -459,7 +460,32 @@
 
     <!-- ENREGISTREMENTS VOCAUX -->
     <div id="teacher-tab-t-recordings" class="admin-tab-content hidden">
+        <div style="display:flex;gap:8px;flex-wrap:wrap;padding:15px 15px 0" id="rec-status-filters">
+            <button class="vocab-filter-btn active" data-status="all" onclick="setRecordingsFilter('status','all',this)"><span class="tab-label">🌟 الكل</span></button>
+            <button class="vocab-filter-btn" data-status="unreviewed" onclick="setRecordingsFilter('status','unreviewed',this)"><span class="tab-label">🆕 غير مُراجَع</span></button>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;padding:8px 15px 0" id="rec-type-filters">
+            <button class="vocab-filter-btn active" data-type="all" onclick="setRecordingsFilter('type','all',this)"><span class="tab-label">الكل</span></button>
+            <button class="vocab-filter-btn" data-type="quran" onclick="setRecordingsFilter('type','quran',this)"><span class="tab-label">📖 القرآن</span></button>
+            <button class="vocab-filter-btn" data-type="vocab" onclick="setRecordingsFilter('type','vocab',this)"><span class="tab-label">🔤 مفردات</span></button>
+            <button class="vocab-filter-btn" data-type="letter" onclick="setRecordingsFilter('type','letter',this)"><span class="tab-label">✏️ حروف</span></button>
+        </div>
         <div id="recordings-list" style="padding:15px"></div>
+    </div>
+
+    <div id="teacher-tab-t-comms" class="admin-tab-content hidden">
+        <div class="admin-section" style="max-width:600px;margin:15px;margin-bottom:20px">
+            <h3>📢 <span class="tab-label">Annonces de la direction</span></h3>
+            <div id="teacher-announcements-list" style="max-height:220px;overflow-y:auto"></div>
+        </div>
+        <div class="admin-section" style="max-width:600px;margin:0 15px">
+            <h3>💬 <span class="tab-label">Discussion avec la direction</span></h3>
+            <div id="teacher-thread-box" style="max-height:280px;overflow-y:auto;padding:8px 4px;margin-bottom:10px;border:1px solid #eee;border-radius:10px"></div>
+            <div style="display:flex;gap:8px">
+                <textarea id="teacher-thread-input" class="admin-input" rows="2" style="flex:1;resize:none" placeholder="Votre message..."></textarea>
+                <button onclick="teacherSendMsg()" class="btn-admin-add" style="align-self:flex-end">📤</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -479,6 +505,7 @@
         <button class="admin-tab" id="sa-tab-btn-absences" onclick="switchAdminTab('sa-absences',this)"><span class="tab-label">📅 Absences</span></button>
         <button class="admin-tab" id="sa-tab-btn-stats" onclick="switchAdminTab('sa-stats',this)"><span class="tab-label">📊 Statistiques</span></button>
         <button class="admin-tab" id="sa-tab-btn-settings" onclick="switchAdminTab('sa-settings',this)"><span class="tab-label">⚙️ Paramètres</span></button>
+        <button class="admin-tab" id="sa-tab-btn-comms" onclick="switchAdminTab('sa-comms',this)"><span class="tab-label">📢 Communication</span> <span id="dir-comms-badge" class="notif-badge hidden">!</span></button>
     </div>
 
     <!-- CLASSES -->
@@ -614,6 +641,40 @@
             </div>
         </div>
     </div>
+
+    <!-- COMMUNICATION -->
+    <div id="admin-tab-sa-comms" class="admin-tab-content hidden">
+        <div class="admin-section" style="max-width:600px;margin-bottom:20px">
+            <h3>📢 <span class="tab-label">Annonce diffusée</span></h3>
+            <p style="color:#888;font-size:13px;margin-bottom:10px"><span class="tab-label">Visible par tous les destinataires choisis, sans réponse possible.</span></p>
+            <textarea id="ann-compose-text" class="admin-input" rows="3" placeholder="Votre annonce..." style="margin-bottom:10px"></textarea>
+            <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button onclick="sendAnnouncement('teachers')" class="btn-admin-add">👩‍🏫 <span class="tab-label">Envoyer aux professeurs</span></button>
+                <button onclick="sendAnnouncement('parents')" class="btn-admin-add">👪 <span class="tab-label">Envoyer aux parents</span></button>
+            </div>
+            <div id="dir-announcements-list" style="margin-top:14px;max-height:260px;overflow-y:auto"></div>
+        </div>
+
+        <div class="admin-section" style="max-width:600px;margin-bottom:20px">
+            <h3>👩‍🏫 <span class="tab-label">Message direct à un professeur</span></h3>
+            <select id="dir-teacher-select" class="admin-input" style="margin-bottom:10px" onchange="dirLoadTeacherThread()"></select>
+            <div id="dir-thread-box-teacher" style="max-height:240px;overflow-y:auto;padding:8px 4px;margin-bottom:10px;border:1px solid #eee;border-radius:10px"></div>
+            <div style="display:flex;gap:8px">
+                <textarea id="dir-thread-input-teacher" class="admin-input" rows="2" style="flex:1;resize:none" placeholder="Votre message..."></textarea>
+                <button onclick="dirSendTeacherMsg()" class="btn-admin-add" style="align-self:flex-end">📤</button>
+            </div>
+        </div>
+
+        <div class="admin-section" style="max-width:600px">
+            <h3>👪 <span class="tab-label">Message direct à un parent</span></h3>
+            <select id="dir-student-select" class="admin-input" style="margin-bottom:10px" onchange="dirLoadParentThread()"></select>
+            <div id="dir-thread-box-parent" style="max-height:240px;overflow-y:auto;padding:8px 4px;margin-bottom:10px;border:1px solid #eee;border-radius:10px"></div>
+            <div style="display:flex;gap:8px">
+                <textarea id="dir-thread-input-parent" class="admin-input" rows="2" style="flex:1;resize:none" placeholder="Votre message..."></textarea>
+                <button onclick="dirSendParentMsg()" class="btn-admin-add" style="align-self:flex-end">📤</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- ========== SUPER ADMIN ========== -->
@@ -720,6 +781,7 @@
             <button onclick="stopRecording()" id="rec-stop-btn" class="login-btn hidden" style="margin:0;background:#555">⏹️ إيقاف</button>
         </div>
 
+        <p id="rec-timer" class="hidden" style="font-size:26px;font-weight:800;color:var(--primary);margin-bottom:4px;font-variant-numeric:tabular-nums"></p>
         <p id="rec-status" style="font-size:14px;color:#888;min-height:20px;margin-bottom:10px"></p>
 
         <div id="rec-playback" class="hidden" style="margin-bottom:16px">
