@@ -286,17 +286,17 @@
                     <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:12px">
                         <select id="autowrite-letter-select" class="admin-input" style="max-width:160px"></select>
                         <select id="autowrite-form-select" class="admin-input" style="max-width:180px">
-                            <option value="0">🔵 أول الكلمة</option>
-                            <option value="1">🟢 وسط الكلمة</option>
-                            <option value="2">🟠 آخر الكلمة (متصلة)</option>
-                            <option value="3">🟣 آخر الكلمة (منفصلة)</option>
+                            <option value="0">🔵 أول الكلمة / Début du mot</option>
+                            <option value="1">🟢 وسط الكلمة / Milieu du mot</option>
+                            <option value="2">🟠 آخر الكلمة (متصلة) / Fin (attachée)</option>
+                            <option value="3">🟣 آخر الكلمة (منفصلة) / Fin (isolée)</option>
                         </select>
-                        <button onclick="playAutoWrite()" class="btn-admin-add" id="btn-autowrite-play">▶️ عرض الكتابة</button>
+                        <button onclick="playAutoWrite()" class="btn-admin-add" id="btn-autowrite-play"><span class="tab-label">▶️ عرض الكتابة</span></button>
                     </div>
                     <div style="position:relative;width:220px;max-width:70vw;aspect-ratio:1/1;margin:0 auto;background:#fff;border-radius:14px;border:2px dashed #ddd">
                         <svg id="autowrite-svg" viewBox="0 0 220 220" style="width:100%;height:100%"></svg>
                     </div>
-                    <p style="font-size:12px;color:#999;text-align:center;margin-top:8px">اختر حرفًا وشكلاً، ثم اضغط \"عرض الكتابة\" لمشاهدة الحرف يُكتب تلقائيًا</p>
+                    <p style="font-size:12px;color:#999;text-align:center;margin-top:8px" id="autowrite-help"><span class="tab-label">اختر حرفًا وشكلاً، ثم اضغط "عرض الكتابة" لمشاهدة الحرف يُكتب تلقائيًا</span></p>
                 </div>
 
                 <!-- ACTIONS -->
@@ -772,13 +772,13 @@
 <!-- ========== FENÊTRE : ENREGISTREMENT VOCAL DE L'ÉLÈVE ========== -->
 <div id="modal-recording" class="screen hidden" style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center">
     <div style="background:#fff;border-radius:18px;padding:24px;max-width:420px;width:90%;max-height:85vh;overflow-y:auto;text-align:center">
-        <h3 style="color:var(--primary);margin-bottom:6px">🎙️ سجّل صوتك</h3>
+        <h3 id="rec-modal-title" style="color:var(--primary);margin-bottom:6px"><span class="tab-label">🎙️ سجّل صوتك</span></h3>
         <p id="rec-item-label" style="font-weight:700;color:var(--text);margin-bottom:8px"></p>
         <p id="rec-item-text" style="font-size:22px;color:var(--primary);margin-bottom:16px;line-height:1.8"></p>
 
         <div style="display:flex;gap:10px;justify-content:center;margin-bottom:14px">
-            <button onclick="startRecording()" id="rec-start-btn" class="login-btn" style="margin:0;background:linear-gradient(135deg,#e74c3c,#c0392b)">🔴 ابدأ التسجيل</button>
-            <button onclick="stopRecording()" id="rec-stop-btn" class="login-btn hidden" style="margin:0;background:#555">⏹️ إيقاف</button>
+            <button onclick="startRecording()" id="rec-start-btn" class="login-btn" style="margin:0;background:linear-gradient(135deg,#e74c3c,#c0392b)"><span class="tab-label">🔴 ابدأ التسجيل</span></button>
+            <button onclick="stopRecording()" id="rec-stop-btn" class="login-btn hidden" style="margin:0;background:#555"><span class="tab-label">⏹️ إيقاف</span></button>
         </div>
 
         <p id="rec-timer" class="hidden" style="font-size:26px;font-weight:800;color:var(--primary);margin-bottom:4px;font-variant-numeric:tabular-nums"></p>
@@ -788,7 +788,7 @@
             <audio id="rec-audio-player" controls style="width:100%"></audio>
         </div>
 
-        <button onclick="sendRecordingToTeacher()" id="rec-send-btn" class="login-btn hidden" style="margin-bottom:10px;background:linear-gradient(135deg,#43e97b,#38f9d7)">📤 إرسال للمعلم</button>
+        <button onclick="sendRecordingToTeacher()" id="rec-send-btn" class="login-btn hidden" style="margin-bottom:10px;background:linear-gradient(135deg,#43e97b,#38f9d7)"><span class="tab-label">📤 إرسال للمعلم</span></button>
         <button onclick="closeRecordingWidget()" class="btn-secondary" style="width:100%">إغلاق / Fermer</button>
     </div>
 </div>
@@ -797,11 +797,11 @@
 <div id="badge-bravo" class="badge-bravo hidden">
     <div class="badge-content">
         <div class="badge-stars">⭐⭐⭐</div>
-        <div class="badge-text">🎉 أحسنت! 🎉</div>
-        <div class="badge-sub">تعلّمت كل الحروف!</div>
+        <div class="badge-text" id="badge-text-main">🎉 أحسنت! 🎉</div>
+        <div class="badge-sub" id="badge-text-sub">تعلّمت كل الحروف!</div>
     </div>
 </div>
 
-<script type="module" src="script.js?v=20260922"></script>
+<script type="module" src="script.js?v=20260923"></script>
 </body>
 </html>

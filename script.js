@@ -327,6 +327,13 @@ const FEATURE_I18N = {
     "sa-logo-help":           { emoji:"", ar:"الصقوا رابط صورة (PNG/JPG). يمكنكم استضافة الشعار مجانًا عبر خدمة مثل imgur.com إذا لم يكن لديكم رابط بعد", fr:"Collez le lien d'une image (PNG/JPG). Vous pouvez héberger votre logo gratuitement sur imgur.com si vous n'avez pas encore de lien.", nl:"Plak de link van een afbeelding (PNG/JPG). U kunt uw logo gratis hosten via imgur.com als u nog geen link hebt.", en:"Paste the link of an image (PNG/JPG). You can host your logo for free on imgur.com if you don't have a link yet.", es:"Pegue el enlace de una imagen (PNG/JPG). Puede alojar su logo gratis en imgur.com si aún no tiene un enlace." },
     "msg-modal-note":         { emoji:"", ar:"هذه الرسالة ستكون مرئية لولي الأمر في مساحة المتابعة الخاصة به", fr:"Ce message sera visible par le parent dans son espace de suivi.", nl:"Dit bericht zal zichtbaar zijn voor de ouder in zijn opvolgingsruimte.", en:"This message will be visible to the parent in their tracking space.", es:"Este mensaje será visible para el padre en su espacio de seguimiento." },
     "msg-cancel-btn":         { emoji:"", ar:"إلغاء", fr:"Annuler", nl:"Annuleren", en:"Cancel", es:"Cancelar" },
+    // Fenêtre d'enregistrement vocal
+    "rec-modal-title":  { emoji:"🎙️", ar:"سجّل صوتك", fr:"Enregistre ta voix", nl:"Neem je stem op", en:"Record your voice", es:"Graba tu voz" },
+    "rec-start-btn":    { emoji:"🔴", ar:"ابدأ التسجيل", fr:"Démarrer", nl:"Starten", en:"Start", es:"Empezar" },
+    "rec-stop-btn":     { emoji:"⏹️", ar:"إيقاف", fr:"Arrêter", nl:"Stoppen", en:"Stop", es:"Detener" },
+    "rec-send-btn":     { emoji:"📤", ar:"إرسال للمعلم", fr:"Envoyer au professeur", nl:"Verzenden naar leerkracht", en:"Send to teacher", es:"Enviar al profesor" },
+    "btn-autowrite-play": { emoji:"▶️", ar:"عرض الكتابة", fr:"Voir l'écriture", nl:"Schrijven tonen", en:"Show writing", es:"Ver la escritura" },
+    "autowrite-help":     { emoji:"", ar:"اختر حرفًا وشكلاً، ثم اضغط \"عرض الكتابة\" لمشاهدة الحرف يُكتب تلقائيًا", fr:"Choisis une lettre et une forme, puis appuie sur \"Voir l'écriture\" pour regarder la lettre s'écrire automatiquement", nl:"Kies een letter en een vorm, druk dan op \"Schrijven tonen\" om de letter automatisch te zien schrijven", en:"Choose a letter and a shape, then press \"Show writing\" to watch the letter write itself", es:"Elige una letra y una forma, luego pulsa \"Ver la escritura\" para ver cómo se escribe la letra automáticamente" },
 };
 
 // Langue secondaire actuellement active (mémorisée pour être réutilisée par d'autres fonctions,
@@ -878,25 +885,69 @@ window.flipCard=()=>{isFlipped=!isFlipped;document.getElementById("letter-card-i
 window.nextLetter=()=>{letterIndex=(letterIndex+1)%lettres.length;loadLetter();};
 window.prevLetter=()=>{letterIndex=(letterIndex-1+lettres.length)%lettres.length;loadLetter();};
 window.playSound=()=>{const a=document.getElementById("audio");a.currentTime=0;a.play().catch(()=>{});};
-const ENCOURAGEMENT_PHRASES = [
-    { text: "أحسنت! أنت رائع",                 file: "sons/encouragement/enc_1.mp3" },
-    { text: "ممتاز! واصل التقدم",                file: "sons/encouragement/enc_2.mp3" },
-    { text: "عمل رائع! أنا فخور بك",             file: "sons/encouragement/enc_3.mp3" },
-    { text: "بارك الله فيك، استمر",              file: "sons/encouragement/enc_4.mp3" },
-    { text: "أنت نجم متألق!",                   file: "sons/encouragement/enc_5.mp3" },
-    { text: "رائع جدًا! خطوة أخرى نحو النجاح",    file: "sons/encouragement/enc_6.mp3" },
-];
+// ===== ENCOURAGEMENT : mot court, gradué, dans la 2e langue de l'école =====
+// Plutôt qu'une longue phrase arabe tirée au hasard, un seul mot simple est prononcé et affiché,
+// de plus en plus fort à mesure que l'élève progresse (Bien → Bravo → Excellent), dans la langue
+// seconde configurée pour l'école (currentUILang). Sans 2e langue configurée, reste en arabe seul.
+const ENCOURAGEMENT_WORDS = {
+    fr: ["Bien !", "Bravo !", "Excellent !"],
+    nl: ["Goed!", "Bravo!", "Uitstekend!"],
+    en: ["Good!", "Bravo!", "Excellent!"],
+    es: ["¡Bien!", "¡Bravo!", "¡Excelente!"],
+    "":  ["أحسنت!", "رائع!", "ممتاز!"],
+};
+const TTS_LANG_CODES = { fr: "fr-FR", nl: "nl-NL", en: "en-US", es: "es-ES" };
 
-function showEncouragementToast(text, count) {
-    const toast = document.createElement("div");
-    toast.textContent = `🎉 ${text} — ${count} حرف!`;
-    toast.style.cssText = "position:fixed;top:20px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:16px 28px;border-radius:16px;font-size:18px;font-weight:bold;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,0.25);text-align:center;max-width:90vw";
-    document.body.appendChild(toast);
-    setTimeout(() => {
-        toast.style.transition = "opacity 0.5s";
-        toast.style.opacity = "0";
-        setTimeout(() => toast.remove(), 500);
-    }, 3000);
+function encouragementWordForLevel(level) {
+    const words = ENCOURAGEMENT_WORDS[currentUILang] || ENCOURAGEMENT_WORDS[""];
+    const tier = Math.min(level - 1, words.length - 1);
+    return words[Math.max(tier, 0)];
+}
+
+function speakEncouragementWord(word) {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(word.replace(/[!¡]/g, ""));
+    utt.lang = TTS_LANG_CODES[currentUILang] || "ar-SA";
+    utt.rate = 0.9;
+    window.speechSynthesis.speak(utt);
+}
+
+function injectEncouragementStarStyles() {
+    if (document.getElementById("enc-star-styles")) return;
+    const style = document.createElement("style");
+    style.id = "enc-star-styles";
+    style.textContent = `
+        .enc-star-layer { position: fixed; inset: 0; z-index: 9998; pointer-events: none; display: flex; align-items: center; justify-content: center; }
+        .enc-star-pop { position: absolute; display: flex; flex-direction: column; align-items: center; opacity: 0; transform: scale(0.3); animation: encStarPop 0.9s cubic-bezier(.34,1.56,.64,1) forwards; }
+        .enc-star-pop .enc-star-icon { font-size: 70px; line-height: 1; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.25)); }
+        .enc-star-pop .enc-star-word { font-size: 22px; font-weight: 900; color: #fff; background: linear-gradient(135deg,#f7b733,#fc4a1a); padding: 4px 16px; border-radius: 20px; margin-top: -10px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); white-space: nowrap; }
+        @keyframes encStarPop {
+            0%   { opacity: 0; transform: scale(0.2) rotate(-15deg); }
+            50%  { opacity: 1; transform: scale(1.15) rotate(5deg); }
+            70%  { transform: scale(1) rotate(0deg); }
+            100% { opacity: 0; transform: scale(0.9) translateY(-40px); }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// Le mot "jaillit" 3 fois dans une étoile, en léger décalage, pour marquer le coup sans être long
+function launchEncouragementStars(word) {
+    injectEncouragementStarStyles();
+    const layer = document.createElement("div");
+    layer.className = "enc-star-layer";
+    document.body.appendChild(layer);
+    for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+            const pop = document.createElement("div");
+            pop.className = "enc-star-pop";
+            pop.innerHTML = `<div class="enc-star-icon">⭐</div><div class="enc-star-word">${word}</div>`;
+            layer.appendChild(pop);
+            setTimeout(() => pop.remove(), 900);
+        }, i * 380);
+    }
+    setTimeout(() => layer.remove(), 3 * 380 + 900);
 }
 
 // ===== ANIMATION DE CÉLÉBRATION PAR NIVEAU =====
@@ -974,14 +1025,13 @@ window.markLearned=async()=>{
     if(!data.learned.includes(letterIndex)){
         data.learned.push(letterIndex);data.lastActivity=new Date().toISOString();data.schoolId=currentSchoolId;data.classId=currentClassId;
         await saveStudentData(currentUser,data);
-        // 🎉 Encouragement verbal + animation tous les 5 lettres apprises
+        // 🎉 Encouragement gradué + animation tous les 5 lettres apprises
         if (data.learned.length % 5 === 0) {
             const level = data.learned.length / 5;
-            const enc = ENCOURAGEMENT_PHRASES[Math.floor(Math.random() * ENCOURAGEMENT_PHRASES.length)];
-            showEncouragementToast(enc.text, data.learned.length);
+            const word = encouragementWordForLevel(level);
+            launchEncouragementStars(word);
             launchLevelAnimation(level);
-            // ✅ Utilise votre enregistrement en priorité, synthèse vocale en repli si le fichier n'existe pas encore
-            window.playNormalizedAudio(enc.file).then(ok => { if (!ok) window.speakArabic(enc.text); });
+            speakEncouragementWord(word);
         }
     }
     await window.showMenu();
@@ -1736,7 +1786,19 @@ window.exportData=async role=>{
     const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="rapport_hourouf_"+new Date().toISOString().slice(0,10)+".csv";a.click();
 };
 
-function showBravoBadge(){const b=document.getElementById("badge-bravo");b.classList.remove("hidden");setTimeout(()=>b.classList.add("hidden"),4000);b.onclick=()=>b.classList.add("hidden");}
+const BADGE_TRANSLATIONS = {
+    fr: { main: "Bravo !", sub: "Tu as appris toutes les lettres !" },
+    nl: { main: "Bravo!", sub: "Je hebt alle letters geleerd!" },
+    en: { main: "Bravo!", sub: "You learned all the letters!" },
+    es: { main: "¡Bravo!", sub: "¡Aprendiste todas las letras!" },
+};
+function showBravoBadge(){
+    const b=document.getElementById("badge-bravo");
+    const t = BADGE_TRANSLATIONS[currentUILang];
+    document.getElementById("badge-text-main").textContent = t ? `🎉 أحسنت! / ${t.main} 🎉` : "🎉 أحسنت! 🎉";
+    document.getElementById("badge-text-sub").textContent = t ? `تعلّمت كل الحروف! / ${t.sub}` : "تعلّمت كل الحروف!";
+    b.classList.remove("hidden");setTimeout(()=>b.classList.add("hidden"),4000);b.onclick=()=>b.classList.add("hidden");
+}
 
 // INIT
 document.addEventListener("DOMContentLoaded",async()=>{
