@@ -1146,6 +1146,7 @@ window.openRecordingWidget = (type, itemId, itemLabel, refText) => {
     document.getElementById("rec-timer").classList.add("hidden");
     document.getElementById("rec-playback").classList.add("hidden");
     document.getElementById("rec-send-btn").classList.add("hidden");
+    document.getElementById("rec-send-btn").disabled = false;
     document.getElementById("rec-start-btn").classList.remove("hidden");
     document.getElementById("rec-stop-btn").classList.add("hidden");
     document.getElementById("modal-recording").classList.remove("hidden");
