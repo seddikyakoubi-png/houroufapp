@@ -858,9 +858,8 @@ body {
     overflow-x: auto;
 }
 .admin-tab {
-    flex: 1;
-    min-width: 120px;
-    padding: 14px 10px;
+    flex: 0 0 auto;
+    padding: 14px 14px;
     background: none;
     border: none;
     font-family: 'Tajawal', sans-serif;
@@ -872,6 +871,7 @@ body {
     margin-bottom: -2px;
     transition: all 0.2s;
     white-space: nowrap;
+    overflow: hidden;
 }
 .admin-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
 .admin-tab-content { padding: 15px; }
