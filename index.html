@@ -475,11 +475,11 @@
 
     <div id="teacher-tab-t-comms" class="admin-tab-content hidden">
         <div class="admin-section" style="max-width:600px;margin:15px;margin-bottom:20px">
-            <h3>📢 <span class="tab-label">Annonces de la direction</span></h3>
+            <h3 id="t-comms-ann-title">📢 <span class="tab-label">Annonces de la direction</span></h3>
             <div id="teacher-announcements-list" style="max-height:220px;overflow-y:auto"></div>
         </div>
         <div class="admin-section" style="max-width:600px;margin:0 15px">
-            <h3>💬 <span class="tab-label">Discussion avec la direction</span></h3>
+            <h3 id="t-comms-thread-title">💬 <span class="tab-label">Discussion avec la direction</span></h3>
             <div id="teacher-thread-box" style="max-height:280px;overflow-y:auto;padding:8px 4px;margin-bottom:10px;border:1px solid #eee;border-radius:10px"></div>
             <div style="display:flex;gap:8px">
                 <textarea id="teacher-thread-input" class="admin-input" rows="2" style="flex:1;resize:none" placeholder="Votre message..."></textarea>
@@ -645,18 +645,18 @@
     <!-- COMMUNICATION -->
     <div id="admin-tab-sa-comms" class="admin-tab-content hidden">
         <div class="admin-section" style="max-width:600px;margin-bottom:20px">
-            <h3>📢 <span class="tab-label">Annonce diffusée</span></h3>
-            <p style="color:#888;font-size:13px;margin-bottom:10px"><span class="tab-label">Visible par tous les destinataires choisis, sans réponse possible.</span></p>
+            <h3 id="sa-comms-ann-title">📢 <span class="tab-label">Annonce diffusée</span></h3>
+            <p style="color:#888;font-size:13px;margin-bottom:10px" id="sa-comms-ann-sub"><span class="tab-label">Visible par tous les destinataires choisis, sans réponse possible.</span></p>
             <textarea id="ann-compose-text" class="admin-input" rows="3" placeholder="Votre annonce..." style="margin-bottom:10px"></textarea>
             <div style="display:flex;gap:10px;flex-wrap:wrap">
-                <button onclick="sendAnnouncement('teachers')" class="btn-admin-add">👩‍🏫 <span class="tab-label">Envoyer aux professeurs</span></button>
-                <button onclick="sendAnnouncement('parents')" class="btn-admin-add">👪 <span class="tab-label">Envoyer aux parents</span></button>
+                <button onclick="sendAnnouncement('teachers')" class="btn-admin-add" id="sa-comms-ann-send-teachers">👩‍🏫 <span class="tab-label">Envoyer aux professeurs</span></button>
+                <button onclick="sendAnnouncement('parents')" class="btn-admin-add" id="sa-comms-ann-send-parents">👪 <span class="tab-label">Envoyer aux parents</span></button>
             </div>
             <div id="dir-announcements-list" style="margin-top:14px;max-height:260px;overflow-y:auto"></div>
         </div>
 
         <div class="admin-section" style="max-width:600px;margin-bottom:20px">
-            <h3>👩‍🏫 <span class="tab-label">Message direct à un professeur</span></h3>
+            <h3 id="sa-comms-teacher-title">👩‍🏫 <span class="tab-label">Message direct à un professeur</span></h3>
             <select id="dir-teacher-select" class="admin-input" style="margin-bottom:10px" onchange="dirLoadTeacherThread()"></select>
             <div id="dir-thread-box-teacher" style="max-height:240px;overflow-y:auto;padding:8px 4px;margin-bottom:10px;border:1px solid #eee;border-radius:10px"></div>
             <div style="display:flex;gap:8px">
@@ -666,7 +666,7 @@
         </div>
 
         <div class="admin-section" style="max-width:600px">
-            <h3>👪 <span class="tab-label">Message direct à un parent</span></h3>
+            <h3 id="sa-comms-parent-title">👪 <span class="tab-label">Message direct à un parent</span></h3>
             <select id="dir-student-select" class="admin-input" style="margin-bottom:10px" onchange="dirLoadParentThread()"></select>
             <div id="dir-thread-box-parent" style="max-height:240px;overflow-y:auto;padding:8px 4px;margin-bottom:10px;border:1px solid #eee;border-radius:10px"></div>
             <div style="display:flex;gap:8px">
@@ -802,6 +802,6 @@
     </div>
 </div>
 
-<script type="module" src="script.js?v=20260923"></script>
+<script type="module" src="script.js?v=20260924"></script>
 </body>
 </html>

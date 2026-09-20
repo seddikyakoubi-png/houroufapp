@@ -334,6 +334,18 @@ const FEATURE_I18N = {
     "rec-send-btn":     { emoji:"📤", ar:"إرسال للمعلم", fr:"Envoyer au professeur", nl:"Verzenden naar leerkracht", en:"Send to teacher", es:"Enviar al profesor" },
     "btn-autowrite-play": { emoji:"▶️", ar:"عرض الكتابة", fr:"Voir l'écriture", nl:"Schrijven tonen", en:"Show writing", es:"Ver la escritura" },
     "autowrite-help":     { emoji:"", ar:"اختر حرفًا وشكلاً، ثم اضغط \"عرض الكتابة\" لمشاهدة الحرف يُكتب تلقائيًا", fr:"Choisis une lettre et une forme, puis appuie sur \"Voir l'écriture\" pour regarder la lettre s'écrire automatiquement", nl:"Kies een letter en een vorm, druk dan op \"Schrijven tonen\" om de letter automatisch te zien schrijven", en:"Choose a letter and a shape, then press \"Show writing\" to watch the letter write itself", es:"Elige una letra y una forma, luego pulsa \"Ver la escritura\" para ver cómo se escribe la letra automáticamente" },
+    // Onglet Communication (directeur)
+    "sa-tab-btn-comms":       { emoji:"📢", ar:"التواصل", fr:"Communication", nl:"Communicatie", en:"Communication", es:"Comunicación" },
+    "sa-comms-ann-title":     { emoji:"📢", ar:"إعلان عام", fr:"Annonce diffusée", nl:"Algemene mededeling", en:"Broadcast announcement", es:"Anuncio general" },
+    "sa-comms-ann-sub":       { emoji:"", ar:"مرئي لجميع المستلمين المختارين، دون إمكانية الرد", fr:"Visible par tous les destinataires choisis, sans réponse possible.", nl:"Zichtbaar voor alle gekozen ontvangers, geen antwoord mogelijk.", en:"Visible to all chosen recipients, no reply possible.", es:"Visible para todos los destinatarios elegidos, sin respuesta posible." },
+    "sa-comms-ann-send-teachers": { emoji:"👩‍🏫", ar:"إرسال إلى المعلمين", fr:"Envoyer aux professeurs", nl:"Verzenden naar leerkrachten", en:"Send to teachers", es:"Enviar a los profesores" },
+    "sa-comms-ann-send-parents":  { emoji:"👪", ar:"إرسال إلى أولياء الأمور", fr:"Envoyer aux parents", nl:"Verzenden naar ouders", en:"Send to parents", es:"Enviar a los padres" },
+    "sa-comms-teacher-title": { emoji:"👩‍🏫", ar:"رسالة مباشرة إلى معلم", fr:"Message direct à un professeur", nl:"Direct bericht aan een leerkracht", en:"Direct message to a teacher", es:"Mensaje directo a un profesor" },
+    "sa-comms-parent-title":  { emoji:"👪", ar:"رسالة مباشرة إلى ولي أمر", fr:"Message direct à un parent", nl:"Direct bericht aan een ouder", en:"Direct message to a parent", es:"Mensaje directo a un padre" },
+    // Onglet Communication (professeur)
+    "t-tab-btn-comms":     { emoji:"📢", ar:"التواصل", fr:"Communication", nl:"Communicatie", en:"Communication", es:"Comunicación" },
+    "t-comms-ann-title":   { emoji:"📢", ar:"إعلانات الإدارة", fr:"Annonces de la direction", nl:"Mededelingen van de directie", en:"Announcements from the principal", es:"Anuncios de la dirección" },
+    "t-comms-thread-title":{ emoji:"💬", ar:"محادثة مع الإدارة", fr:"Discussion avec la direction", nl:"Gesprek met de directie", en:"Discussion with the principal", es:"Conversación con la dirección" },
 };
 
 // Langue secondaire actuellement active (mémorisée pour être réutilisée par d'autres fonctions,
@@ -386,6 +398,9 @@ const DYNAMIC_I18N = {
     chooseTeacher:    { fr:"Choisir un professeur", nl:"Kies een leerkracht", en:"Choose a teacher", es:"Elige un profesor" },
     chooseStudent:    { fr:"Choisir un élève", nl:"Kies een leerling", en:"Choose a student", es:"Elige un alumno" },
     confirmDeleteAnn: { fr:"Supprimer cette annonce ?", nl:"Deze mededeling verwijderen?", en:"Delete this announcement?", es:"¿Eliminar este anuncio?" },
+    schoolMessages:   { fr:"Messages de l'école", nl:"Berichten van de school", en:"School messages", es:"Mensajes de la escuela" },
+    dirAnnouncements: { fr:"Annonces de la direction", nl:"Mededelingen van de directie", en:"Announcements from the principal", es:"Anuncios de la dirección" },
+    dirDiscussion:    { fr:"Discussion avec la direction", nl:"Gesprek met de directie", en:"Discussion with the principal", es:"Conversación con la dirección" },
 };
 
 // Petit helper pour les textes bilingues générés dynamiquement en JS (hors boutons/onglets statiques).
@@ -406,6 +421,11 @@ const PLACEHOLDER_I18N = {
     "ex-word":           { ar:"كلمة يجب كتابتها (مثال: بَطَّة)", fr:"Mot à écrire (ex: بَطَّة)", nl:"Te schrijven woord (bv. بَطَّة)", en:"Word to write (e.g. بَطَّة)", es:"Palabra a escribir (ej. بَطَّة)" },
     "ex-free-text":      { ar:"تعليمة حرة (مثال: تتبّع حرف ب ثلاث مرات بدءًا من النقطة)", fr:"Consigne libre (ex: Trace la lettre ب trois fois en commençant par le point)", nl:"Vrije instructie (bv. Trek de letter ب drie keer, begin bij het punt)", en:"Free instruction (e.g. Trace the letter ب three times starting from the dot)", es:"Instrucción libre (ej. Traza la letra ب tres veces empezando por el punto)" },
     "msg-text":          { ar:"اكتب رسالتك هنا...", fr:"Écrivez votre message ici...", nl:"Schrijf hier uw bericht...", en:"Write your message here...", es:"Escriba su mensaje aquí..." },
+    "parent-thread-input": { ar:"اكتب رسالتك هنا...", fr:"Écrivez votre message ici...", nl:"Schrijf hier uw bericht...", en:"Write your message here...", es:"Escriba su mensaje aquí..." },
+    "ann-compose-text":       { ar:"اكتب إعلانك هنا...", fr:"Votre annonce...", nl:"Uw mededeling...", en:"Your announcement...", es:"Su anuncio..." },
+    "dir-thread-input-teacher": { ar:"اكتب رسالتك هنا...", fr:"Votre message...", nl:"Uw bericht...", en:"Your message...", es:"Su mensaje..." },
+    "dir-thread-input-parent":  { ar:"اكتب رسالتك هنا...", fr:"Votre message...", nl:"Uw bericht...", en:"Your message...", es:"Su mensaje..." },
+    "teacher-thread-input":     { ar:"اكتب رسالتك هنا...", fr:"Votre message...", nl:"Uw bericht...", en:"Your message...", es:"Su mensaje..." },
 };
 
 // Applique la traduction des placeholders selon la langue de l'école (rappelle currentUILang)
@@ -652,7 +672,7 @@ async function loadParentDashboard(studentId, studentName) {
         </div>
 
         <div class="admin-section" style="margin-bottom:20px">
-            <h3 style="margin-bottom:10px">✉️ رسائل المدرسة / Messages de l'école</h3>
+            <h3 style="margin-bottom:10px">✉️ ${bi("رسائل المدرسة","schoolMessages")}</h3>
             ${messages.length === 0
                 ? `<p style="color:#aaa;text-align:center;padding:20px 0">لا توجد رسائل حالياً<br>Aucun message pour le moment</p>`
                 : messages.map(m => {
@@ -670,7 +690,7 @@ async function loadParentDashboard(studentId, studentName) {
         </div>
 
         <div class="admin-section" style="margin-bottom:20px">
-            <h3 style="margin-bottom:10px">📢 إعلانات الإدارة / Annonces de la direction</h3>
+            <h3 style="margin-bottom:10px">📢 ${bi("إعلانات الإدارة","dirAnnouncements")}</h3>
             ${anns.length === 0
                 ? `<p style="color:#aaa;text-align:center;padding:14px 0">لا توجد إعلانات حالياً</p>`
                 : anns.map(a => `<div style="border-bottom:1px solid #f0f0f0;padding:10px 0">
@@ -681,7 +701,7 @@ async function loadParentDashboard(studentId, studentName) {
         </div>
 
         <div class="admin-section">
-            <h3 style="margin-bottom:10px">💬 محادثة مع الإدارة / Discussion avec la direction</h3>
+            <h3 style="margin-bottom:10px">💬 ${bi("محادثة مع الإدارة","dirDiscussion")}</h3>
             <div id="parent-thread-box" style="max-height:280px;overflow-y:auto;padding:8px 4px;margin-bottom:10px"></div>
             <div style="display:flex;gap:8px">
                 <textarea id="parent-thread-input" class="admin-input" rows="2" style="flex:1;resize:none" placeholder="اكتب رسالتك هنا..."></textarea>
@@ -690,6 +710,7 @@ async function loadParentDashboard(studentId, studentName) {
         </div>
     `;
     document.getElementById("parent-thread-box").innerHTML = threadHtml(data.thread || [], "parent");
+    applyPlaceholderTranslations();
     await updateDoc(doc(db,"eleves",studentId), { annLastSeen: new Date().toISOString(), threadLastSeen: new Date().toISOString() }).catch(()=>{});
 }
 
