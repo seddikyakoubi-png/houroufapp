@@ -163,7 +163,7 @@ function extractStudentName(studentId, schoolId, classId) {
 }
 
 // STATE
-let currentUser=null, currentRole=null, currentSchoolId=null, currentClassId=null;
+let currentUser=null, currentRole=null, currentSchoolId=null, currentClassId=null, currentOrgType="school";
 let selectedRole="student";
 let isDemoMode=false; // Mode démo 100% local, sans écriture Firebase
 let letterIndex=0, isFlipped=false;
@@ -400,6 +400,21 @@ const DYNAMIC_I18N = {
     confirmDeleteAnn: { fr:"Supprimer cette annonce ?", nl:"Deze mededeling verwijderen?", en:"Delete this announcement?", es:"¿Eliminar este anuncio?" },
     tooFewStudentsForDifficulty: { fr:"trop peu d'élèves pour une analyse fiable", nl:"te weinig leerlingen voor een betrouwbare analyse", en:"too few students for a reliable analysis", es:"muy pocos alumnos para un análisis fiable" },
     noCommonDifficulty: { fr:"Bravo, aucune difficulté commune détectée pour l'instant", nl:"Goed zo, momenteel geen gemeenschappelijk probleem gevonden", en:"Well done, no common difficulty detected right now", es:"Bien hecho, no se detecta ninguna dificultad común por ahora" },
+    statStudents:     { fr:"Élèves", nl:"Leerlingen", en:"Students", es:"Alumnos" },
+    statAvgProgress:  { fr:"Progression moyenne", nl:"Gemiddelde voortgang", en:"Average progress", es:"Progreso medio" },
+    statFinished:     { fr:"Terminés", nl:"Voltooid", en:"Completed", es:"Completados" },
+    statQuiz:         { fr:"Quiz", nl:"Quiz", en:"Quiz", es:"Cuestionarios" },
+    statStudentsTotal:{ fr:"Élèves total", nl:"Totaal leerlingen", en:"Total students", es:"Total de alumnos" },
+    statTotalAbsences:{ fr:"Total absences", nl:"Totaal afwezigheden", en:"Total absences", es:"Total de ausencias" },
+    statRegistered:   { fr:"Élèves inscrits", nl:"Ingeschreven leerlingen", en:"Registered students", es:"Alumnos inscritos" },
+    statConnected:    { fr:"Déjà connectés", nl:"Al ingelogd", en:"Already logged in", es:"Ya conectados" },
+    statNotConnected: { fr:"Pas encore connectés", nl:"Nog niet ingelogd", en:"Not yet logged in", es:"Aún no conectados" },
+    statCourseDays:   { fr:"Jours de cours", nl:"Lesdagen", en:"Course days", es:"Días de clase" },
+    statStudentsConcerned: { fr:"Élèves concernés", nl:"Betrokken leerlingen", en:"Students concerned", es:"Alumnos afectados" },
+    noStudentYet:     { fr:"Aucun élève", nl:"Geen leerling", en:"No student", es:"Ningún alumno" },
+    noTeacherYet:     { fr:"Aucun professeur", nl:"Geen leerkracht", en:"No teacher", es:"Ningún profesor" },
+    noStudentInClass: { fr:"Aucun élève dans cette classe", nl:"Geen leerling in deze klas", en:"No student in this class", es:"Ningún alumno en esta clase" },
+    noMessageYet:     { fr:"Aucun message pour le moment", nl:"Nog geen bericht", en:"No message yet", es:"Aún no hay mensajes" },
     schoolMessages:   { fr:"Messages de l'école", nl:"Berichten van de school", en:"School messages", es:"Mensajes de la escuela" },
     dirAnnouncements: { fr:"Annonces de la direction", nl:"Mededelingen van de directie", en:"Announcements from the principal", es:"Anuncios de la dirección" },
     dirDiscussion:    { fr:"Discussion avec la direction", nl:"Gesprek met de directie", en:"Discussion with the principal", es:"Conversación con la dirección" },
@@ -676,7 +691,7 @@ async function loadParentDashboard(studentId, studentName) {
         <div class="admin-section" style="margin-bottom:20px">
             <h3 style="margin-bottom:10px">✉️ ${bi("رسائل المدرسة","schoolMessages")}</h3>
             ${messages.length === 0
-                ? `<p style="color:#aaa;text-align:center;padding:20px 0">لا توجد رسائل حالياً<br>Aucun message pour le moment</p>`
+                ? `<p style="color:#aaa;text-align:center;padding:20px 0">${bi("لا توجد رسائل حالياً","noMessageYet")}</p>`
                 : messages.map(m => {
                     const info = catInfo[m.category] || catInfo.general;
                     return `<div style="border-inline-start:4px solid ${info.color};background:#f9f9fb;border-radius:10px;padding:12px 14px;margin-bottom:10px">
@@ -774,6 +789,10 @@ window.loginTeacher = async () => {
     currentUser=email; currentRole="teacher"; currentSchoolId=data.schoolId; currentClassId=data.classId;
     document.getElementById("teacher-header-name").textContent="👩‍🏫 "+data.name;
     const teacherSchool=(await getDoc(doc(db,"ecoles",data.schoolId))).data();
+    currentOrgType = teacherSchool?.orgType || "school";
+    // Pas de vie de classe à gérer pour une famille : masquer Appel et Liste de classe
+    document.getElementById("t-tab-btn-attendance")?.classList.toggle("hidden", currentOrgType === "family");
+    document.getElementById("t-tab-btn-classlist")?.classList.toggle("hidden", currentOrgType === "family");
     applySchoolBranding(teacherSchool);
     applyFeatureTranslations(teacherSchool?.uiLang);
     showScreen("screen-teacher"); await loadTeacherDashboard();
@@ -789,7 +808,8 @@ window.loginSchoolAdmin = async () => {
     if(data.password!==btoa(pwd)){showError("Mot de passe incorrect");return;}
     currentUser=email; currentRole="schooladmin"; currentSchoolId=data.schoolId;
     const school=(await getDoc(doc(db,"ecoles",data.schoolId))).data();
-    document.getElementById("schooladmin-title").textContent="🏫 "+school.name;
+    currentOrgType = school.orgType || "school"; // rétrocompatibilité : anciennes écoles sans ce champ = "school"
+    document.getElementById("schooladmin-title").textContent=(currentOrgType==="family"?"👨‍👩‍👧 ":"🏫 ")+school.name;
     applySchoolBranding(school);
     applyFeatureTranslations(school?.uiLang);
     showScreen("screen-schooladmin"); await loadSchoolAdminDashboard();
@@ -1163,13 +1183,13 @@ async function loadTeacherDashboard(){
     const totalQuiz=mine.reduce((a,[,d])=>a+(d.quizScores?.length||0),0);
 
     document.getElementById("teacher-summary").innerHTML=`
-        <div class="summary-card"><div class="s-num">${mine.length}</div><div class="s-label">Élèves</div></div>
-        <div class="summary-card"><div class="s-num">${avg}%</div><div class="s-label">Progression moyenne</div></div>
-        <div class="summary-card"><div class="s-num">${finished}</div><div class="s-label">Terminés</div></div>
-        <div class="summary-card"><div class="s-num">${totalQuiz}</div><div class="s-label">Quiz</div></div>`;
+        <div class="summary-card"><div class="s-num">${mine.length}</div><div class="s-label">${bi("الطلاب","statStudents")}</div></div>
+        <div class="summary-card"><div class="s-num">${avg}%</div><div class="s-label">${bi("التقدم المتوسط","statAvgProgress")}</div></div>
+        <div class="summary-card"><div class="s-num">${finished}</div><div class="s-label">${bi("المكتملون","statFinished")}</div></div>
+        <div class="summary-card"><div class="s-num">${totalQuiz}</div><div class="s-label">${bi("اختبارات","statQuiz")}</div></div>`;
 
     document.getElementById("teacher-tbody").innerHTML=mine.length===0
-        ?`<tr><td colspan="5" style="color:#aaa;padding:20px">Aucun élève</td></tr>`
+        ?`<tr><td colspan="5" style="color:#aaa;padding:20px">${bi("لا يوجد تلاميذ","noStudentYet")}</td></tr>`
         :mine.map(([id,data])=>{
             let name=id;
             if(data.schoolId&&data.classId){const prefix=data.schoolId+"_"+data.classId+"_";if(id.startsWith(prefix))name=id.slice(prefix.length);else name=id.split("_").slice(4).join(" ")||id.split("_").slice(2).join(" ");}else{name=id.split("_").slice(2).join(" ");}const pct=Math.round(data.learned.length/lettres.length*100);const sc=data.quizScores||[];const avgS=sc.length>0?Math.round(sc.reduce((a,s)=>a+(s.score/s.total*100),0)/sc.length):"-";const date=data.lastActivity?new Date(data.lastActivity).toLocaleDateString("fr-FR"):"Jamais";
@@ -1430,6 +1450,9 @@ async function loadSchoolAdminDashboard(){
     // (ex: une autre école), pour ne jamais afficher des données d'un autre établissement.
     window.closeStuPanel();
     let school=(await getDoc(doc(db,"ecoles",currentSchoolId))).data();
+    currentOrgType = school.orgType || "school";
+    // L'onglet Absences n'a pas de sens pour une famille (pas de vie de classe à suivre)
+    document.getElementById("sa-tab-btn-absences")?.classList.toggle("hidden", currentOrgType === "family");
     await saLoadClasses(school); await saLoadTeachers(school); await saLoadStats();
     const logoInput=document.getElementById("sa-logo-url");
     if(logoInput){ logoInput.value=school?.logoUrl||""; window.saPreviewLogo(); }
@@ -1574,10 +1597,10 @@ function loadDemoDashboard({school, teachers, students}){
     const quranAvg = students.length>0 ? Math.round(students.reduce((a,[,d])=>a+quranPct(d),0)/students.length) : 0;
 
     document.getElementById("sa-summary").innerHTML = `
-        <div class="summary-card"><div class="s-num">${students.length}</div><div class="s-label">Élèves total</div></div>
-        <div class="summary-card"><div class="s-num">${avg}%</div><div class="s-label">Progression moyenne</div></div>
-        <div class="summary-card"><div class="s-num">${finished}</div><div class="s-label">Terminés</div></div>
-        <div class="summary-card"><div class="s-num">${totalQuiz}</div><div class="s-label">Quiz</div></div>
+        <div class="summary-card"><div class="s-num">${students.length}</div><div class="s-label">${bi("مجموع الطلاب","statStudentsTotal")}</div></div>
+        <div class="summary-card"><div class="s-num">${avg}%</div><div class="s-label">${bi("التقدم المتوسط","statAvgProgress")}</div></div>
+        <div class="summary-card"><div class="s-num">${finished}</div><div class="s-label">${bi("المكتملون","statFinished")}</div></div>
+        <div class="summary-card"><div class="s-num">${totalQuiz}</div><div class="s-label">${bi("اختبارات","statQuiz")}</div></div>
         <div class="summary-card"><div class="s-num">${quranAvg}%</div><div class="s-label">📖 Coran moyen</div></div>`;
 
     document.getElementById("sa-tbody").innerHTML = students.map(([id,data]) => {
@@ -1640,7 +1663,7 @@ async function saLoadTeachers(school){
     const myTeachers=Object.entries(allTeachers).filter(([,t])=>t.schoolId===currentSchoolId);
     const classes=school?.classes||{};
     document.getElementById("sa-teachers-list").innerHTML=myTeachers.length===0
-        ?`<p style="color:#aaa;padding:20px">Aucun professeur</p>`
+        ?`<p style="color:#aaa;padding:20px">${bi("لا يوجد معلمون","noTeacherYet")}</p>`
         :`<table class="teacher-table"><thead><tr><th>Nom</th><th>Email</th><th>Classe</th><th>Statut</th><th>Code</th><th>⚙️</th></tr></thead><tbody>`+
         myTeachers.map(([email,t])=>{const cls=classes[t.classId]?.name||"?";const status=t.password?`<span class="badge-active">✅ Actif</span>`:`<span class="badge-pending">⏳ En attente</span>`;
             return `<tr><td>${t.name}</td><td dir="ltr">${email}</td><td>${cls}</td><td>${status}</td><td><code>${t.activationCode}</code></td><td><button onclick="saDeleteTeacher('${email}')" class="btn-delete">🗑️</button></td></tr>`;}).join("")+"</tbody></table>";
@@ -1672,14 +1695,14 @@ async function saLoadStats(){
     const quranAvg=mine.length>0?Math.round(mine.reduce((a,[,d])=>a+quranPct(d),0)/mine.length):0;
 
     document.getElementById("sa-summary").innerHTML=`
-        <div class="summary-card"><div class="s-num">${mine.length}</div><div class="s-label">Élèves total</div></div>
-        <div class="summary-card"><div class="s-num">${avg}%</div><div class="s-label">Progression moyenne</div></div>
-        <div class="summary-card"><div class="s-num">${finished}</div><div class="s-label">Terminés</div></div>
-        <div class="summary-card"><div class="s-num">${totalQuiz}</div><div class="s-label">Quiz</div></div>
+        <div class="summary-card"><div class="s-num">${mine.length}</div><div class="s-label">${bi("مجموع الطلاب","statStudentsTotal")}</div></div>
+        <div class="summary-card"><div class="s-num">${avg}%</div><div class="s-label">${bi("التقدم المتوسط","statAvgProgress")}</div></div>
+        <div class="summary-card"><div class="s-num">${finished}</div><div class="s-label">${bi("المكتملون","statFinished")}</div></div>
+        <div class="summary-card"><div class="s-num">${totalQuiz}</div><div class="s-label">${bi("اختبارات","statQuiz")}</div></div>
         <div class="summary-card"><div class="s-num">${quranAvg}%</div><div class="s-label">📖 Coran moyen</div></div>`;
 
     document.getElementById("sa-tbody").innerHTML=mine.length===0
-        ?`<tr><td colspan="7" style="color:#aaa;padding:20px">Aucun élève</td></tr>`
+        ?`<tr><td colspan="7" style="color:#aaa;padding:20px">${bi("لا يوجد تلاميذ","noStudentYet")}</td></tr>`
         :mine.map(([id,data])=>{
             let name=id;
             if(data.schoolId&&data.classId){const prefix=data.schoolId+"_"+data.classId+"_";if(id.startsWith(prefix))name=id.slice(prefix.length);else name=id.split("_").slice(4).join(" ")||id.split("_").slice(2).join(" ");}else{name=id.split("_").slice(2).join(" ");}const cls=school?.classes?.[data.classId]?.name||"?";const pct=Math.round(data.learned.length/lettres.length*100);const sc=data.quizScores||[];const avgS=sc.length>0?Math.round(sc.reduce((a,s)=>a+(s.score/s.total*100),0)/sc.length):"-";const date=data.lastActivity?new Date(data.lastActivity).toLocaleDateString("fr-FR"):"Jamais";const qPct=quranPct(data);
@@ -1734,6 +1757,7 @@ window.supAddSchool=async()=>{
     const email=document.getElementById("sup-admin-email").value.trim().toLowerCase();
     const pwd=document.getElementById("sup-admin-pwd").value;
     const uiLang=document.getElementById("sup-school-lang").value; // "" | "fr" | "nl" | "en" | "es" — figé à la création
+    const orgType=document.getElementById("sup-org-type").value; // "school" | "family" — figé à la création, comme la langue
     if(!name||!city||!email||!pwd){alert("Tous les champs sont requis");return;}
     const schoolId="school_"+Date.now();
     // ✅ Génère un code d'école unique (ex: ECO-4821) que les élèves saisiront pour rejoindre l'école,
@@ -1742,7 +1766,7 @@ window.supAddSchool=async()=>{
     const existingCodes = new Set(Object.values(existingSchools).map(s => (s.code || "").toUpperCase()));
     let schoolCode;
     do { schoolCode = "ECO-" + Math.floor(1000 + Math.random() * 9000); } while (existingCodes.has(schoolCode));
-    await setDoc(doc(db,"ecoles",schoolId),{name,city,code:schoolCode,uiLang,adminEmail:email,classes:{},createdAt:new Date().toISOString()});
+    await setDoc(doc(db,"ecoles",schoolId),{name,city,code:schoolCode,uiLang,orgType,adminEmail:email,classes:{},createdAt:new Date().toISOString()});
     await setDoc(doc(db,"school_admins",email),{email,schoolId,password:btoa(pwd),createdAt:new Date().toISOString()});
     const langLabel = {fr:"🇫🇷 Français",nl:"🇳🇱 Néerlandais",en:"🇬🇧 Anglais",es:"🇪🇸 Espagnol"}[uiLang] || "🇸🇦 Arabe uniquement";
     const res=document.getElementById("sup-school-result");
@@ -1763,9 +1787,9 @@ async function supLoadStats(){
     const avg=entries.length>0?Math.round(entries.reduce((a,[,d])=>a+(d.learned.length/lettres.length*100),0)/entries.length):0;
     document.getElementById("sup-summary").innerHTML=`
         <div class="summary-card"><div class="s-num">${Object.keys(schools).length}</div><div class="s-label">Écoles</div></div>
-        <div class="summary-card"><div class="s-num">${entries.length}</div><div class="s-label">Élèves total</div></div>
-        <div class="summary-card"><div class="s-num">${avg}%</div><div class="s-label">Progression moyenne</div></div>
-        <div class="summary-card"><div class="s-num">${entries.filter(([,d])=>d.learned.length===lettres.length).length}</div><div class="s-label">Terminés</div></div>`;
+        <div class="summary-card"><div class="s-num">${entries.length}</div><div class="s-label">${bi("مجموع الطلاب","statStudentsTotal")}</div></div>
+        <div class="summary-card"><div class="s-num">${avg}%</div><div class="s-label">${bi("التقدم المتوسط","statAvgProgress")}</div></div>
+        <div class="summary-card"><div class="s-num">${entries.filter(([,d])=>d.learned.length===lettres.length).length}</div><div class="s-label">${bi("المكتملون","statFinished")}</div></div>`;
     document.getElementById("sup-tbody").innerHTML=entries.length===0
         ?`<tr><td colspan="7" style="color:#aaa;padding:20px">Aucun élève</td></tr>`
         :entries.map(([id,data])=>{
@@ -3048,15 +3072,15 @@ async function loadTeacherClassList() {
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px">
             <div class="summary-card">
                 <div class="s-num">${total}</div>
-                <div class="s-label">Élèves inscrits</div>
+                <div class="s-label">${bi("الطلاب المسجّلون","statRegistered")}</div>
             </div>
             <div class="summary-card">
                 <div class="s-num" style="color:#27ae60">${connected}</div>
-                <div class="s-label">Déjà connectés</div>
+                <div class="s-label">${bi("سجّلوا الدخول","statConnected")}</div>
             </div>
             <div class="summary-card">
                 <div class="s-num" style="color:#e67e22">${total - connected}</div>
-                <div class="s-label">Pas encore connectés</div>
+                <div class="s-label">${bi("لم يسجّلوا الدخول بعد","statNotConnected")}</div>
             </div>
         </div>
         <div class="teacher-table-wrap">
@@ -3784,7 +3808,7 @@ window.loadAttendance = async () => {
 
     if (students.length === 0) {
         el.innerHTML = `<div style="text-align:center;padding:30px;color:#aaa">
-            <p>Aucun élève dans cette classe</p>
+            <p>${bi("لا يوجد تلاميذ في هذا الفصل","noStudentInClass")}</p>
             <p style="font-size:13px">Le directeur doit d'abord ajouter des élèves</p>
         </div>`;
         return;
@@ -4014,9 +4038,9 @@ window.loadDirectorAbsences = async () => {
 
     el.innerHTML = `
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:20px">
-            <div class="summary-card"><div class="s-num">${uniqueDates}</div><div class="s-label">Jours de cours</div></div>
-            <div class="summary-card"><div class="s-num">${uniqueStudents}</div><div class="s-label">Élèves concernés</div></div>
-            <div class="summary-card"><div class="s-num" style="color:var(--primary)">${totalAbsences}</div><div class="s-label">Total absences</div></div>
+            <div class="summary-card"><div class="s-num">${uniqueDates}</div><div class="s-label">${bi("أيام الدراسة","statCourseDays")}</div></div>
+            <div class="summary-card"><div class="s-num">${uniqueStudents}</div><div class="s-label">${bi("الطلاب المعنيون","statStudentsConcerned")}</div></div>
+            <div class="summary-card"><div class="s-num" style="color:var(--primary)">${totalAbsences}</div><div class="s-label">${bi("مجموع الغيابات","statTotalAbsences")}</div></div>
         </div>
         <div class="teacher-table-wrap">
             <table class="teacher-table">

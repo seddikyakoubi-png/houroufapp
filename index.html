@@ -694,6 +694,10 @@
         <div class="admin-section">
             <h3>➕ Ajouter une école</h3>
             <div class="admin-form">
+                <select id="sup-org-type" class="admin-input" onchange="document.getElementById('sup-school-name').placeholder = this.value==='family' ? 'Nom de famille' : 'Nom de l\'école'">
+                    <option value="school">🏫 École (classes, plusieurs profs)</option>
+                    <option value="family">👨‍👩‍👧 Famille (usage à la maison)</option>
+                </select>
                 <input type="text" id="sup-school-name" placeholder="Nom de l'école" class="admin-input">
                 <input type="text" id="sup-school-city" placeholder="Ville" class="admin-input">
                 <input type="email" id="sup-admin-email" placeholder="Email Admin école" class="admin-input" dir="ltr">
@@ -802,6 +806,6 @@
     </div>
 </div>
 
-<script type="module" src="script.js?v=20260925"></script>
+<script type="module" src="script.js?v=20260926"></script>
 </body>
 </html>
