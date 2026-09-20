@@ -398,6 +398,8 @@ const DYNAMIC_I18N = {
     chooseTeacher:    { fr:"Choisir un professeur", nl:"Kies een leerkracht", en:"Choose a teacher", es:"Elige un profesor" },
     chooseStudent:    { fr:"Choisir un élève", nl:"Kies een leerling", en:"Choose a student", es:"Elige un alumno" },
     confirmDeleteAnn: { fr:"Supprimer cette annonce ?", nl:"Deze mededeling verwijderen?", en:"Delete this announcement?", es:"¿Eliminar este anuncio?" },
+    tooFewStudentsForDifficulty: { fr:"trop peu d'élèves pour une analyse fiable", nl:"te weinig leerlingen voor een betrouwbare analyse", en:"too few students for a reliable analysis", es:"muy pocos alumnos para un análisis fiable" },
+    noCommonDifficulty: { fr:"Bravo, aucune difficulté commune détectée pour l'instant", nl:"Goed zo, momenteel geen gemeenschappelijk probleem gevonden", en:"Well done, no common difficulty detected right now", es:"Bien hecho, no se detecta ninguna dificultad común por ahora" },
     schoolMessages:   { fr:"Messages de l'école", nl:"Berichten van de school", en:"School messages", es:"Mensajes de la escuela" },
     dirAnnouncements: { fr:"Annonces de la direction", nl:"Mededelingen van de directie", en:"Announcements from the principal", es:"Anuncios de la dirección" },
     dirDiscussion:    { fr:"Discussion avec la direction", nl:"Gesprek met de directie", en:"Discussion with the principal", es:"Conversación con la dirección" },
@@ -4315,24 +4317,71 @@ function drawSchoolDonutChart(students, avg, finished) {
 }
 
 // ====== LETTRES DIFFICILES (Prof + Directeur) ======
+// Seuils choisis pour que ce graphique reste honnête statistiquement :
+// - il faut un minimum d'élèves pour qu'une tendance "difficulté commune" ait un sens
+// - une lettre n'est retenue que si une part significative des élèves bute encore dessus
+//   (pas juste 1 élève en retard sur une lettre que les autres ont simplement pas encore atteinte)
+const MIN_STUDENTS_FOR_DIFFICULTY_CHART = 5;
+const MIN_FAIL_PERCENT_FOR_DIFFICULTY_CHART = 30;
+
+function showDifficultyChartMessage(canvas, text) {
+    destroyChart(canvas.id);
+    canvas.style.display = "none";
+    let msg = canvas.parentElement.querySelector(".difficulty-chart-msg");
+    if (!msg) {
+        msg = document.createElement("p");
+        msg.className = "difficulty-chart-msg";
+        msg.style.cssText = "color:#aaa;text-align:center;padding:30px 10px;font-size:14px";
+        canvas.parentElement.appendChild(msg);
+    }
+    msg.textContent = text;
+    msg.style.display = "block";
+}
+
 function drawLettersHardChart(students, canvasId) {
     destroyChart(canvasId);
     const canvas = document.getElementById(canvasId);
-    if (!canvas || students.length === 0) return;
+    if (!canvas) return;
+    const existingMsg = canvas.parentElement.querySelector(".difficulty-chart-msg");
 
-    // Count how many students haven't learned each letter
+    if (students.length === 0) return;
+
+    if (students.length < MIN_STUDENTS_FOR_DIFFICULTY_CHART) {
+        showDifficultyChartMessage(canvas, bi(
+            `👥 عدد التلاميذ قليل جدًا (${students.length}) لتحليل موثوق — يلزم ${MIN_STUDENTS_FOR_DIFFICULTY_CHART} تلاميذ على الأقل`,
+            "tooFewStudentsForDifficulty"
+        ));
+        return;
+    }
+
+    // Compte, pour chaque lettre, le % d'élèves qui ne l'ont pas encore apprise
     const failCount = new Array(lettres.length).fill(0);
     students.forEach(([,d]) => {
         lettres.forEach((_,i) => { if (!d.learned.includes(i)) failCount[i]++; });
     });
+    const failPercent = failCount.map(c => Math.round(c / students.length * 100));
 
-    // Sort by difficulty (most difficult first), take top 14
-    const indexed = failCount.map((count, i) => ({ letter: lettres[i].l, count }));
-    const top = indexed.sort((a,b) => b.count - a.count).slice(0, 14);
+    // Ne garder que les lettres où une part significative des élèves bute réellement dessus
+    const indexed = failPercent.map((pct, i) => ({ letter: lettres[i].l, pct }))
+        .filter(t => t.pct >= MIN_FAIL_PERCENT_FOR_DIFFICULTY_CHART);
+    const top = indexed.sort((a,b) => b.pct - a.pct).slice(0, 14);
 
-    const maxCount = Math.max(...top.map(t => t.count), 1);
+    if (top.length === 0) {
+        canvas.style.display = "none";
+        if (existingMsg) existingMsg.remove();
+        const msg = document.createElement("p");
+        msg.className = "difficulty-chart-msg";
+        msg.style.cssText = "color:#43e97b;text-align:center;padding:30px 10px;font-size:14px;font-weight:700";
+        msg.textContent = bi("👏 لا توجد صعوبة مشتركة ملحوظة حاليًا", "noCommonDifficulty");
+        canvas.parentElement.appendChild(msg);
+        return;
+    }
+
+    canvas.style.display = "";
+    if (existingMsg) existingMsg.remove();
+
     const colors = top.map(t => {
-        const heat = t.count / maxCount;
+        const heat = t.pct / 100;
         const r = Math.round(255 * heat);
         const g = Math.round(200 * (1 - heat));
         return `rgba(${r},${g},80,0.8)`;
@@ -4343,8 +4392,8 @@ function drawLettersHardChart(students, canvasId) {
         data: {
             labels: top.map(t => t.letter),
             datasets: [{
-                label: "Nb d'élèves n'ayant pas appris",
-                data: top.map(t => t.count),
+                label: "% d'élèves n'ayant pas encore appris",
+                data: top.map(t => t.pct),
                 backgroundColor: colors,
                 borderRadius: 6,
                 borderSkipped: false
@@ -4357,14 +4406,15 @@ function drawLettersHardChart(students, canvasId) {
                 legend: { display: false },
                 tooltip: {
                     callbacks: {
-                        label: ctx => `${ctx.parsed.y} élève(s) n'ont pas encore appris cette lettre`
+                        label: ctx => `${ctx.parsed.y}% des élèves n'ont pas encore appris cette lettre`
                     }
                 }
             },
             scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: { stepSize: 1 },
+                    min: 0, max: 100,
+                    ticks: { callback: v => v + "%" },
                     grid: { color: '#f0f0f0' }
                 },
                 x: {
