@@ -3,6 +3,7 @@
 // ============================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAqAf5DBg6MudvVcajvWM514OYHp9IGPL8",
@@ -14,6 +15,24 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db  = getFirestore(app);
+const auth = getAuth(app);
+
+// ============================================================
+// 🔒 SÉCURITÉ — Niveau 1 : connexion anonyme Firebase obligatoire
+// ============================================================
+// Chaque visiteur (élève, parent, prof, directeur) reçoit automatiquement une identité
+// Firebase anonyme, invisible pour lui, sans rien à taper. Combinée aux règles Firestore
+// (qui exigent request.auth != null), cela bloque les robots/scripts qui tenteraient de lire
+// ou écrire directement dans la base de données sans jamais passer par cette page.
+// ⚠️ Ce n'est PAS une authentification "par rôle" : ça ne remplace pas la vérification des mots
+// de passe déjà en place, ça ajoute juste une porte fermée aux visiteurs qui ne sont pas de vraies
+// pages de l'appli.
+let authReadyResolve;
+const authReady = new Promise(resolve => { authReadyResolve = resolve; });
+onAuthStateChanged(auth, user => {
+    if (user) authReadyResolve();
+    else signInAnonymously(auth).catch(err => console.error("Connexion anonyme échouée :", err));
+});
 
 const SUPER_ADMIN_PASSWORD = "Hourouf@SuperAdmin2025";
 
@@ -171,16 +190,16 @@ let quizMode=null, quizQuestions=[], quizCurrent=0, quizCorrect=0, quizWrong=0;
 let traceSelectedLetter=0, isDrawing=false, lastX=0, lastY=0;
 
 // FIREBASE
-const getStudentData  = async id    => { if(!id) return {learned:[],quizScores:[],lastActivity:null}; try { const s=await getDoc(doc(db,"eleves",id)); return s.exists()?{learned:[],quizScores:[],lastActivity:null,...s.data()}:{learned:[],quizScores:[],lastActivity:null}; } catch(e) { return {learned:[],quizScores:[],lastActivity:null}; } };
+const getStudentData  = async id    => { if(!id) return {learned:[],quizScores:[],lastActivity:null}; await authReady; try { const s=await getDoc(doc(db,"eleves",id)); return s.exists()?{learned:[],quizScores:[],lastActivity:null,...s.data()}:{learned:[],quizScores:[],lastActivity:null}; } catch(e) { return {learned:[],quizScores:[],lastActivity:null}; } };
 
 // ===== PROGRESSION CORAN (utilisé par les tableaux de bord prof/directeur/super-admin) =====
 function totalQuranAyahs(){ return (typeof SURAHS !== "undefined" && SURAHS.length) ? SURAHS.reduce((a,s)=>a+s.ayahs,0) : 0; }
 function quranMemorizedCount(data){ const qm=data?.quranMemorized||{}; return Object.values(qm).reduce((a,arr)=>a+(arr?.length||0),0); }
 function quranPct(data){ const total=totalQuranAyahs(); return total>0 ? Math.round(quranMemorizedCount(data)/total*100) : 0; }
-const saveStudentData = async (id,d)=> setDoc(doc(db,"eleves",id),d);
-const delStudent      = async id    => deleteDoc(doc(db,"eleves",id));
-const getSchools      = async ()    => { const s=await getDocs(collection(db,"ecoles")); const r={}; s.forEach(d=>r[d.id]=d.data()); return r; };
-const getTeachers     = async ()    => { const s=await getDocs(collection(db,"profs")); const r={}; s.forEach(d=>r[d.id]=d.data()); return r; };
+const saveStudentData = async (id,d)=> { await authReady; return setDoc(doc(db,"eleves",id),d); };
+const delStudent      = async id    => { await authReady; return deleteDoc(doc(db,"eleves",id)); };
+const getSchools      = async ()    => { await authReady; const s=await getDocs(collection(db,"ecoles")); const r={}; s.forEach(d=>r[d.id]=d.data()); return r; };
+const getTeachers     = async ()    => { await authReady; const s=await getDocs(collection(db,"profs")); const r={}; s.forEach(d=>r[d.id]=d.data()); return r; };
 const getAllStudents   = async ()    => { const s=await getDocs(collection(db,"eleves")); const r={}; s.forEach(d=>r[d.id]=d.data()); return r; };
 
 // SCREENS
