@@ -497,7 +497,10 @@
             <img id="sa-logo-img" class="hidden" alt="logo" style="height:42px;width:42px;border-radius:50%;object-fit:cover;vertical-align:middle;margin-inline-end:8px;border:2px solid rgba(255,255,255,0.6);box-shadow:0 2px 6px rgba(0,0,0,0.15)">
             <span id="schooladmin-title">🏫 Gestion École</span>
         </div>
-        <div class="header-right"><button onclick="exportData('school')" class="btn-export">📥 Export</button></div>
+        <div class="header-right" style="display:flex;gap:8px">
+            <button onclick="exportSchoolRegistry()" class="btn-export" title="Codes de connexion : profs, classes, élèves, parents">📋 Registre</button>
+            <button onclick="exportData('school')" class="btn-export">📥 Export</button>
+        </div>
     </header>
     <div class="admin-tabs">
         <button class="admin-tab active" id="sa-tab-btn-classes" onclick="switchAdminTab('sa-classes',this)"><span class="tab-label">📚 Classes</span></button>
@@ -806,6 +809,6 @@
     </div>
 </div>
 
-<script type="module" src="script.js?v=20260927"></script>
+<script type="module" src="script.js?v=20260928"></script>
 </body>
 </html>

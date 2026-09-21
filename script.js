@@ -1834,6 +1834,44 @@ async function supLoadStats(){
 }
 
 // EXPORT
+// Export du "registre" complet de l'école : tous les codes de connexion (prof, classe, élève, parent)
+// dans un seul tableau — pour que le directeur n'ait plus besoin de tenir ce suivi à la main dans un
+// fichier Excel séparé, dès la création de l'école.
+window.exportSchoolRegistry = async () => {
+    if (isDemoMode) { alert("🎬 Mode démo : export désactivé.\nCette action serait possible avec un vrai compte école."); return; }
+    const school = (await getDoc(doc(db, "ecoles", currentSchoolId))).data();
+    const teachers = await getTeachers();
+    const myTeachers = Object.entries(teachers).filter(([, d]) => d.schoolId === currentSchoolId);
+    const teacherByClass = {};
+    myTeachers.forEach(([, d]) => { teacherByClass[d.classId] = d; });
+
+    const BOM = "\uFEFF";
+    const header = ["École", "Code École", "Classe", "Code Classe", "Professeur", "Email Professeur", "Code Activation Prof", "Élève", "Code Élève 🔒", "Code Parent"];
+    const rows = [header];
+
+    const classes = school.classes || {};
+    for (const [classId, cls] of Object.entries(classes)) {
+        const t = teacherByClass[classId];
+        const students = cls.students || [];
+        if (students.length === 0) {
+            // Garder une ligne pour la classe même sans élève, pour ne pas la perdre du registre
+            rows.push([school.name, school.code, cls.name, cls.code, t?.name || "", t?.email || "", t?.activationCode || "", "", "", ""]);
+            continue;
+        }
+        for (const fullName of students) {
+            const studentId = `${currentSchoolId}_${classId}_${fullName}`;
+            const data = await getStudentData(studentId);
+            rows.push([school.name, school.code, cls.name, cls.code, t?.name || "", t?.email || "", t?.activationCode || "", fullName, data.pin || "", data.parentPin || ""]);
+        }
+    }
+
+    const blob = new Blob([BOM + rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(";")).join("\n")], { type: "text/csv;charset=utf-8;" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "registre_" + (school.name || "ecole").replace(/[^a-zA-Z0-9]/g, "_") + "_" + new Date().toISOString().slice(0, 10) + ".csv";
+    a.click();
+};
+
 window.exportData=async role=>{
     if(isDemoMode){alert("🎬 Mode démo : export désactivé.\nCette action serait possible avec un vrai compte école.");return;}
     const all=await getAllStudents();const schools=await getSchools();
