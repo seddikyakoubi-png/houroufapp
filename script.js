@@ -1169,19 +1169,19 @@ window.saveTrace=()=>{const c=document.getElementById("trace-canvas");const a=do
 // et se referme en pointant vers la droite (inclinaison naturelle).
 const CUSTOM_LETTER_STROKES = {
     "ر": {
-        isolated: "M145,78 Q108,95 98,135 Q92,168 122,178",
-        attached: "M188,78 L145,78 Q108,95 98,135 Q92,168 122,178"
+        isolated: "M75,78 Q112,95 122,135 Q128,168 98,178",
+        attached: "M188,50 L75,78 Q112,95 122,135 Q128,168 98,178"
     },
     "ز": {
-        isolated: "M145,78 Q108,95 98,135 Q92,168 122,178",
-        attached: "M188,78 L145,78 Q108,95 98,135 Q92,168 122,178",
-        dot: { cx: 147, cy: 55, r: 7 }
+        isolated: "M75,78 Q112,95 122,135 Q128,168 98,178",
+        attached: "M188,50 L75,78 Q112,95 122,135 Q128,168 98,178",
+        dot: { cx: 73, cy: 55, r: 7 }
     },
     "و": {
         // Tête = vrai cercle (aucun risque de mauvais raccord) + queue en crochet séparée
-        circle: { cx: 145, cy: 95, r: 26 },
-        tail: "M126,116 Q100,140 95,170 Q92,190 122,188",
-        attachedEntry: "M188,69 L145,69" // relie au sommet du cercle
+        circle: { cx: 75, cy: 95, r: 26 },
+        tail: "M94,116 Q120,140 125,170 Q128,190 98,188",
+        attachedEntry: "M188,69 L75,69" // relie au sommet du cercle
     }
 };
 
