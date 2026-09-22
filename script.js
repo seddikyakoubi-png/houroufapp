@@ -1181,7 +1181,7 @@ const CUSTOM_LETTER_STROKES = {
         // Tête = vrai cercle (aucun risque de mauvais raccord) + queue en crochet séparée
         circle: { cx: 75, cy: 95, r: 26 },
         tail: "M94,116 Q120,140 125,170 Q128,190 98,188",
-        attachedEntry: "M188,69 L75,69" // relie au sommet du cercle
+        attachedEntry: "M188,121 L75,121" // relie au bas du cercle (et non plus au sommet)
     }
 };
 
@@ -1196,7 +1196,7 @@ window.playAutoWrite = async () => {
     if (custom) {
         // 0 et 1 (début/milieu) → forme isolée ; 2 et 3 (fin liée/libre) → forme reliée
         const attached = formIdx > 1;
-        const strokeAttrs = `fill="none" stroke="#3D348B" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" clip-path="url(#revealClip)"`;
+        const strokeAttrs = `fill="none" stroke="#3D348B" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"`;
         let shapeHtml;
         if (custom.circle) {
             // Cas du waw : un vrai <circle> pour la tête (jamais déformé) + la queue en <path> séparé
@@ -1208,12 +1208,15 @@ window.playAutoWrite = async () => {
             `;
         } else {
             const d = custom[attached ? "attached" : "isolated"];
-            const dotHtml = custom.dot ? `<circle cx="${custom.dot.cx}" cy="${custom.dot.cy}" r="${custom.dot.r}" fill="#3D348B" clip-path="url(#revealClip)"></circle>` : "";
+            const dotHtml = custom.dot ? `<circle cx="${custom.dot.cx}" cy="${custom.dot.cy}" r="${custom.dot.r}" fill="#3D348B"></circle>` : "";
             shapeHtml = `<path d="${d}" ${strokeAttrs}></path>${dotHtml}`;
         }
+        // Rotation de 25° vers la droite pour un tracé moins "vertical", plus proche de l'écriture réelle.
+        // Le clip-path (révélation progressive) est posé sur le groupe entier, APRÈS la rotation,
+        // pour que le balayage reste propre malgré l'inclinaison.
         svg.innerHTML = `
             <defs><clipPath id="revealClip"><rect id="revealRect" x="220" y="0" width="0" height="220"></rect></clipPath></defs>
-            ${shapeHtml}
+            <g clip-path="url(#revealClip)"><g transform="rotate(25 110 130)">${shapeHtml}</g></g>
         `;
     } else {
         const data = formesMots[letterChar];
