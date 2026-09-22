@@ -1163,21 +1163,25 @@ window.saveTrace=()=>{const c=document.getElementById("trace-canvas");const a=do
 // répétées dans les 4 cases du menu. On dessine nous-mêmes leur courbe (sommet bas, crochet penché),
 // plutôt que de dépendre du rendu d'une police externe.
 // Coordonnées dans le repère du SVG (viewBox 0 0 220 220). Le trait est révélé de droite à gauche.
+// Courbes volontairement SIMPLES (2 segments quadratiques max) pour rester prévisible :
+// moins de points de contrôle = moins de risque qu'une boucle se referme mal (comme le و
+// en spirale au dernier essai). Le crochet reste bas (sommet vers y=78, jamais près de y=0),
+// et se referme en pointant vers la droite (inclinaison naturelle).
 const CUSTOM_LETTER_STROKES = {
     "ر": {
-        // Le trait de liaison part du MÊME point (150,72) que le début de la courbe — plus de
-        // segment détaché : la lettre précédente "arrive" naturellement dans le crochet.
-        isolated: "M150,72 C133,86 116,104 106,132 C99,152 101,170 117,177 C128,181 139,175 143,164",
-        attached: "M188,72 L150,72 C133,86 116,104 106,132 C99,152 101,170 117,177 C128,181 139,175 143,164"
+        isolated: "M145,78 Q108,95 98,135 Q92,168 122,178",
+        attached: "M188,78 L145,78 Q108,95 98,135 Q92,168 122,178"
     },
     "ز": {
-        isolated: "M150,72 C133,86 116,104 106,132 C99,152 101,170 117,177 C128,181 139,175 143,164",
-        attached: "M188,72 L150,72 C133,86 116,104 106,132 C99,152 101,170 117,177 C128,181 139,175 143,164",
-        dot: { cx: 152, cy: 50, r: 7 }
+        isolated: "M145,78 Q108,95 98,135 Q92,168 122,178",
+        attached: "M188,78 L145,78 Q108,95 98,135 Q92,168 122,178",
+        dot: { cx: 147, cy: 55, r: 7 }
     },
     "و": {
-        isolated: "M138,68 C160,68 172,82 172,100 C172,118 158,130 140,128 C122,126 114,112 118,98 C121,88 132,82 140,88 M132,110 C120,122 108,140 104,160 C101,175 106,185 120,183",
-        attached: "M188,68 L138,68 C160,68 172,82 172,100 C172,118 158,130 140,128 C122,126 114,112 118,98 C121,88 132,82 140,88 M132,110 C120,122 108,140 104,160 C101,175 106,185 120,183"
+        // Tête = vrai cercle (aucun risque de mauvais raccord) + queue en crochet séparée
+        circle: { cx: 145, cy: 95, r: 26 },
+        tail: "M126,116 Q100,140 95,170 Q92,190 122,188",
+        attachedEntry: "M188,69 L145,69" // relie au sommet du cercle
     }
 };
 
@@ -1191,13 +1195,25 @@ window.playAutoWrite = async () => {
     const custom = CUSTOM_LETTER_STROKES[letterChar];
     if (custom) {
         // 0 et 1 (début/milieu) → forme isolée ; 2 et 3 (fin liée/libre) → forme reliée
-        const strokeKey = (formIdx <= 1) ? "isolated" : "attached";
-        const d = custom[strokeKey];
-        const dotHtml = custom.dot ? `<circle cx="${custom.dot.cx}" cy="${custom.dot.cy}" r="${custom.dot.r}" fill="#3D348B" clip-path="url(#revealClip)"></circle>` : "";
+        const attached = formIdx > 1;
+        const strokeAttrs = `fill="none" stroke="#3D348B" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" clip-path="url(#revealClip)"`;
+        let shapeHtml;
+        if (custom.circle) {
+            // Cas du waw : un vrai <circle> pour la tête (jamais déformé) + la queue en <path> séparé
+            const entryHtml = attached ? `<path d="${custom.attachedEntry}" ${strokeAttrs}></path>` : "";
+            shapeHtml = `
+                ${entryHtml}
+                <circle cx="${custom.circle.cx}" cy="${custom.circle.cy}" r="${custom.circle.r}" ${strokeAttrs}></circle>
+                <path d="${custom.tail}" ${strokeAttrs}></path>
+            `;
+        } else {
+            const d = custom[attached ? "attached" : "isolated"];
+            const dotHtml = custom.dot ? `<circle cx="${custom.dot.cx}" cy="${custom.dot.cy}" r="${custom.dot.r}" fill="#3D348B" clip-path="url(#revealClip)"></circle>` : "";
+            shapeHtml = `<path d="${d}" ${strokeAttrs}></path>${dotHtml}`;
+        }
         svg.innerHTML = `
             <defs><clipPath id="revealClip"><rect id="revealRect" x="220" y="0" width="0" height="220"></rect></clipPath></defs>
-            <path d="${d}" fill="none" stroke="#3D348B" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" clip-path="url(#revealClip)"></path>
-            ${dotHtml}
+            ${shapeHtml}
         `;
     } else {
         const data = formesMots[letterChar];
