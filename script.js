@@ -1158,7 +1158,7 @@ window.saveTrace=()=>{const c=document.getElementById("trace-canvas");const a=do
 // ⚠️ Il ne s'agit pas d'un véritable tracé du geste calligraphique (ordre exact des traits),
 // mais d'une animation de révélation progressive de la forme choisie, de droite à gauche
 // (sens de l'écriture arabe), pour donner un repère visuel à l'élève.
-window.playAutoWrite = () => {
+window.playAutoWrite = async () => {
     const letterChar = document.getElementById("autowrite-letter-select").value;
     const formIdx = parseInt(document.getElementById("autowrite-form-select").value, 10);
     const data = formesMots[letterChar];
@@ -1166,6 +1166,11 @@ window.playAutoWrite = () => {
     // 🔤 On retire les harakats (تشكيل) pour ne montrer QUE la forme de la lettre,
     // quelle que soit la lettre choisie — ces données servent aussi à l'exercice "أشكال" (inchangé).
     const formText = data.formes[formIdx].replace(/[\u064B-\u065F\u0670]/g, "");
+
+    // ⏳ Un texte SVG ne réaffiche pas toujours tout seul une fois une police web chargée après coup :
+    // on force ici l'attente de son chargement complet AVANT de dessiner, sinon le navigateur peut
+    // silencieusement retomber sur la police de secours (Tajawal) au premier affichage.
+    try { await document.fonts.load("110px 'Noto Naskh Arabic'"); } catch (e) {}
 
     const svg = document.getElementById("autowrite-svg");
     // ✏️ Police Naskh traditionnelle (au lieu de Tajawal, une police d'interface) : elle respecte
