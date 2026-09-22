@@ -1168,12 +1168,12 @@ window.playAutoWrite = () => {
     const formText = data.formes[formIdx].replace(/[\u064B-\u065F\u0670]/g, "");
 
     const svg = document.getElementById("autowrite-svg");
-    // ✏️ ر، ز، و sont visuellement plus fidèles avec une légère obliquité et un corps un peu plus resserré
-    const isSlantedLetter = ["ر", "ز", "و"].includes(letterChar);
-    const textStyle = isSlantedLetter ? `font-style:italic;transform:scale(1,0.9);transform-origin:110px 150px;` : "";
+    // ✏️ Police Naskh traditionnelle (au lieu de Tajawal, une police d'interface) : elle respecte
+    // les formes calligraphiques correctes — important pour ر، ز، و dont le crochet doit rester bas,
+    // sans que le haut de la lettre ne monte trop.
     svg.innerHTML = `
         <defs><clipPath id="revealClip"><rect id="revealRect" x="220" y="0" width="0" height="220"></rect></clipPath></defs>
-        <text x="110" y="150" font-size="110" text-anchor="middle" fill="#3D348B" font-family="Tajawal, Arial" style="${textStyle}" clip-path="url(#revealClip)">${formText}</text>
+        <text x="110" y="150" font-size="110" text-anchor="middle" fill="#3D348B" font-family="'Noto Naskh Arabic', 'Tajawal', Arial" clip-path="url(#revealClip)">${formText}</text>
     `;
     const rect = document.getElementById("revealRect");
     const btn = document.getElementById("btn-autowrite-play");
