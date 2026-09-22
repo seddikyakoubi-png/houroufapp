@@ -1158,30 +1158,57 @@ window.saveTrace=()=>{const c=document.getElementById("trace-canvas");const a=do
 // ⚠️ Il ne s'agit pas d'un véritable tracé du geste calligraphique (ordre exact des traits),
 // mais d'une animation de révélation progressive de la forme choisie, de droite à gauche
 // (sens de l'écriture arabe), pour donner un repère visuel à l'élève.
+// ✏️ Tracés SVG dessinés à la main pour ر / ز / و : ces 3 lettres ne se lient jamais à la lettre
+// suivante, donc elles n'ont réellement que 2 formes visuelles (isolée / reliée à la lettre d'avant),
+// répétées dans les 4 cases du menu. On dessine nous-mêmes leur courbe (sommet bas, crochet penché),
+// plutôt que de dépendre du rendu d'une police externe.
+// Coordonnées dans le repère du SVG (viewBox 0 0 220 220). Le trait est révélé de droite à gauche.
+const CUSTOM_LETTER_STROKES = {
+    "ر": {
+        isolated: "M150,72 C133,86 116,104 106,132 C99,152 101,170 117,177 C128,181 139,175 143,164",
+        attached: "M150,72 C133,86 116,104 106,132 C99,152 101,170 117,177 C128,181 139,175 143,164 M143,135 L188,135"
+    },
+    "ز": {
+        isolated: "M150,72 C133,86 116,104 106,132 C99,152 101,170 117,177 C128,181 139,175 143,164",
+        attached: "M150,72 C133,86 116,104 106,132 C99,152 101,170 117,177 C128,181 139,175 143,164 M143,135 L188,135",
+        dot: { cx: 152, cy: 50, r: 7 }
+    },
+    "و": {
+        isolated: "M138,68 C160,68 172,82 172,100 C172,118 158,130 140,128 C122,126 114,112 118,98 C121,88 132,82 140,88 M132,110 C120,122 108,140 104,160 C101,175 106,185 120,183",
+        attached: "M138,68 C160,68 172,82 172,100 C172,118 158,130 140,128 C122,126 114,112 118,98 C121,88 132,82 140,88 M132,110 C120,122 108,140 104,160 C101,175 106,185 120,183 M120,155 L188,155"
+    }
+};
+
 window.playAutoWrite = async () => {
     const letterChar = document.getElementById("autowrite-letter-select").value;
     const formIdx = parseInt(document.getElementById("autowrite-form-select").value, 10);
-    const data = formesMots[letterChar];
-    if (!data) return;
-    // 🔤 On retire les harakats (تشكيل) pour ne montrer QUE la forme de la lettre,
-    // quelle que soit la lettre choisie — ces données servent aussi à l'exercice "أشكال" (inchangé).
-    const formText = data.formes[formIdx].replace(/[\u064B-\u065F\u0670]/g, "");
-
-    // ⏳ Un texte SVG ne réaffiche pas toujours tout seul une fois une police web chargée après coup :
-    // on force ici l'attente de son chargement complet AVANT de dessiner, sinon le navigateur peut
-    // silencieusement retomber sur la police de secours (Tajawal) au premier affichage.
-    try { await document.fonts.load("110px 'Noto Naskh Arabic'"); } catch (e) {}
-
     const svg = document.getElementById("autowrite-svg");
-    // ✏️ Police Naskh traditionnelle (au lieu de Tajawal, une police d'interface) : elle respecte
-    // les formes calligraphiques correctes — important pour ر، ز، و dont le crochet doit rester bas,
-    // sans que le haut de la lettre ne monte trop.
-    svg.innerHTML = `
-        <defs><clipPath id="revealClip"><rect id="revealRect" x="220" y="0" width="0" height="220"></rect></clipPath></defs>
-        <text x="110" y="150" font-size="110" text-anchor="middle" fill="#3D348B" font-family="'Noto Naskh Arabic', 'Tajawal', Arial" clip-path="url(#revealClip)">${formText}</text>
-    `;
-    const rect = document.getElementById("revealRect");
+    const rect_ = () => document.getElementById("revealRect");
     const btn = document.getElementById("btn-autowrite-play");
+
+    const custom = CUSTOM_LETTER_STROKES[letterChar];
+    if (custom) {
+        // 0 et 1 (début/milieu) → forme isolée ; 2 et 3 (fin liée/libre) → forme reliée
+        const strokeKey = (formIdx <= 1) ? "isolated" : "attached";
+        const d = custom[strokeKey];
+        const dotHtml = custom.dot ? `<circle cx="${custom.dot.cx}" cy="${custom.dot.cy}" r="${custom.dot.r}" fill="#3D348B" clip-path="url(#revealClip)"></circle>` : "";
+        svg.innerHTML = `
+            <defs><clipPath id="revealClip"><rect id="revealRect" x="220" y="0" width="0" height="220"></rect></clipPath></defs>
+            <path d="${d}" fill="none" stroke="#3D348B" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" clip-path="url(#revealClip)"></path>
+            ${dotHtml}
+        `;
+    } else {
+        const data = formesMots[letterChar];
+        if (!data) return;
+        // 🔤 On retire les harakats (تشكيل) pour ne montrer QUE la forme de la lettre
+        const formText = data.formes[formIdx].replace(/[\u064B-\u065F\u0670]/g, "");
+        svg.innerHTML = `
+            <defs><clipPath id="revealClip"><rect id="revealRect" x="220" y="0" width="0" height="220"></rect></clipPath></defs>
+            <text x="110" y="150" font-size="110" text-anchor="middle" fill="#3D348B" font-family="'Noto Naskh Arabic', 'Tajawal', Arial" clip-path="url(#revealClip)">${formText}</text>
+        `;
+    }
+
+    const rect = rect_();
     if (btn) btn.disabled = true;
 
     const duration = 1800; // ms
