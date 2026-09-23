@@ -1167,21 +1167,24 @@ window.saveTrace=()=>{const c=document.getElementById("trace-canvas");const a=do
 // moins de points de contrôle = moins de risque qu'une boucle se referme mal (comme le و
 // en spirale au dernier essai). Le crochet reste bas (sommet vers y=78, jamais près de y=0),
 // et se referme en pointant vers la droite (inclinaison naturelle).
+// Le point d'attache (haut de la lettre, ~75,78) reste fixe : c'est de LÀ que "pivote" l'inclinaison,
+// donc le trait de connexion horizontal touche toujours le bon endroit, et seul le BAS de la lettre
+// penche vers la gauche (pas le haut).
 const CUSTOM_LETTER_STROKES = {
     "ر": {
-        isolated: "M75,78 Q112,95 122,135 Q128,168 98,178",
-        attached: "M188,50 L75,78 Q112,95 122,135 Q128,168 98,178"
+        isolated: "M75,78 Q107,103 106,144 Q104,177 72,179",
+        attached: "M188,78 L75,78 Q107,103 106,144 Q104,177 72,179"
     },
     "ز": {
-        isolated: "M75,78 Q112,95 122,135 Q128,168 98,178",
-        attached: "M188,50 L75,78 Q112,95 122,135 Q128,168 98,178",
-        dot: { cx: 73, cy: 55, r: 7 }
+        isolated: "M75,78 Q107,103 106,144 Q104,177 72,179",
+        attached: "M188,78 L75,78 Q107,103 106,144 Q104,177 72,179",
+        dot: { cx: 80, cy: 54, r: 7 }
     },
     "و": {
         // Tête = vrai cercle (aucun risque de mauvais raccord) + queue en crochet séparée
-        circle: { cx: 75, cy: 95, r: 26 },
-        tail: "M94,116 Q120,140 125,170 Q128,190 98,188",
-        attachedEntry: "M188,121 L75,121" // relie au bas du cercle (et non plus au sommet)
+        circle: { cx: 68, cy: 94, r: 26 },
+        tail: "M81,119 Q100,149 97,180 Q95,200 66,190",
+        attachedEntry: "M188,120 L68,120" // relie au bas du cercle, à l'horizontale
     }
 };
 
@@ -1196,7 +1199,7 @@ window.playAutoWrite = async () => {
     if (custom) {
         // 0 et 1 (début/milieu) → forme isolée ; 2 et 3 (fin liée/libre) → forme reliée
         const attached = formIdx > 1;
-        const strokeAttrs = `fill="none" stroke="#3D348B" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"`;
+        const strokeAttrs = `fill="none" stroke="#3D348B" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" clip-path="url(#revealClip)"`;
         let shapeHtml;
         if (custom.circle) {
             // Cas du waw : un vrai <circle> pour la tête (jamais déformé) + la queue en <path> séparé
@@ -1208,15 +1211,12 @@ window.playAutoWrite = async () => {
             `;
         } else {
             const d = custom[attached ? "attached" : "isolated"];
-            const dotHtml = custom.dot ? `<circle cx="${custom.dot.cx}" cy="${custom.dot.cy}" r="${custom.dot.r}" fill="#3D348B"></circle>` : "";
+            const dotHtml = custom.dot ? `<circle cx="${custom.dot.cx}" cy="${custom.dot.cy}" r="${custom.dot.r}" fill="#3D348B" clip-path="url(#revealClip)"></circle>` : "";
             shapeHtml = `<path d="${d}" ${strokeAttrs}></path>${dotHtml}`;
         }
-        // Rotation de 25° vers la droite pour un tracé moins "vertical", plus proche de l'écriture réelle.
-        // Le clip-path (révélation progressive) est posé sur le groupe entier, APRÈS la rotation,
-        // pour que le balayage reste propre malgré l'inclinaison.
         svg.innerHTML = `
             <defs><clipPath id="revealClip"><rect id="revealRect" x="220" y="0" width="0" height="220"></rect></clipPath></defs>
-            <g clip-path="url(#revealClip)"><g transform="rotate(25 110 130)">${shapeHtml}</g></g>
+            ${shapeHtml}
         `;
     } else {
         const data = formesMots[letterChar];
