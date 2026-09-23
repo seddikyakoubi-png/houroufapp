@@ -1172,19 +1172,19 @@ window.saveTrace=()=>{const c=document.getElementById("trace-canvas");const a=do
 // penche vers la gauche (pas le haut).
 const CUSTOM_LETTER_STROKES = {
     "ر": {
-        isolated: "M75,78 Q107,103 106,144 Q104,177 72,179",
-        attached: "M188,78 L75,78 Q107,103 106,144 Q104,177 72,179"
+        isolated: "M75,78 Q88,105 66,144 Q51,170 25,165",
+        attached: "M188,78 L75,78 Q88,105 66,144 Q51,170 25,165"
     },
     "ز": {
-        isolated: "M75,78 Q107,103 106,144 Q104,177 72,179",
-        attached: "M188,78 L75,78 Q107,103 106,144 Q104,177 72,179",
-        dot: { cx: 80, cy: 54, r: 7 }
+        isolated: "M75,78 Q88,105 66,144 Q51,170 25,165",
+        attached: "M188,78 L75,78 Q88,105 66,144 Q51,170 25,165",
+        dot: { cx: 78, cy: 50, r: 7 }
     },
     "و": {
         // Tête = vrai cercle (aucun risque de mauvais raccord) + queue en crochet séparée
-        circle: { cx: 68, cy: 94, r: 26 },
-        tail: "M81,119 Q100,149 97,180 Q95,200 66,190",
-        attachedEntry: "M188,120 L68,120" // relie au bas du cercle, à l'horizontale
+        circle: { cx: 90, cy: 95, r: 26 },
+        tail: "M90,121 Q103,148 81,187 Q66,213 40,208",
+        attachedEntry: "M188,121 L90,121" // relie au bas du cercle, à l'horizontale
     }
 };
 
@@ -1197,8 +1197,9 @@ window.playAutoWrite = async () => {
 
     const custom = CUSTOM_LETTER_STROKES[letterChar];
     if (custom) {
-        // 0 et 1 (début/milieu) → forme isolée ; 2 et 3 (fin liée/libre) → forme reliée
-        const attached = formIdx > 1;
+        // 0, 1, 3 (début / milieu / fin ISOLÉE) → forme isolée, sans trait de liaison
+        // 2 (fin CONNECTÉE) uniquement → forme reliée, avec le trait de liaison
+        const attached = formIdx === 2;
         const strokeAttrs = `fill="none" stroke="#3D348B" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" clip-path="url(#revealClip)"`;
         let shapeHtml;
         if (custom.circle) {
