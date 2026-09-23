@@ -1181,10 +1181,11 @@ const CUSTOM_LETTER_STROKES = {
         dot: { cx: 78, cy: 50, r: 7 }
     },
     "و": {
-        // Tête = vrai cercle (aucun risque de mauvais raccord) + queue en crochet séparée
+        // Tête = vrai cercle (aucun risque de mauvais raccord) + queue en crochet séparée,
+        // attachée au bas-DROIT du cercle (pas le bas centré), inclinaison renforcée vers la gauche
         circle: { cx: 90, cy: 95, r: 26 },
-        tail: "M90,121 Q103,148 81,187 Q66,213 40,208",
-        attachedEntry: "M188,121 L90,121" // relie au bas du cercle, à l'horizontale
+        tail: "M108,113 Q118,148 88,190 Q65,215 20,205",
+        attachedEntry: "M188,113 L108,113" // relie au bas-droit du cercle, à l'horizontale
     }
 };
 
@@ -1197,9 +1198,10 @@ window.playAutoWrite = async () => {
 
     const custom = CUSTOM_LETTER_STROKES[letterChar];
     if (custom) {
-        // 0, 1, 3 (début / milieu / fin ISOLÉE) → forme isolée, sans trait de liaison
-        // 2 (fin CONNECTÉE) uniquement → forme reliée, avec le trait de liaison
-        const attached = formIdx === 2;
+        // ر ز و ne se lient JAMAIS à la lettre suivante, donc "début" et "fin isolée" (0 et 3)
+        // sont identiques : sans trait de liaison. "Milieu" et "fin connectée" (1 et 2) sont
+        // aussi identiques entre elles : avec le trait de liaison (reliées à la lettre PRÉCÉDENTE).
+        const attached = formIdx === 1 || formIdx === 2;
         const strokeAttrs = `fill="none" stroke="#3D348B" stroke-width="13" stroke-linecap="round" stroke-linejoin="round" clip-path="url(#revealClip)"`;
         let shapeHtml;
         if (custom.circle) {
