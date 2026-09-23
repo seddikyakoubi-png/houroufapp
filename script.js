@@ -894,6 +894,22 @@ window.logout = ()=>{
 };
 
 // MENU ÉLÈVE
+// ====== FONCTIONNALITÉS À LA CARTE ======
+// Système générique pour activer des options spécifiques à une école/famille (personnalisation
+// payante), SANS dupliquer le code : un seul champ `features` par école dans Firestore, lu ici.
+// Pour ajouter une nouvelle fonctionnalité à la carte plus tard : ajouter une clé dans `features`
+// (via l'écran super-admin) et un `if (await hasFeature("maCle")) { ... }` à l'endroit concerné.
+async function hasFeature(key) {
+    if (!currentSchoolId) return false;
+    const school = (await getDoc(doc(db, "ecoles", currentSchoolId))).data();
+    return !!(school?.features && school.features[key]);
+}
+async function getFeatureValue(key) {
+    if (!currentSchoolId) return null;
+    const school = (await getDoc(doc(db, "ecoles", currentSchoolId))).data();
+    return school?.features?.[key] ?? null;
+}
+
 async function buildMenu(){
     if(!currentUser || !currentSchoolId) return;
     const grid=document.getElementById("lettersGrid");
@@ -901,6 +917,14 @@ async function buildMenu(){
     const data=await getStudentData(currentUser); grid.innerHTML="";
     lettres.forEach((item,i)=>{const div=document.createElement("div");div.className="circle";div.textContent=item.l;if(data.learned.includes(i))div.classList.add("learned");div.onclick=()=>openLetter(i);grid.appendChild(div);});
     if(currentRole==="student") await checkExerciseBadge();
+
+    // Première fonctionnalité à la carte : message de bienvenue personnalisé (activé par école/famille)
+    const banner = document.getElementById("custom-welcome-banner");
+    if (banner) {
+        const msg = await getFeatureValue("customWelcomeMessage");
+        if (msg) { banner.textContent = msg; banner.classList.remove("hidden"); }
+        else banner.classList.add("hidden");
+    }
 }
 async function updateProgress(){
     if(!currentUser) return;
@@ -1813,9 +1837,31 @@ async function supLoadSchools(){
         const langBadge = {fr:"🇫🇷",nl:"🇳🇱",en:"🇬🇧",es:"🇪🇸"}[s.uiLang] || "🇸🇦";
         return `<div class="school-card"><div class="school-card-header">
             <div><strong>🏫 ${s.name}</strong> <span class="school-city">${s.city}</span> <span class="school-city">${classes} classe(s)</span> <span class="school-city">${langBadge}</span></div>
-            <div>${s.code ? `<span class="code-badge" style="margin-inline-end:8px">🔑 ${s.code}</span>` : `<button onclick="supGenerateSchoolCode('${id}')" class="btn-sm-add" style="margin-inline-end:8px">🔑 Générer un code</button>`}<span class="school-city" style="color:var(--text-light)">${s.adminEmail||""}</span> <button onclick="supDeleteSchool('${id}')" class="btn-delete">🗑️</button></div>
+            <div>${s.code ? `<span class="code-badge" style="margin-inline-end:8px">🔑 ${s.code}</span>` : `<button onclick="supGenerateSchoolCode('${id}')" class="btn-sm-add" style="margin-inline-end:8px">🔑 Générer un code</button>`}<span class="school-city" style="color:var(--text-light)">${s.adminEmail||""}</span> <button onclick="supEditFeatures('${id}')" class="btn-sm-add" style="margin-inline-end:8px" title="Fonctionnalités à la carte (personnalisation payante)">⚙️ Fonctionnalités</button><button onclick="supDeleteSchool('${id}')" class="btn-delete">🗑️</button></div>
         </div></div>`;}).join("");
 }
+
+// Interface simple pour activer/régler les fonctionnalités à la carte d'une école/famille.
+// ✏️ À étoffer au fur et à mesure : chaque nouvelle fonctionnalité à la carte ajoute juste
+// une question ici, sans dupliquer le code de l'appli elle-même.
+window.supEditFeatures = async (schoolId) => {
+    const school = (await getDoc(doc(db, "ecoles", schoolId))).data();
+    const current = school.features || {};
+
+    const currentMsg = current.customWelcomeMessage || "";
+    const newMsg = prompt(
+        `Personnalisation pour "${school.name}"\n\nMessage de bienvenue personnalisé (laisser vide pour désactiver) :`,
+        currentMsg
+    );
+    if (newMsg === null) return; // annulé
+
+    const features = { ...current, customWelcomeMessage: newMsg.trim() || null };
+    // Nettoyer les clés vides pour garder le document propre
+    Object.keys(features).forEach(k => { if (!features[k]) delete features[k]; });
+
+    await setDoc(doc(db, "ecoles", schoolId), { features }, { merge: true });
+    alert("✅ Fonctionnalités mises à jour pour " + school.name);
+};
 
 window.supGenerateSchoolCode = async (schoolId) => {
     const existingSchools = await getSchools();
