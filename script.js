@@ -5176,17 +5176,22 @@ function loadNormalizedBuffer(path) {
   });
 }
 
+// Coupe immédiatement toute lecture Coran en cours — à appeler DÈS qu'on décide de lancer un
+// nouveau verset, AVANT même de commencer à charger son fichier audio. Sinon, la coupure
+// n'intervenait qu'après le téléchargement/décodage du fichier suivant (donc avec retard).
+function stopCurrentQuranAudio() {
+    if (window._currentQuranSource) {
+        try { window._currentQuranSource.onended = null; window._currentQuranSource.stop(); } catch (e) {}
+        window._currentQuranSource = null;
+    }
+    window.speechSynthesis?.cancel(); // coupe aussi une éventuelle synthèse vocale de secours
+}
+
 // Joue un buffer déjà chargé par loadNormalizedBuffer(). Résout à la fin de la lecture.
 function playLoadedBuffer(loaded) {
   return new Promise((resolve) => {
     if (!loaded) { resolve(false); return; }
-    // ⚠️ Si un verset est déjà en train d'être lu (ex: on vient de marquer le verset précédent
-    // comme mémorisé, et l'appli enchaîne aussitôt sur le suivant), on le coupe avant de démarrer
-    // la nouvelle lecture — sinon les deux se chevauchent.
-    if (window._currentQuranSource) {
-      try { window._currentQuranSource.onended = null; window._currentQuranSource.stop(); } catch (e) {}
-      window._currentQuranSource = null;
-    }
+    stopCurrentQuranAudio(); // filet de sécurité si l'appelant ne l'a pas déjà fait plus tôt
     const ctx = getAudioCtx();
     const source = ctx.createBufferSource();
     source.buffer = loaded.audioBuffer;
@@ -5208,6 +5213,7 @@ window.playNormalizedAudio = async function (path) {
 
 window.speakAyah = async () => {
   if (!currentSurahData) return;
+  stopCurrentQuranAudio(); // coupe l'ancien verset SANS ATTENDRE le chargement du nouveau
   const ayah = currentSurahData.ayahs[currentAyahIndex];
   const mp3Path = `quran/audio/${currentSurah.id}_${ayah.number}.mp3`;
   const ok = await window.playNormalizedAudio(mp3Path);
