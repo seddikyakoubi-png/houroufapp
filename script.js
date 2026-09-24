@@ -532,11 +532,17 @@ window.saPreviewLogo = () => {
 // ✅ Upload direct depuis l'appareil, sans passer par un hébergeur d'images externe (imgur, etc.).
 // L'image est redimensionnée et compressée dans le navigateur (max 300×300px) avant d'être
 // enregistrée directement dans Firestore — un logo reste largement sous la limite de 1 Mo par document.
+// Jeton de requête : si l'utilisateur relance un import avant la fin du précédent (ou si un
+// ancien traitement finit "en retard"), seul le tout DERNIER résultat est appliqué — les autres
+// sont ignorés silencieusement, pour ne jamais laisser un ancien logo écraser le nouveau.
+let logoUploadToken = 0;
+
 window.saHandleLogoFile = (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
     if (isDemoMode) { alert("🎬 Mode démo : modification désactivée."); event.target.value = ""; return; }
 
+    const myToken = ++logoUploadToken;
     const status = document.getElementById("sa-logo-file-status");
     status.textContent = "⏳ " + (currentUILang === "nl" ? "Bezig met verwerken..." : "Traitement en cours...");
 
@@ -544,6 +550,7 @@ window.saHandleLogoFile = (event) => {
     reader.onload = (e) => {
         const img = new Image();
         img.onload = async () => {
+            if (myToken !== logoUploadToken) return; // un import plus récent a pris le relais
             const MAX = 300;
             let { width, height } = img;
             if (width > height) { if (width > MAX) { height = Math.round(height * MAX / width); width = MAX; } }
@@ -555,16 +562,24 @@ window.saHandleLogoFile = (event) => {
 
             try {
                 await setDoc(doc(db, "ecoles", currentSchoolId), { logoUrl: dataUrl }, { merge: true });
+                if (myToken !== logoUploadToken) return; // vérifié à nouveau après l'écriture (async)
                 applySchoolBranding({ logoUrl: dataUrl });
-                document.getElementById("sa-logo-preview").src = dataUrl;
-                document.getElementById("sa-logo-preview").style.display = "inline-block";
+                const preview = document.getElementById("sa-logo-preview");
+                preview.onerror = null; // retire tout ancien gestionnaire d'erreur laissé par saPreviewLogo()
+                preview.src = dataUrl;
+                preview.style.display = "inline-block";
                 document.getElementById("sa-logo-placeholder").style.display = "none";
+                // Garde le champ "lien externe" synchronisé, pour qu'il ne montre jamais une valeur périmée
+                const urlInput = document.getElementById("sa-logo-url");
+                if (urlInput) urlInput.value = dataUrl;
                 status.textContent = "✅ " + (currentUILang === "nl" ? "Logo opgeslagen!" : "Logo enregistré !");
             } catch (err) {
-                status.textContent = "❌ " + (currentUILang === "nl" ? "Fout bij opslaan." : "Erreur lors de l'enregistrement.");
+                if (myToken === logoUploadToken) {
+                    status.textContent = "❌ " + (currentUILang === "nl" ? "Fout bij opslaan." : "Erreur lors de l'enregistrement.");
+                }
             }
         };
-        img.onerror = () => { status.textContent = "❌ " + (currentUILang === "nl" ? "Ongeldige afbeelding." : "Image invalide."); };
+        img.onerror = () => { if (myToken === logoUploadToken) status.textContent = "❌ " + (currentUILang === "nl" ? "Ongeldige afbeelding." : "Image invalide."); };
         img.src = e.target.result;
     };
     reader.readAsDataURL(file);
