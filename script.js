@@ -196,6 +196,15 @@ const getStudentData  = async id    => { if(!id) return {learned:[],quizScores:[
 function totalQuranAyahs(){ return (typeof SURAHS !== "undefined" && SURAHS.length) ? SURAHS.reduce((a,s)=>a+s.ayahs,0) : 0; }
 function quranMemorizedCount(data){ const qm=data?.quranMemorized||{}; return Object.values(qm).reduce((a,arr)=>a+(arr?.length||0),0); }
 function quranPct(data){ const total=totalQuranAyahs(); return total>0 ? Math.round(quranMemorizedCount(data)/total*100) : 0; }
+// Le % ci-dessus est basé sur le nombre de VERSETS, pas de sourates : un élève qui grappille
+// quelques versets dans 10 sourates différentes peut afficher un % proche de celui d'un élève
+// ayant terminé 3 sourates courtes en entier, sans qu'on distingue les deux. Ce compteur comble
+// ce manque en indiquant combien de sourates sont réellement achevées à 100%.
+function quranSourahsCompleted(data){
+    if (typeof SURAHS === "undefined" || !SURAHS.length) return 0;
+    const qm = data?.quranMemorized || {};
+    return SURAHS.filter(s => (qm[s.id]?.length || 0) >= s.ayahs).length;
+}
 const saveStudentData = async (id,d)=> { await authReady; return setDoc(doc(db,"eleves",id),d); };
 const delStudent      = async id    => { await authReady; return deleteDoc(doc(db,"eleves",id)); };
 const getSchools      = async ()    => { await authReady; const s=await getDocs(collection(db,"ecoles")); const r={}; s.forEach(d=>r[d.id]=d.data()); return r; };
@@ -680,6 +689,8 @@ async function loadParentDashboard(studentId, studentName) {
     const totalQuranAyahs = typeof SURAHS !== "undefined" ? SURAHS.reduce((a,s)=>a+s.ayahs,0) : 0;
     const memorizedAyahs = Object.values(qm).reduce((a,arr)=>a+(arr?.length||0),0);
     const quranPct = totalQuranAyahs > 0 ? Math.round(memorizedAyahs / totalQuranAyahs * 100) : 0;
+    const sourahsDone = quranSourahsCompleted(data);
+    const sourahsTotal = typeof SURAHS !== "undefined" ? SURAHS.length : 0;
     const sc = data.quizScores || [];
     const avgQuiz = sc.length > 0 ? Math.round(sc.reduce((a,s)=>a+(s.score/s.total*100),0)/sc.length) : null;
     const lastActivity = data.lastActivity ? new Date(data.lastActivity).toLocaleDateString("fr-FR") : "لا يوجد نشاط بعد";
@@ -698,7 +709,8 @@ async function loadParentDashboard(studentId, studentName) {
 
         <div class="teacher-summary" style="margin-bottom:20px">
             <div class="summary-card"><div class="s-num">${pct}%</div><div class="s-label">🔤 الحروف / Lettres</div></div>
-            <div class="summary-card"><div class="s-num">${quranPct}%</div><div class="s-label">📖 القرآن / Coran</div></div>
+            <div class="summary-card"><div class="s-num">${quranPct}%</div><div class="s-label">📖 القرآن / Coran (versets)</div></div>
+            <div class="summary-card"><div class="s-num">${sourahsDone}/${sourahsTotal}</div><div class="s-label">✅ سور كاملة / Sourates complètes</div></div>
             <div class="summary-card"><div class="s-num">${avgQuiz !== null ? avgQuiz+"%" : "—"}</div><div class="s-label">🏆 الاختبارات / Quiz (${sc.length})</div></div>
         </div>
 
@@ -1710,7 +1722,8 @@ function loadDemoDashboard({school, teachers, students}){
         const avgS = sc.length>0 ? Math.round(sc.reduce((a,s)=>a+(s.score/s.total*100),0)/sc.length) : "-";
         const date = data.lastActivity ? new Date(data.lastActivity).toLocaleDateString("fr-FR") : "Jamais";
         const qPct = quranPct(data);
-        return `<tr><td>${name}</td><td>${cls}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${pct}%"></div></div><span>${pct}%</span></div></td><td>${avgS}${avgS!=="-"?"%":""} (${sc.length})</td><td>${date}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${qPct}%;background:#43e97b"></div></div><span>${qPct}%</span></div></td><td><button class="btn-pin-student" disabled title="Désactivé en mode démo" style="opacity:0.4">✉️</button></td></tr>`;
+        const qDone = quranSourahsCompleted(data);
+        return `<tr><td>${name}</td><td>${cls}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${pct}%"></div></div><span>${pct}%</span></div></td><td>${avgS}${avgS!=="-"?"%":""} (${sc.length})</td><td>${date}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${qPct}%;background:#43e97b"></div></div><span>${qPct}% (${qDone} ✅)</span></div></td><td><button class="btn-pin-student" disabled title="Désactivé en mode démo" style="opacity:0.4">✉️</button></td></tr>`;
     }).join("");
 
     setTimeout(() => {
@@ -1804,8 +1817,8 @@ async function saLoadStats(){
         ?`<tr><td colspan="7" style="color:#aaa;padding:20px">${bi("لا يوجد تلاميذ","noStudentYet")}</td></tr>`
         :mine.map(([id,data])=>{
             let name=id;
-            if(data.schoolId&&data.classId){const prefix=data.schoolId+"_"+data.classId+"_";if(id.startsWith(prefix))name=id.slice(prefix.length);else name=id.split("_").slice(4).join(" ")||id.split("_").slice(2).join(" ");}else{name=id.split("_").slice(2).join(" ");}const cls=school?.classes?.[data.classId]?.name||"?";const pct=Math.round(data.learned.length/lettres.length*100);const sc=data.quizScores||[];const avgS=sc.length>0?Math.round(sc.reduce((a,s)=>a+(s.score/s.total*100),0)/sc.length):"-";const date=data.lastActivity?new Date(data.lastActivity).toLocaleDateString("fr-FR"):"Jamais";const qPct=quranPct(data);
-            return `<tr><td>${name}</td><td>${cls}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${pct}%"></div></div><span>${pct}%</span></div></td><td>${avgS}${avgS!=="-"?"%":""} (${sc.length})</td><td>${date}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${qPct}%;background:#43e97b"></div></div><span>${qPct}%</span></div></td><td><button class="btn-pin-student" onclick="openMessageModal('${id}', '${name}')" title="Envoyer un message au parent">✉️</button></td></tr>`;}).join("");
+            if(data.schoolId&&data.classId){const prefix=data.schoolId+"_"+data.classId+"_";if(id.startsWith(prefix))name=id.slice(prefix.length);else name=id.split("_").slice(4).join(" ")||id.split("_").slice(2).join(" ");}else{name=id.split("_").slice(2).join(" ");}const cls=school?.classes?.[data.classId]?.name||"?";const pct=Math.round(data.learned.length/lettres.length*100);const sc=data.quizScores||[];const avgS=sc.length>0?Math.round(sc.reduce((a,s)=>a+(s.score/s.total*100),0)/sc.length):"-";const date=data.lastActivity?new Date(data.lastActivity).toLocaleDateString("fr-FR"):"Jamais";const qPct=quranPct(data);const qDone=quranSourahsCompleted(data);
+            return `<tr><td>${name}</td><td>${cls}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${pct}%"></div></div><span>${pct}%</span></div></td><td>${avgS}${avgS!=="-"?"%":""} (${sc.length})</td><td>${date}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${qPct}%;background:#43e97b"></div></div><span>${qPct}% (${qDone} ✅)</span></div></td><td><button class="btn-pin-student" onclick="openMessageModal('${id}', '${name}')" title="Envoyer un message au parent">✉️</button></td></tr>`;}).join("");
 
     // Draw charts
     setTimeout(() => {
