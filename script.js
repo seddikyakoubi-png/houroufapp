@@ -5398,7 +5398,7 @@ function renderFullSurahControls(isPlaying) {
 }
 
 // ===== MODE MÉMORISATION =====
-function renderMemorizeMode() {
+function renderMemorizeMode(autoPlay = true) {
   const ayah = currentSurahData.ayahs[currentAyahIndex];
   const total = currentSurahData.ayahs.length;
   const memorized = (quranMemorized[currentSurah.id] || []).includes(ayah.number);
@@ -5424,7 +5424,9 @@ function renderMemorizeMode() {
       <button onclick="nextAyah()" class="q-nav-btn" ${currentAyahIndex===total-1?"disabled":""}>← ${bi("التالية","nextAyah")}</button>
     </div>
   `;
-  speakAyah();
+  // ⚠️ Si on vient de marquer ce verset "mémorisé", l'écran va de toute façon avancer au suivant
+  // dans l'instant — relancer sa lecture ici serait immédiatement coupé, donc inutile et gênant.
+  if (autoPlay) speakAyah(); else stopCurrentQuranAudio();
 }
 
 window.markAyahMemorized = async (ayahNum) => {
@@ -5433,7 +5435,8 @@ window.markAyahMemorized = async (ayahNum) => {
     quranMemorized[currentSurah.id].push(ayahNum);
     await saveQuranProgress();
     updateQuranProgress();
-    renderMemorizeMode();
+    stopCurrentQuranAudio(); // coupe net toute lecture en cours, sans en relancer une nouvelle ici
+    renderMemorizeMode(false); // affiche le badge "mémorisé" SANS relancer l'audio (voir plus haut)
     if (currentAyahIndex < currentSurahData.ayahs.length - 1) {
       setTimeout(() => { currentAyahIndex++; renderMemorizeMode(); }, 800);
     }
