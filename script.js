@@ -5124,6 +5124,13 @@ function loadNormalizedBuffer(path) {
 function playLoadedBuffer(loaded) {
   return new Promise((resolve) => {
     if (!loaded) { resolve(false); return; }
+    // ⚠️ Si un verset est déjà en train d'être lu (ex: on vient de marquer le verset précédent
+    // comme mémorisé, et l'appli enchaîne aussitôt sur le suivant), on le coupe avant de démarrer
+    // la nouvelle lecture — sinon les deux se chevauchent.
+    if (window._currentQuranSource) {
+      try { window._currentQuranSource.onended = null; window._currentQuranSource.stop(); } catch (e) {}
+      window._currentQuranSource = null;
+    }
     const ctx = getAudioCtx();
     const source = ctx.createBufferSource();
     source.buffer = loaded.audioBuffer;
