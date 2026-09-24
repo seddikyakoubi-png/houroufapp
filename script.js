@@ -529,6 +529,47 @@ window.saPreviewLogo = () => {
     }
 };
 
+// ✅ Upload direct depuis l'appareil, sans passer par un hébergeur d'images externe (imgur, etc.).
+// L'image est redimensionnée et compressée dans le navigateur (max 300×300px) avant d'être
+// enregistrée directement dans Firestore — un logo reste largement sous la limite de 1 Mo par document.
+window.saHandleLogoFile = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    if (isDemoMode) { alert("🎬 Mode démo : modification désactivée."); event.target.value = ""; return; }
+
+    const status = document.getElementById("sa-logo-file-status");
+    status.textContent = "⏳ " + (currentUILang === "nl" ? "Bezig met verwerken..." : "Traitement en cours...");
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const img = new Image();
+        img.onload = async () => {
+            const MAX = 300;
+            let { width, height } = img;
+            if (width > height) { if (width > MAX) { height = Math.round(height * MAX / width); width = MAX; } }
+            else { if (height > MAX) { width = Math.round(width * MAX / height); height = MAX; } }
+            const canvas = document.createElement("canvas");
+            canvas.width = width; canvas.height = height;
+            canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+            const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+
+            try {
+                await setDoc(doc(db, "ecoles", currentSchoolId), { logoUrl: dataUrl }, { merge: true });
+                applySchoolBranding({ logoUrl: dataUrl });
+                document.getElementById("sa-logo-preview").src = dataUrl;
+                document.getElementById("sa-logo-preview").style.display = "inline-block";
+                document.getElementById("sa-logo-placeholder").style.display = "none";
+                status.textContent = "✅ " + (currentUILang === "nl" ? "Logo opgeslagen!" : "Logo enregistré !");
+            } catch (err) {
+                status.textContent = "❌ " + (currentUILang === "nl" ? "Fout bij opslaan." : "Erreur lors de l'enregistrement.");
+            }
+        };
+        img.onerror = () => { status.textContent = "❌ " + (currentUILang === "nl" ? "Ongeldige afbeelding." : "Image invalide."); };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+};
+
 window.saSaveLogo = async () => {
     if (isDemoMode) { alert("🎬 Mode démo : modification désactivée."); return; }
     const url = document.getElementById("sa-logo-url").value.trim();
@@ -722,16 +763,16 @@ async function loadParentDashboard(studentId, studentName) {
         <div class="admin-section" style="margin-bottom:20px">
             <h3 style="margin-bottom:10px">✉️ ${bi("رسائل المدرسة","schoolMessages")}</h3>
             ${messages.length === 0
-                ? `<p style="color:#aaa;text-align:center;padding:20px 0">${bi("لا توجد رسائل حالياً","noMessageYet")}</p>`
+                ? `<p style="color:#777;text-align:center;padding:20px 0">${bi("لا توجد رسائل حالياً","noMessageYet")}</p>`
                 : messages.map(m => {
                     const info = catInfo[m.category] || catInfo.general;
                     return `<div style="border-inline-start:4px solid ${info.color};background:#f9f9fb;border-radius:10px;padding:12px 14px;margin-bottom:10px">
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
                             <span style="font-weight:700;color:${info.color}">${info.icon} ${info.label}</span>
-                            <span style="font-size:12px;color:#999">${new Date(m.date).toLocaleDateString("fr-FR")}</span>
+                            <span style="font-size:12px;color:#666">${new Date(m.date).toLocaleDateString("fr-FR")}</span>
                         </div>
                         <p style="color:#333;margin:0">${m.text}</p>
-                        ${m.author ? `<p style="font-size:12px;color:#aaa;margin-top:6px">— ${m.author}</p>` : ""}
+                        ${m.author ? `<p style="font-size:12px;color:#777;margin-top:6px">— ${m.author}</p>` : ""}
                     </div>`;
                 }).join("")
             }
@@ -740,7 +781,7 @@ async function loadParentDashboard(studentId, studentName) {
         <div class="admin-section" style="margin-bottom:20px">
             <h3 style="margin-bottom:10px">📢 ${bi("إعلانات الإدارة","dirAnnouncements")}</h3>
             ${anns.length === 0
-                ? `<p style="color:#aaa;text-align:center;padding:14px 0">لا توجد إعلانات حالياً</p>`
+                ? `<p style="color:#777;text-align:center;padding:14px 0">لا توجد إعلانات حالياً</p>`
                 : anns.map(a => `<div style="border-bottom:1px solid #f0f0f0;padding:10px 0">
                         <p style="font-size:12px;color:#888;margin:0 0 4px">${a.authorName || ""} · ${new Date(a.date).toLocaleDateString("fr-FR")}</p>
                         <p style="margin:0;white-space:pre-wrap">${a.text}</p>
@@ -925,7 +966,7 @@ async function getFeatureValue(key) {
 async function buildMenu(){
     if(!currentUser || !currentSchoolId) return;
     const grid=document.getElementById("lettersGrid");
-    grid.innerHTML="<div style='text-align:center;padding:40px;color:#aaa'>⏳</div>";
+    grid.innerHTML="<div style='text-align:center;padding:40px;color:#777'>⏳</div>";
     const data=await getStudentData(currentUser); grid.innerHTML="";
     lettres.forEach((item,i)=>{const div=document.createElement("div");div.className="circle";div.textContent=item.l;if(data.learned.includes(i))div.classList.add("learned");div.onclick=()=>openLetter(i);grid.appendChild(div);});
     if(currentRole==="student") await checkExerciseBadge();
@@ -1300,7 +1341,7 @@ async function loadTeacherDashboard(){
         <div class="summary-card"><div class="s-num">${totalQuiz}</div><div class="s-label">${bi("اختبارات","statQuiz")}</div></div>`;
 
     document.getElementById("teacher-tbody").innerHTML=mine.length===0
-        ?`<tr><td colspan="5" style="color:#aaa;padding:20px">${bi("لا يوجد تلاميذ","noStudentYet")}</td></tr>`
+        ?`<tr><td colspan="5" style="color:#777;padding:20px">${bi("لا يوجد تلاميذ","noStudentYet")}</td></tr>`
         :mine.map(([id,data])=>{
             let name=id;
             if(data.schoolId&&data.classId){const prefix=data.schoolId+"_"+data.classId+"_";if(id.startsWith(prefix))name=id.slice(prefix.length);else name=id.split("_").slice(4).join(" ")||id.split("_").slice(2).join(" ");}else{name=id.split("_").slice(2).join(" ");}const pct=Math.round(data.learned.length/lettres.length*100);const sc=data.quizScores||[];const avgS=sc.length>0?Math.round(sc.reduce((a,s)=>a+(s.score/s.total*100),0)/sc.length):"-";const date=data.lastActivity?new Date(data.lastActivity).toLocaleDateString("fr-FR"):"Jamais";
@@ -1691,7 +1732,7 @@ function loadDemoDashboard({school, teachers, students}){
     document.getElementById("sa-classes-list").innerHTML = Object.entries(school.classes).map(([cid,cl]) => {
         const stuCount = students.filter(([,d]) => d.classId===cid).length;
         return `<div class="school-card"><div class="school-card-header"><strong>📚 ${cl.name}</strong><div style="display:flex;align-items:center;gap:8px"><span class="code-badge">🔑 ${cl.code}</span><span class="btn-sm-add" style="background:var(--purple)">👥 ${stuCount} élève(s)</span></div></div><p style="color:#888;font-size:13px;margin:5px 0 0 0">Code à donner aux élèves : <strong style="color:#e67e22;font-size:16px">${cl.code}</strong></p></div>`;
-    }).join("") + `<p style="color:#aaa;font-size:13px;padding:10px;text-align:center">🎬 Données fictives à titre d'exemple — la gestion (ajout/suppression) est désactivée en mode démo</p>`;
+    }).join("") + `<p style="color:#777;font-size:13px;padding:10px;text-align:center">🎬 Données fictives à titre d'exemple — la gestion (ajout/suppression) est désactivée en mode démo</p>`;
 
     // --- Professeurs ---
     document.getElementById("sa-teachers-list").innerHTML =
@@ -1738,7 +1779,7 @@ function loadDemoDashboard({school, teachers, students}){
 async function saLoadClasses(school){
     const classes=school?.classes?Object.entries(school.classes):[];
     const el=document.getElementById("sa-classes-list");
-    el.innerHTML=classes.length===0?`<p style="color:#aaa;padding:20px">${bi("لا يوجد فصل — أضيفوا واحدًا","noClasses")}</p>`:
+    el.innerHTML=classes.length===0?`<p style="color:#777;padding:20px">${bi("لا يوجد فصل — أضيفوا واحدًا","noClasses")}</p>`:
     classes.map(([cid,cl])=>{
         const stuCount=cl.students?cl.students.length:0;
         return `<div class="school-card"><div class="school-card-header"><strong>📚 ${cl.name}</strong><div style="display:flex;align-items:center;gap:8px"><span class="code-badge">🔑 ${cl.code||"N/A"}</span><button onclick="openStuPanel('${cid}','${cl.name}')" class="btn-sm-add" style="background:var(--purple)">👥 ${stuCount} élève(s)</button><button onclick="saDeleteClass('${cid}')" class="btn-delete">🗑️</button></div></div><p style="color:#888;font-size:13px;margin:5px 0 0 0">Code à donner aux élèves : <strong style="color:#e67e22;font-size:16px">${cl.code||"N/A"}</strong></p></div>`;
@@ -1775,7 +1816,7 @@ async function saLoadTeachers(school){
     const myTeachers=Object.entries(allTeachers).filter(([,t])=>t.schoolId===currentSchoolId);
     const classes=school?.classes||{};
     document.getElementById("sa-teachers-list").innerHTML=myTeachers.length===0
-        ?`<p style="color:#aaa;padding:20px">${bi("لا يوجد معلمون","noTeacherYet")}</p>`
+        ?`<p style="color:#777;padding:20px">${bi("لا يوجد معلمون","noTeacherYet")}</p>`
         :`<table class="teacher-table"><thead><tr><th>Nom</th><th>Email</th><th>Classe</th><th>Statut</th><th>Code</th><th>⚙️</th></tr></thead><tbody>`+
         myTeachers.map(([email,t])=>{const cls=classes[t.classId]?.name||"?";const status=t.password?`<span class="badge-active">✅ Actif</span>`:`<span class="badge-pending">⏳ En attente</span>`;
             return `<tr><td>${t.name}</td><td dir="ltr">${email}</td><td>${cls}</td><td>${status}</td><td><code>${t.activationCode}</code></td><td><button onclick="saDeleteTeacher('${email}')" class="btn-delete">🗑️</button></td></tr>`;}).join("")+"</tbody></table>";
@@ -1814,7 +1855,7 @@ async function saLoadStats(){
         <div class="summary-card"><div class="s-num">${quranAvg}%</div><div class="s-label">📖 Coran moyen</div></div>`;
 
     document.getElementById("sa-tbody").innerHTML=mine.length===0
-        ?`<tr><td colspan="7" style="color:#aaa;padding:20px">${bi("لا يوجد تلاميذ","noStudentYet")}</td></tr>`
+        ?`<tr><td colspan="7" style="color:#777;padding:20px">${bi("لا يوجد تلاميذ","noStudentYet")}</td></tr>`
         :mine.map(([id,data])=>{
             let name=id;
             if(data.schoolId&&data.classId){const prefix=data.schoolId+"_"+data.classId+"_";if(id.startsWith(prefix))name=id.slice(prefix.length);else name=id.split("_").slice(4).join(" ")||id.split("_").slice(2).join(" ");}else{name=id.split("_").slice(2).join(" ");}const cls=school?.classes?.[data.classId]?.name||"?";const pct=Math.round(data.learned.length/lettres.length*100);const sc=data.quizScores||[];const avgS=sc.length>0?Math.round(sc.reduce((a,s)=>a+(s.score/s.total*100),0)/sc.length):"-";const date=data.lastActivity?new Date(data.lastActivity).toLocaleDateString("fr-FR"):"Jamais";const qPct=quranPct(data);const qDone=quranSourahsCompleted(data);
@@ -1844,7 +1885,7 @@ async function loadSuperAdminDashboard(){
 
 async function supLoadSchools(){
     const schools=await getSchools();const el=document.getElementById("sup-schools-list");
-    el.innerHTML=Object.keys(schools).length===0?`<p style="color:#aaa;padding:20px">Aucune école</p>`:
+    el.innerHTML=Object.keys(schools).length===0?`<p style="color:#777;padding:20px">Aucune école</p>`:
     Object.entries(schools).map(([id,s])=>{
         const classes=s.classes?Object.keys(s.classes).length:0;
         const langBadge = {fr:"🇫🇷",nl:"🇳🇱",en:"🇬🇧",es:"🇪🇸"}[s.uiLang] || "🇸🇦";
@@ -1925,7 +1966,7 @@ async function supLoadStats(){
         <div class="summary-card"><div class="s-num">${avg}%</div><div class="s-label">${bi("التقدم المتوسط","statAvgProgress")}</div></div>
         <div class="summary-card"><div class="s-num">${entries.filter(([,d])=>d.learned.length===lettres.length).length}</div><div class="s-label">${bi("المكتملون","statFinished")}</div></div>`;
     document.getElementById("sup-tbody").innerHTML=entries.length===0
-        ?`<tr><td colspan="7" style="color:#aaa;padding:20px">Aucun élève</td></tr>`
+        ?`<tr><td colspan="7" style="color:#777;padding:20px">Aucun élève</td></tr>`
         :entries.map(([id,data])=>{
             // Extract real name: ID = schoolId_classId_Firstname Lastname
             // schoolId starts with "school_", classId starts with "class_"
@@ -2217,7 +2258,7 @@ async function loadTeacherExercises() {
     const subs = await getSubmissions();
     const el = document.getElementById("teacher-exercises-list");
     if (!el) return;
-    if (mine.length === 0) { el.innerHTML = `<p style="color:#aaa;padding:20px;text-align:center">${bi("لم يتم إنشاء أي تمرين","noExercisesCreated")}</p>`; return; }
+    if (mine.length === 0) { el.innerHTML = `<p style="color:#777;padding:20px;text-align:center">${bi("لم يتم إنشاء أي تمرين","noExercisesCreated")}</p>`; return; }
 
     el.innerHTML = mine.sort((a,b) => b[1].createdAt.localeCompare(a[1].createdAt)).map(([id, ex]) => {
         const subsForEx = Object.values(subs).filter(s => s.exerciceId === id);
@@ -2272,7 +2313,7 @@ window.deleteExercise = async id => {
 // - Messages directeur ↔ parent : tableau `thread` dans le document de l'élève (eleves/{id})
 
 function threadHtml(thread, mySide) {
-    if (!thread || thread.length === 0) return `<p style="color:#aaa;padding:14px;text-align:center;font-size:13px">${bi("لا توجد رسائل بعد، ابدأ المحادثة ✍️","noMessagesYet")}</p>`;
+    if (!thread || thread.length === 0) return `<p style="color:#777;padding:14px;text-align:center;font-size:13px">${bi("لا توجد رسائل بعد، ابدأ المحادثة ✍️","noMessagesYet")}</p>`;
     return thread.map(m => `
         <div style="display:flex;justify-content:${m.from === mySide ? "flex-end" : "flex-start"};margin-bottom:8px">
             <div style="max-width:78%;padding:8px 13px;border-radius:14px;background:${m.from === mySide ? "var(--primary)" : "#f0f0f0"};color:${m.from === mySide ? "#fff" : "#333"}">
@@ -2289,7 +2330,7 @@ async function loadDirectorComms() {
     const annEl = document.getElementById("dir-announcements-list");
     if (annEl) {
         annEl.innerHTML = anns.length === 0
-            ? `<p style="color:#aaa;padding:10px">${bi("لا توجد إعلانات بعد","noAnnouncementsYet")}</p>`
+            ? `<p style="color:#777;padding:10px">${bi("لا توجد إعلانات بعد","noAnnouncementsYet")}</p>`
             : anns.map(a => `
                 <div style="border-bottom:1px solid #f0f0f0;padding:10px 0">
                     <p style="font-size:12px;color:#888;margin:0 0 4px">${a.target === "teachers" ? "👩‍🏫 " + bi("للمعلمين","forTeachers") : "👪 " + bi("لأولياء الأمور","forParents")} · ${new Date(a.date).toLocaleDateString("fr-FR")}</p>
@@ -2427,7 +2468,7 @@ async function loadTeacherComms() {
     const annEl = document.getElementById("teacher-announcements-list");
     if (annEl) {
         annEl.innerHTML = anns.length === 0
-            ? `<p style="color:#aaa;padding:10px">${bi("لا توجد إعلانات","noAnnouncementsYet")}</p>`
+            ? `<p style="color:#777;padding:10px">${bi("لا توجد إعلانات","noAnnouncementsYet")}</p>`
             : anns.map(a => `
                 <div style="border-bottom:1px solid #f0f0f0;padding:10px 0">
                     <p style="font-size:12px;color:#888;margin:0 0 4px">📢 ${a.authorName || ""} · ${new Date(a.date).toLocaleDateString("fr-FR")}</p>
@@ -2532,7 +2573,7 @@ function renderRecordingsList() {
     if (recordingsFilter.type !== "all") items = items.filter(i => i.type === recordingsFilter.type);
 
     if (items.length === 0) {
-        el.innerHTML = `<p style="color:#aaa;padding:20px;text-align:center">${bi("لا توجد تسجيلات بعد","noRecordingsYet")}</p>`;
+        el.innerHTML = `<p style="color:#777;padding:20px;text-align:center">${bi("لا توجد تسجيلات بعد","noRecordingsYet")}</p>`;
         return;
     }
 
@@ -2607,7 +2648,7 @@ async function loadSubmissions() {
     const badge = document.getElementById("submissions-badge");
     if (badge) { badge.textContent = newSubs.length; badge.classList.toggle("hidden", newSubs.length === 0); }
 
-    if (mine.length === 0) { el.innerHTML = `<p style="color:#aaa;padding:20px;text-align:center">${bi("لا يوجد عمل مُسلَّم","noSubmissions")}</p>`; return; }
+    if (mine.length === 0) { el.innerHTML = `<p style="color:#777;padding:20px;text-align:center">${bi("لا يوجد عمل مُسلَّم","noSubmissions")}</p>`; return; }
 
     // Group by exercise
     const grouped = {};
@@ -2707,7 +2748,7 @@ async function loadStudentExercises() {
     if (!el) return;
 
     if (myExercises.length === 0) {
-        el.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#aaa"><div style="font-size:60px">📋</div><p style="margin-top:15px;font-size:18px">${bi("لا توجد تمارين حالياً","noExercises")}</p><p style="font-size:14px">${bi("سيظهر هنا تمارين الأستاذ","noExercisesSub")}</p></div>`;
+        el.innerHTML = `<div style="text-align:center;padding:60px 20px;color:#777"><div style="font-size:60px">📋</div><p style="margin-top:15px;font-size:18px">${bi("لا توجد تمارين حالياً","noExercises")}</p><p style="font-size:14px">${bi("سيظهر هنا تمارين الأستاذ","noExercisesSub")}</p></div>`;
         return;
     }
 
@@ -3004,7 +3045,7 @@ async function loadStudentsList(classId) {
     const el = document.getElementById("sa-students-list");
 
     if (students.length === 0) {
-        el.innerHTML = `<p style="color:#aaa;text-align:center;padding:20px">${bi("لا يوجد تلاميذ — أضيفوهم أعلاه","noStudentsYet")}</p>`;
+        el.innerHTML = `<p style="color:#777;text-align:center;padding:20px">${bi("لا يوجد تلاميذ — أضيفوهم أعلاه","noStudentsYet")}</p>`;
         return;
     }
 
@@ -3018,7 +3059,7 @@ async function loadStudentsList(classId) {
             <tbody>
                 ${students.map((name, i) => `
                     <tr>
-                        <td style="color:#aaa">${i+1}</td>
+                        <td style="color:#777">${i+1}</td>
                         <td><strong>${name}</strong></td>
                         <td>${pins[i]?.pin
                             ? `<span class="code-badge">🔑 ${pins[i].pin}</span> <button class="btn-pin-student" onclick="setPinForStudent('${studentIds[i]}', '${name.replace(/'/g,"\\'")}')" title="Modifier le code élève">✏️</button>`
@@ -3175,7 +3216,7 @@ async function loadTeacherClassList() {
     const el = document.getElementById("teacher-classlist-content");
     if (!el) return;
 
-    el.innerHTML = "<div style='text-align:center;padding:30px;color:#aaa'>⏳ Chargement...</div>";
+    el.innerHTML = "<div style='text-align:center;padding:30px;color:#777'>⏳ Chargement...</div>";
 
     // Get class info from school
     const schoolSnap = await getDoc(doc(db, "ecoles", currentSchoolId));
@@ -3190,7 +3231,7 @@ async function loadTeacherClassList() {
 
     if (registeredStudents.length === 0) {
         el.innerHTML = `
-            <div style="text-align:center;padding:40px;color:#aaa">
+            <div style="text-align:center;padding:40px;color:#777">
                 <div style="font-size:50px">📋</div>
                 <p style="margin-top:15px;font-size:18px">Aucun élève inscrit dans cette classe</p>
                 <p style="font-size:14px;margin-top:8px">Le directeur doit d'abord établir la liste des élèves</p>
@@ -3217,7 +3258,7 @@ async function loadTeacherClassList() {
         const quizCount = studentData?.quizScores?.length || 0;
 
         return `<tr>
-            <td style="color:#aaa;font-size:13px">${i + 1}</td>
+            <td style="color:#777;font-size:13px">${i + 1}</td>
             <td><strong>${name}</strong></td>
             <td>
                 <span style="background:${isConnected ? "#e8f8ec" : "#fff3e0"};color:${isConnected ? "#27ae60" : "#e67e22"};padding:4px 10px;border-radius:20px;font-size:13px;font-weight:700">
@@ -3970,7 +4011,7 @@ window.loadAttendance = async () => {
     if (!date) { alert("Choisissez une date"); return; }
 
     const el = document.getElementById("attendance-form");
-    el.innerHTML = "<div style='text-align:center;padding:20px;color:#aaa'>⏳ Chargement...</div>";
+    el.innerHTML = "<div style='text-align:center;padding:20px;color:#777'>⏳ Chargement...</div>";
 
     // Get class students
     const schoolSnap = await getDoc(doc(db, "ecoles", currentSchoolId));
@@ -3979,7 +4020,7 @@ window.loadAttendance = async () => {
     const students = classData?.students || [];
 
     if (students.length === 0) {
-        el.innerHTML = `<div style="text-align:center;padding:30px;color:#aaa">
+        el.innerHTML = `<div style="text-align:center;padding:30px;color:#777">
             <p>${bi("لا يوجد تلاميذ في هذا الفصل","noStudentInClass")}</p>
             <p style="font-size:13px">Le directeur doit d'abord ajouter des élèves</p>
         </div>`;
@@ -4169,7 +4210,7 @@ async function initDirectorAbsences() {
 window.loadDirectorAbsences = async () => {
     const el = document.getElementById("director-absences-content");
     if (!el) return;
-    el.innerHTML = "<div style='text-align:center;padding:20px;color:#aaa'>⏳ Chargement...</div>";
+    el.innerHTML = "<div style='text-align:center;padding:20px;color:#777'>⏳ Chargement...</div>";
 
     const classFilter = document.getElementById("sa-absence-class-filter")?.value || "all";
     const month = document.getElementById("sa-absence-month")?.value || new Date().toISOString().slice(0, 7);
@@ -4186,7 +4227,7 @@ window.loadDirectorAbsences = async () => {
     );
 
     if (records.length === 0) {
-        el.innerHTML = `<div style="text-align:center;padding:30px;color:#aaa">
+        el.innerHTML = `<div style="text-align:center;padding:30px;color:#777">
             <div style="font-size:50px">📅</div>
             <p style="margin-top:10px">Aucune absence enregistrée pour cette période</p>
         </div>`;
@@ -4527,7 +4568,7 @@ function showDifficultyChartMessage(canvas, text) {
     if (!msg) {
         msg = document.createElement("p");
         msg.className = "difficulty-chart-msg";
-        msg.style.cssText = "color:#aaa;text-align:center;padding:30px 10px;font-size:14px";
+        msg.style.cssText = "color:#777;text-align:center;padding:30px 10px;font-size:14px";
         canvas.parentElement.appendChild(msg);
     }
     msg.textContent = text;
@@ -5052,7 +5093,7 @@ function renderListenMode() {
       <div class="quran-ayah-arabic" style="font-size:1.6em;line-height:2.1">${ayah.arabic}</div>
       <div class="quran-ayah-translation hidden" id="q-translation">
         <div class="q-trans-single" style="font-size:1.4em;line-height:1.7">${trans.flag} ${trans.text}</div>
-        ${trans.fallbackNote ? `<div style="font-size:12px;color:#999;margin-top:6px">(Traduction en ${currentUILang==="en"?"anglais":"espagnol"} pas encore disponible — français affiché)</div>` : ""}
+        ${trans.fallbackNote ? `<div style="font-size:12px;color:#666;margin-top:6px">(Traduction en ${currentUILang==="en"?"anglais":"espagnol"} pas encore disponible — français affiché)</div>` : ""}
       </div>
       <button onclick="toggleQTranslation()" class="q-trans-btn">💡 ماذا تعني؟</button>
     </div>

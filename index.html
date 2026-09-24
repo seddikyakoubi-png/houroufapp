@@ -199,7 +199,7 @@
 
     <div id="tab-exercises" class="tab-content hidden">
         <div id="exercises-list" class="exercises-list">
-            <div style="text-align:center;padding:40px;color:#aaa">⏳ Chargement...</div>
+            <div style="text-align:center;padding:40px;color:#777">⏳ Chargement...</div>
         </div>
     </div>
 
@@ -297,7 +297,7 @@
                     <div style="position:relative;width:220px;max-width:70vw;aspect-ratio:1/1;margin:0 auto;background:#fff;border-radius:14px;border:2px dashed #ddd">
                         <svg id="autowrite-svg" viewBox="0 0 220 220" style="width:100%;height:100%"></svg>
                     </div>
-                    <p style="font-size:12px;color:#999;text-align:center;margin-top:8px" id="autowrite-help"><span class="tab-label">اختر حرفًا وشكلاً، ثم اضغط "عرض الكتابة" لمشاهدة الحرف يُكتب تلقائيًا</span></p>
+                    <p style="font-size:12px;color:#666;text-align:center;margin-top:8px" id="autowrite-help"><span class="tab-label">اختر حرفًا وشكلاً، ثم اضغط "عرض الكتابة" لمشاهدة الحرف يُكتب تلقائيًا</span></p>
                 </div>
 
                 <!-- ACTIONS -->
@@ -630,9 +630,17 @@
                 <img id="sa-logo-preview" src="" alt="Aperçu du logo" style="height:90px;width:90px;border-radius:50%;object-fit:cover;border:3px solid #eee;display:none">
                 <div id="sa-logo-placeholder" style="height:90px;width:90px;border-radius:50%;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto">🏫</div>
             </div>
-            <input type="url" id="sa-logo-url" placeholder="https://exemple.com/logo-ecole.png" class="login-input" dir="ltr" oninput="saPreviewLogo()">
-            <p style="color:#aaa;font-size:12px;margin:6px 0 15px" id="sa-logo-help"><span class="tab-label">الصقوا رابط صورة (PNG/JPG). يمكنكم استضافة الشعار مجانًا عبر خدمة مثل imgur.com إذا لم يكن لديكم رابط بعد</span></p>
-            <button onclick="saSaveLogo()" class="login-btn" id="btn-save-logo"><span class="tab-label">💾 Enregistrer le logo</span></button>
+
+            <input type="file" id="sa-logo-file" accept="image/png,image/jpeg,image/webp" style="display:none" onchange="saHandleLogoFile(event)">
+            <button onclick="document.getElementById('sa-logo-file').click()" class="login-btn" id="btn-choose-logo" style="margin-bottom:10px"><span class="tab-label">📁 Choisir une image sur mon appareil</span></button>
+            <p id="sa-logo-file-status" style="color:#666;font-size:14px;margin:0 0 15px;min-height:20px"></p>
+
+            <details style="margin-bottom:15px">
+                <summary style="color:#666;font-size:14px;cursor:pointer;padding:6px 0" id="sa-logo-url-toggle"><span class="tab-label">🔗 J'ai déjà un lien d'image en ligne</span></summary>
+                <input type="url" id="sa-logo-url" placeholder="https://exemple.com/logo-ecole.png" class="login-input" dir="ltr" oninput="saPreviewLogo()" style="margin-top:10px">
+                <p style="color:#555;font-size:13px;margin:8px 0 0" id="sa-logo-help"><span class="tab-label">الصقوا رابط صورة (PNG/JPG). يمكنكم استضافة الشعار مجانًا عبر خدمة مثل imgur.com إذا لم يكن لديكم رابط بعد</span></p>
+                <button onclick="saSaveLogo()" class="login-btn" id="btn-save-logo" style="margin-top:10px"><span class="tab-label">💾 Enregistrer ce lien</span></button>
+            </details>
         </div>
 
         <div class="admin-section" style="max-width:500px;margin-top:20px">
@@ -810,6 +818,6 @@
     </div>
 </div>
 
-<script type="module" src="script.js?v=20260941"></script>
+<script type="module" src="script.js?v=20260942"></script>
 </body>
 </html>

@@ -1502,7 +1502,7 @@ body {
 .vocab-img-wrap { margin-bottom: 10px; height: 80px; display: flex; align-items: center; justify-content: center; }
 .vocab-img { width: 80px; height: 80px; object-fit: contain; border-radius: 10px; }
 .vocab-word { font-size: 22px; font-weight: 900; color: var(--primary); font-family: 'Tajawal', Arial; margin-bottom: 4px; }
-.vocab-trad { font-size: 11px; color: var(--text-light); line-height: 1.4; }
+.vocab-trad { font-size: 13px; color: var(--text-light); line-height: 1.4; }
 .vocab-lettre-badge {
     display: inline-block;
     background: #f0eeff;
@@ -1590,7 +1590,7 @@ body {
     color: var(--text);
 }
 .role-card-name-fr {
-    font-size: 10px;
+    font-size: 12px;
     color: var(--text-light);
     text-align: center;
 }
@@ -1649,7 +1649,7 @@ body {
 .surah-card:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
 .surah-name-ar { font-family: var(--font-ar); font-size: 22px; font-weight: 900; direction: rtl; }
 .surah-name-fr { font-size: 13px; color: #888; margin-top: 2px; }
-.surah-ayahs { font-size: 12px; color: #aaa; margin-top: 4px; direction: rtl; }
+.surah-ayahs { font-size: 13px; color: #666; margin-top: 4px; direction: rtl; }
 .surah-card-progress { min-width: 80px; text-align: right; }
 .surah-progress-bar { width: 80px; height: 6px; background: #eee; border-radius: 3px; overflow: hidden; margin-bottom: 4px; }
 .surah-progress-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
