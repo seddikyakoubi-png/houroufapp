@@ -684,6 +684,8 @@ window.loginStudent = async () => {
     const classData=schoolData?.classes?.[cid];
     if(!classData){showError("القسم غير موجود");return;}
     if(classData.code!==code){showError("رمز القسم غير صحيح ❌");return;}
+    const accessError = checkSchoolAccessValid(schoolData);
+    if (accessError) { showError(accessError); return; }
     // ✅ Vérifier le code personnel si activé
     const studentId=sid+"_"+cid+"_"+selectedName;
     const studentData=await getStudentData(studentId);
@@ -720,6 +722,8 @@ window.loginParent = async () => {
     const classData=schoolData?.classes?.[cid];
     if(!classData){showError("القسم غير موجود");return;}
     if(classData.code!==code){showError("رمز القسم غير صحيح ❌");return;}
+    const accessError = checkSchoolAccessValid(schoolData);
+    if (accessError) { showError(accessError); return; }
     const studentId=sid+"_"+cid+"_"+selectedName;
     const studentData=await getStudentData(studentId);
     // 🔒 Le code parent est DIFFÉRENT du code élève, pour un contrôle et un suivi efficaces :
@@ -873,9 +877,11 @@ window.loginTeacher = async () => {
     const data=snap.data();
     if(!data.password){showError("Créez votre mot de passe");document.getElementById("teacher-first-login").classList.remove("hidden");return;}
     if(data.password!==btoa(pwd)){showError("Mot de passe incorrect");return;}
+    const teacherSchool=(await getDoc(doc(db,"ecoles",data.schoolId))).data();
+    const teacherAccessError = checkSchoolAccessValid(teacherSchool);
+    if (teacherAccessError) { showError(teacherAccessError); return; }
     currentUser=email; currentRole="teacher"; currentSchoolId=data.schoolId; currentClassId=data.classId;
     document.getElementById("teacher-header-name").textContent="👩‍🏫 "+data.name;
-    const teacherSchool=(await getDoc(doc(db,"ecoles",data.schoolId))).data();
     currentOrgType = teacherSchool?.orgType || "school";
     // Pas de vie de classe à gérer pour une famille : masquer Appel et Liste de classe
     document.getElementById("t-tab-btn-attendance")?.classList.toggle("hidden", currentOrgType === "family");
@@ -893,8 +899,10 @@ window.loginSchoolAdmin = async () => {
     if(!snap.exists()){showError("Compte introuvable");return;}
     const data=snap.data();
     if(data.password!==btoa(pwd)){showError("Mot de passe incorrect");return;}
-    currentUser=email; currentRole="schooladmin"; currentSchoolId=data.schoolId;
     const school=(await getDoc(doc(db,"ecoles",data.schoolId))).data();
+    const adminAccessError = checkSchoolAccessValid(school);
+    if (adminAccessError) { showError(adminAccessError); return; }
+    currentUser=email; currentRole="schooladmin"; currentSchoolId=data.schoolId;
     currentOrgType = school.orgType || "school"; // rétrocompatibilité : anciennes écoles sans ce champ = "school"
     document.getElementById("schooladmin-title").textContent=(currentOrgType==="family"?"👨‍👩‍👧 ":"🏫 ")+school.name;
     applySchoolBranding(school);
@@ -1711,6 +1719,20 @@ function generateDemoData(){
     return { school, teachers, students };
 }
 
+// Vérifie que l'école/famille est dans sa période d'accès autorisée (accessStart / accessExpiry,
+// fixées par le super-admin selon le contrat). Retourne null si tout va bien, sinon un message
+// d'erreur bilingue à afficher au lieu de laisser entrer la personne.
+function checkSchoolAccessValid(school) {
+    const today = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+    if (school.accessStart && today < school.accessStart) {
+        return `⏳ الوصول لم يبدأ بعد (يبدأ في ${school.accessStart}) / L'accès n'a pas encore commencé (débute le ${school.accessStart})`;
+    }
+    if (school.accessExpiry && today > school.accessExpiry) {
+        return `⌛ انتهت صلاحية الاشتراك (${school.accessExpiry}) / L'abonnement a expiré le ${school.accessExpiry}. Contactez l'administrateur.`;
+    }
+    return null;
+}
+
 const DEMO_ACCESS_CODE = "HOUROUF-2026"; // ✏️ Changez ce code quand vous voulez
 
 window.startDemoMode = () => {
@@ -1906,8 +1928,16 @@ async function supLoadSchools(){
     Object.entries(schools).map(([id,s])=>{
         const classes=s.classes?Object.keys(s.classes).length:0;
         const langBadge = {fr:"🇫🇷",nl:"🇳🇱",en:"🇬🇧",es:"🇪🇸"}[s.uiLang] || "🇸🇦";
+        // Badge d'abonnement : rouge si expiré, orange si expire dans ≤ 14 jours, vert sinon
+        let expiryBadge = "";
+        if (s.accessExpiry) {
+            const daysLeft = Math.ceil((new Date(s.accessExpiry) - new Date()) / 86400000);
+            const color = daysLeft < 0 ? "#e74c3c" : daysLeft <= 14 ? "#e67e22" : "#27ae60";
+            const label = daysLeft < 0 ? `Expiré (${s.accessExpiry})` : daysLeft <= 14 ? `Expire dans ${daysLeft}j` : `Jusqu'au ${s.accessExpiry}`;
+            expiryBadge = `<span class="school-city" style="color:${color};font-weight:700">📅 ${label}</span>`;
+        }
         return `<div class="school-card"><div class="school-card-header">
-            <div><strong>🏫 ${s.name}</strong> <span class="school-city">${s.city}</span> <span class="school-city">${classes} classe(s)</span> <span class="school-city">${langBadge}</span></div>
+            <div><strong>🏫 ${s.name}</strong> <span class="school-city">${s.city}</span> <span class="school-city">${classes} classe(s)</span> <span class="school-city">${langBadge}</span> ${expiryBadge}</div>
             <div>${s.code ? `<span class="code-badge" style="margin-inline-end:8px">🔑 ${s.code}</span>` : `<button onclick="supGenerateSchoolCode('${id}')" class="btn-sm-add" style="margin-inline-end:8px">🔑 Générer un code</button>`}<span class="school-city" style="color:var(--text-light)">${s.adminEmail||""}</span> <button onclick="supEditFeatures('${id}')" class="btn-sm-add" style="margin-inline-end:8px" title="Fonctionnalités à la carte (personnalisation payante)">⚙️ Fonctionnalités</button><button onclick="supDeleteSchool('${id}')" class="btn-delete">🗑️</button></div>
         </div></div>`;}).join("");
 }
@@ -1926,12 +1956,28 @@ window.supEditFeatures = async (schoolId) => {
     );
     if (newMsg === null) return; // annulé
 
+    const newStart = prompt(
+        `Date de DÉBUT d'accès (format AAAA-MM-JJ, laisser vide = pas de restriction) :`,
+        school.accessStart || ""
+    );
+    if (newStart === null) return;
+
+    const newExpiry = prompt(
+        `Date d'EXPIRATION de l'abonnement (format AAAA-MM-JJ, laisser vide = pas d'expiration) :`,
+        school.accessExpiry || ""
+    );
+    if (newExpiry === null) return;
+
     const features = { ...current, customWelcomeMessage: newMsg.trim() || null };
     // Nettoyer les clés vides pour garder le document propre
     Object.keys(features).forEach(k => { if (!features[k]) delete features[k]; });
 
-    await setDoc(doc(db, "ecoles", schoolId), { features }, { merge: true });
-    alert("✅ Fonctionnalités mises à jour pour " + school.name);
+    await setDoc(doc(db, "ecoles", schoolId), {
+        features,
+        accessStart: newStart.trim() || null,
+        accessExpiry: newExpiry.trim() || null
+    }, { merge: true });
+    alert("✅ Fonctionnalités et dates mises à jour pour " + school.name);
 };
 
 window.supGenerateSchoolCode = async (schoolId) => {
@@ -1950,6 +1996,8 @@ window.supAddSchool=async()=>{
     const pwd=document.getElementById("sup-admin-pwd").value;
     const uiLang=document.getElementById("sup-school-lang").value; // "" | "fr" | "nl" | "en" | "es" — figé à la création
     const orgType=document.getElementById("sup-org-type").value; // "school" | "family" — figé à la création, comme la langue
+    const accessStart = document.getElementById("sup-school-start").value || null;   // "YYYY-MM-DD" ou null = pas de restriction de début
+    const accessExpiry = document.getElementById("sup-school-expiry").value || null; // "YYYY-MM-DD" ou null = pas d'expiration
     if(!name||!city||!email||!pwd){alert("Tous les champs sont requis");return;}
     const schoolId="school_"+Date.now();
     // ✅ Génère un code d'école unique (ex: ECO-4821) que les élèves saisiront pour rejoindre l'école,
@@ -1958,7 +2006,7 @@ window.supAddSchool=async()=>{
     const existingCodes = new Set(Object.values(existingSchools).map(s => (s.code || "").toUpperCase()));
     let schoolCode;
     do { schoolCode = "ECO-" + Math.floor(1000 + Math.random() * 9000); } while (existingCodes.has(schoolCode));
-    await setDoc(doc(db,"ecoles",schoolId),{name,city,code:schoolCode,uiLang,orgType,adminEmail:email,classes:{},createdAt:new Date().toISOString()});
+    await setDoc(doc(db,"ecoles",schoolId),{name,city,code:schoolCode,uiLang,orgType,accessStart,accessExpiry,adminEmail:email,classes:{},createdAt:new Date().toISOString()});
     await setDoc(doc(db,"school_admins",email),{email,schoolId,password:btoa(pwd),createdAt:new Date().toISOString()});
     const langLabel = {fr:"🇫🇷 Français",nl:"🇳🇱 Néerlandais",en:"🇬🇧 Anglais",es:"🇪🇸 Espagnol"}[uiLang] || "🇸🇦 Arabe uniquement";
     const res=document.getElementById("sup-school-result");

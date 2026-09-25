@@ -721,7 +721,11 @@
                     <option value="en">🇬🇧 + Anglais</option>
                     <option value="es">🇪🇸 + Espagnol</option>
                 </select>
-                <button onclick="supAddSchool()" class="btn-admin-add">Créer l'école 🏫</button>
+                <label style="display:block;font-size:13px;color:#666;margin:10px 0 4px">Date de début d'accès</label>
+                <input type="date" id="sup-school-start" class="admin-input">
+                <label style="display:block;font-size:13px;color:#666;margin:10px 0 4px">Date d'expiration (fin d'abonnement)</label>
+                <input type="date" id="sup-school-expiry" class="admin-input">
+                <button onclick="supAddSchool()" class="btn-admin-add" style="margin-top:10px">Créer l'école 🏫</button>
             </div>
             <p id="sup-school-result" class="code-result hidden"></p>
         </div>
@@ -818,6 +822,6 @@
     </div>
 </div>
 
-<script type="module" src="script.js?v=20260946"></script>
+<script type="module" src="script.js?v=20260947"></script>
 </body>
 </html>
