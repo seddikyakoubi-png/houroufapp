@@ -949,7 +949,9 @@ window.logout = ()=>{
     if(stuBtn) stuBtn.classList.add("active");
     ["teacher","schooladmin","superadmin"].forEach(r=>document.getElementById("form-"+r).classList.add("hidden"));
     document.getElementById("form-student").classList.remove("hidden");
-    document.getElementById("teacher-first-login").classList.add("hidden");
+    // ⚠️ Ne PAS recacher "teacher-first-login" ici : ce lien doit rester visible en permanence
+    // sur l'écran de connexion prof (première connexion OU mot de passe oublié), pas seulement
+    // après une tentative de connexion échouée.
     const sel=document.getElementById("student-name-select"); if(sel){sel.style.display="none"; sel.innerHTML='<option value="">-- اختر اسمك --</option>';}
     // ✅ Vider tous les écrans pour éviter que les données du compte précédent restent affichées
     ["teacher-exercises-list","teacher-students-list","submissions-list",
