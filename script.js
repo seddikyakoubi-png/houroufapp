@@ -1928,6 +1928,9 @@ async function supLoadSchools(){
     Object.entries(schools).map(([id,s])=>{
         const classes=s.classes?Object.keys(s.classes).length:0;
         const langBadge = {fr:"🇫🇷",nl:"🇳🇱",en:"🇬🇧",es:"🇪🇸"}[s.uiLang] || "🇸🇦";
+        const orgBadge = s.orgType === "family"
+            ? `<span class="school-city" style="background:#eee7fb;color:#764ba2;padding:2px 8px;border-radius:8px">👨‍👩‍👧 Famille</span>`
+            : `<span class="school-city" style="background:#e7f3fb;color:#2980b9;padding:2px 8px;border-radius:8px">🏫 École</span>`;
         // Badge d'abonnement : rouge si expiré, orange si expire dans ≤ 14 jours, vert sinon
         let expiryBadge = "";
         if (s.accessExpiry) {
@@ -1937,7 +1940,7 @@ async function supLoadSchools(){
             expiryBadge = `<span class="school-city" style="color:${color};font-weight:700">📅 ${label}</span>`;
         }
         return `<div class="school-card"><div class="school-card-header">
-            <div><strong>🏫 ${s.name}</strong> <span class="school-city">${s.city}</span> <span class="school-city">${classes} classe(s)</span> <span class="school-city">${langBadge}</span> ${expiryBadge}</div>
+            <div><strong>🏫 ${s.name}</strong> <span class="school-city">${s.city}</span> ${orgBadge} <span class="school-city">${classes} classe(s)</span> <span class="school-city">${langBadge}</span> ${expiryBadge}</div>
             <div>${s.code ? `<span class="code-badge" style="margin-inline-end:8px">🔑 ${s.code}</span>` : `<button onclick="supGenerateSchoolCode('${id}')" class="btn-sm-add" style="margin-inline-end:8px">🔑 Générer un code</button>`}<span class="school-city" style="color:var(--text-light)">${s.adminEmail||""}</span> <button onclick="supResetAdminPassword('${id}','${s.adminEmail||""}')" class="btn-sm-add" style="margin-inline-end:8px" title="Réinitialiser le mot de passe du directeur">🔑 Reset mdp directeur</button> <button onclick="supEditFeatures('${id}')" class="btn-sm-add" style="margin-inline-end:8px" title="Fonctionnalités à la carte (personnalisation payante)">⚙️ Fonctionnalités</button><button onclick="supDeleteSchool('${id}')" class="btn-delete">🗑️</button></div>
         </div></div>`;}).join("");
 }
