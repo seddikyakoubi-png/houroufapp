@@ -1938,13 +1938,24 @@ async function supLoadSchools(){
         }
         return `<div class="school-card"><div class="school-card-header">
             <div><strong>🏫 ${s.name}</strong> <span class="school-city">${s.city}</span> <span class="school-city">${classes} classe(s)</span> <span class="school-city">${langBadge}</span> ${expiryBadge}</div>
-            <div>${s.code ? `<span class="code-badge" style="margin-inline-end:8px">🔑 ${s.code}</span>` : `<button onclick="supGenerateSchoolCode('${id}')" class="btn-sm-add" style="margin-inline-end:8px">🔑 Générer un code</button>`}<span class="school-city" style="color:var(--text-light)">${s.adminEmail||""}</span> <button onclick="supEditFeatures('${id}')" class="btn-sm-add" style="margin-inline-end:8px" title="Fonctionnalités à la carte (personnalisation payante)">⚙️ Fonctionnalités</button><button onclick="supDeleteSchool('${id}')" class="btn-delete">🗑️</button></div>
+            <div>${s.code ? `<span class="code-badge" style="margin-inline-end:8px">🔑 ${s.code}</span>` : `<button onclick="supGenerateSchoolCode('${id}')" class="btn-sm-add" style="margin-inline-end:8px">🔑 Générer un code</button>`}<span class="school-city" style="color:var(--text-light)">${s.adminEmail||""}</span> <button onclick="supResetAdminPassword('${id}','${s.adminEmail||""}')" class="btn-sm-add" style="margin-inline-end:8px" title="Réinitialiser le mot de passe du directeur">🔑 Reset mdp directeur</button> <button onclick="supEditFeatures('${id}')" class="btn-sm-add" style="margin-inline-end:8px" title="Fonctionnalités à la carte (personnalisation payante)">⚙️ Fonctionnalités</button><button onclick="supDeleteSchool('${id}')" class="btn-delete">🗑️</button></div>
         </div></div>`;}).join("");
 }
 
 // Interface simple pour activer/régler les fonctionnalités à la carte d'une école/famille.
 // ✏️ À étoffer au fur et à mesure : chaque nouvelle fonctionnalité à la carte ajoute juste
 // une question ici, sans dupliquer le code de l'appli elle-même.
+// ✅ Les directeurs n'ont pas de code d'activation permanent comme les profs — leur mot de passe
+// est fixé une fois à la création. Ce bouton comble ce manque : génère un nouveau mot de passe
+// et l'écrase directement, sans avoir besoin de connaître l'ancien.
+window.supResetAdminPassword = async (schoolId, adminEmail) => {
+    if (!adminEmail) { alert("Aucun email admin enregistré pour cette école."); return; }
+    if (!confirm(`Réinitialiser le mot de passe de "${adminEmail}" ?\n\nL'ancien mot de passe ne fonctionnera plus.`)) return;
+    const newPwd = "Reset-" + Math.random().toString(36).slice(-6);
+    await setDoc(doc(db, "school_admins", adminEmail), { password: btoa(newPwd) }, { merge: true });
+    alert(`✅ Nouveau mot de passe pour ${adminEmail} :\n\n${newPwd}\n\nCommuniquez-le au directeur — il ne sera plus jamais affiché après cette fenêtre.`);
+};
+
 window.supEditFeatures = async (schoolId) => {
     const school = (await getDoc(doc(db, "ecoles", schoolId))).data();
     const current = school.features || {};
