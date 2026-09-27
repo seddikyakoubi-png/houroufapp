@@ -53,19 +53,19 @@
 
             <!-- ÉLÈVE -->
             <div id="form-student" class="login-form-block">
-                <input type="text" id="student-school-code" placeholder="🏫 رمز المدرسة (Code école)" class="login-input" dir="ltr" maxlength="20" onchange="resolveSchoolCode()">
+                <input type="text" id="student-school-code" placeholder="🏫 رمز المدرسة (Code école)" class="login-input" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override" maxlength="20" onchange="resolveSchoolCode()">
                 <p id="school-code-result" style="display:none;font-size:14px;text-align:center;margin:5px 0;font-weight:bold"></p>
                 <input type="hidden" id="student-school">
                 <select id="student-class" class="login-input" onchange="resetStudentSelect()">
                     <option value="">-- اختر القسم --</option>
                 </select>
-                <input type="text" id="student-code" placeholder="رمز القسم (Code de classe)" class="login-input" maxlength="20" dir="ltr" onchange="loadStudentNames()">
+                <input type="text" id="student-code" placeholder="رمز القسم (Code de classe)" class="login-input" maxlength="20" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override" onchange="loadStudentNames()">
                 <select id="student-name-select" class="login-input" style="display:none">
                     <option value="">-- اختر اسمك --</option>
                 </select>
                 <p id="student-list-msg" style="display:none;color:#e67e22;font-size:14px;text-align:center;margin:5px 0">⏳ Chargement de la liste...</p>
                 <div id="pin-container">
-                    <input type="password" id="student-pin" placeholder="🔐 رمز التلميذ (Code élève)" class="login-input" maxlength="10" dir="ltr">
+                    <input type="password" id="student-pin" placeholder="🔐 رمز التلميذ (Code élève)" class="login-input" maxlength="10" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override">
                 </div>
                 <button onclick="loginStudent()" class="login-btn" id="student-login-btn">ابدأ التعلم ✨</button>
             </div>
@@ -90,7 +90,7 @@
 
             <!-- SUPER ADMIN -->
             <div id="form-superadmin" class="login-form-block hidden">
-                <input type="password" id="superadmin-pwd" placeholder="Mot de passe Super Admin" class="login-input" dir="ltr">
+                <input type="password" id="superadmin-pwd" placeholder="Mot de passe Super Admin" class="login-input" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override">
                 <button onclick="loginSuperAdmin()" class="login-btn">Accès Super Admin 👨‍💼</button>
             </div>
 
@@ -107,7 +107,7 @@
             <h2 style="color:var(--primary);margin-bottom:10px">Première connexion</h2>
             <p style="color:var(--text-light);margin-bottom:20px">Choisissez votre mot de passe</p>
             <input type="email" id="fl-email" placeholder="Votre email" class="login-input" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override">
-            <input type="text" id="fl-code" placeholder="Code d'activation" class="login-input" dir="ltr">
+            <input type="text" id="fl-code" placeholder="Code d'activation" class="login-input" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override">
             <input type="password" id="fl-pwd1" placeholder="Nouveau mot de passe" class="login-input">
             <input type="password" id="fl-pwd2" placeholder="Confirmer le mot de passe" class="login-input">
             <button onclick="doFirstLogin()" class="login-btn">Créer mon compte ✅</button>
@@ -637,7 +637,7 @@
 
             <details style="margin-bottom:15px">
                 <summary style="color:#666;font-size:14px;cursor:pointer;padding:6px 0" id="sa-logo-url-toggle"><span class="tab-label">🔗 J'ai déjà un lien d'image en ligne</span></summary>
-                <input type="url" id="sa-logo-url" placeholder="https://exemple.com/logo-ecole.png" class="login-input" dir="ltr" oninput="saPreviewLogo()" style="margin-top:10px">
+                <input type="url" id="sa-logo-url" placeholder="https://exemple.com/logo-ecole.png" class="login-input" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override" oninput="saPreviewLogo()" style="margin-top:10px">
                 <p style="color:#555;font-size:13px;margin:8px 0 0" id="sa-logo-help"><span class="tab-label">الصقوا رابط صورة (PNG/JPG). يمكنكم استضافة الشعار مجانًا عبر خدمة مثل imgur.com إذا لم يكن لديكم رابط بعد</span></p>
                 <button onclick="saSaveLogo()" class="login-btn" id="btn-save-logo" style="margin-top:10px"><span class="tab-label">💾 Enregistrer ce lien</span></button>
             </details>
@@ -713,7 +713,7 @@
                 <input type="text" id="sup-school-name" placeholder="Nom de l'école" class="admin-input">
                 <input type="text" id="sup-school-city" placeholder="Ville" class="admin-input">
                 <input type="email" id="sup-admin-email" placeholder="Email Admin école" class="admin-input" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override">
-                <input type="password" id="sup-admin-pwd" placeholder="Mot de passe Admin école" class="admin-input" dir="ltr">
+                <input type="password" id="sup-admin-pwd" placeholder="Mot de passe Admin école" class="admin-input" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override">
                 <select id="sup-school-lang" class="admin-input">
                     <option value="">🇸🇦 Arabe uniquement (par défaut)</option>
                     <option value="fr">🇫🇷 + Français</option>
@@ -822,6 +822,6 @@
     </div>
 </div>
 
-<script type="module" src="script.js?v=20260950"></script>
+<script type="module" src="script.js?v=20260951"></script>
 </body>
 </html>
