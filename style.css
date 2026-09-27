@@ -710,9 +710,10 @@ body {
 .summary-card .s-num  { font-size: 36px; font-weight: 900; color: var(--primary); }
 .summary-card .s-label { font-size: 13px; color: var(--text-light); margin-top: 4px; }
 
-.teacher-table-wrap { padding: 0 15px 15px; overflow-x: auto; }
+.teacher-table-wrap { padding: 0 15px 15px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
 .teacher-table {
     width: 100%;
+    min-width: 650px; /* ne se comprime jamais en dessous : sur mobile, on fait défiler plutôt qu'écraser les colonnes */
     border-collapse: collapse;
     background: white;
     border-radius: var(--radius);
@@ -727,12 +728,14 @@ body {
     font-weight: 700;
     color: var(--text-light);
     border-bottom: 2px solid #eee;
+    white-space: nowrap;
 }
 .teacher-table td {
     padding: 12px 15px;
     text-align: center;
     font-size: 15px;
     border-bottom: 1px solid #f0f0f0;
+    white-space: nowrap;
 }
 .teacher-table tr:last-child td { border-bottom: none; }
 .teacher-table tr:hover td { background: #fafafa; }

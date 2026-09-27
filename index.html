@@ -72,7 +72,7 @@
 
             <!-- PROF -->
             <div id="form-teacher" class="login-form-block hidden">
-                <input type="email" id="teacher-email" placeholder="البريد الإلكتروني" class="login-input" dir="ltr">
+                <input type="email" id="teacher-email" placeholder="البريد الإلكتروني" class="login-input" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override">
                 <input type="password" id="teacher-pwd" placeholder="كلمة المرور" class="login-input">
                 <button onclick="loginTeacher()" class="login-btn">دخول 👩‍🏫</button>
                 <p id="teacher-first-login" class="info-text">🔑 أول دخول؟ / مشكلة في كلمة المرور؟ <a href="#" onclick="showFirstLogin()">انقر هنا</a></p>
@@ -80,7 +80,7 @@
 
             <!-- ADMIN ÉCOLE -->
             <div id="form-schooladmin" class="login-form-block hidden">
-                <input type="email" id="schooladmin-email" placeholder="البريد الإلكتروني" class="login-input" dir="ltr">
+                <input type="email" id="schooladmin-email" placeholder="البريد الإلكتروني" class="login-input" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override">
                 <input type="password" id="schooladmin-pwd" placeholder="كلمة المرور" class="login-input">
                 <button onclick="loginSchoolAdmin()" class="login-btn">دخول 🏫</button>
                 <button onclick="startDemoMode()" class="btn-secondary" style="margin-top:10px;width:100%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none">
@@ -106,7 +106,7 @@
             <div class="login-logo">🔑</div>
             <h2 style="color:var(--primary);margin-bottom:10px">Première connexion</h2>
             <p style="color:var(--text-light);margin-bottom:20px">Choisissez votre mot de passe</p>
-            <input type="email" id="fl-email" placeholder="Votre email" class="login-input" dir="ltr">
+            <input type="email" id="fl-email" placeholder="Votre email" class="login-input" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override">
             <input type="text" id="fl-code" placeholder="Code d'activation" class="login-input" dir="ltr">
             <input type="password" id="fl-pwd1" placeholder="Nouveau mot de passe" class="login-input">
             <input type="password" id="fl-pwd2" placeholder="Confirmer le mot de passe" class="login-input">
@@ -557,7 +557,7 @@
             <h3 id="sa-addteacher-title"><span class="tab-label">➕ Ajouter un professeur</span></h3>
             <div class="admin-form">
                 <input type="text" id="sa-teacher-name" placeholder="Nom du professeur" class="admin-input">
-                <input type="email" id="sa-teacher-email" placeholder="Email" class="admin-input" dir="ltr">
+                <input type="email" id="sa-teacher-email" placeholder="Email" class="admin-input" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override">
                 <select id="sa-teacher-class" class="admin-input">
                     <option value="">-- Classe --</option>
                 </select>
@@ -712,7 +712,7 @@
                 </select>
                 <input type="text" id="sup-school-name" placeholder="Nom de l'école" class="admin-input">
                 <input type="text" id="sup-school-city" placeholder="Ville" class="admin-input">
-                <input type="email" id="sup-admin-email" placeholder="Email Admin école" class="admin-input" dir="ltr">
+                <input type="email" id="sup-admin-email" placeholder="Email Admin école" class="admin-input" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override">
                 <input type="password" id="sup-admin-pwd" placeholder="Mot de passe Admin école" class="admin-input" dir="ltr">
                 <select id="sup-school-lang" class="admin-input">
                     <option value="">🇸🇦 Arabe uniquement (par défaut)</option>
@@ -822,6 +822,6 @@
     </div>
 </div>
 
-<script type="module" src="script.js?v=20260949"></script>
+<script type="module" src="script.js?v=20260950"></script>
 </body>
 </html>
