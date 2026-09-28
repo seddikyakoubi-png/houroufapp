@@ -225,10 +225,13 @@ body {
     background: white;
     border-bottom: 2px solid #f0f0f0;
     padding: 0 15px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 .tab-btn {
-    flex: 1;
-    padding: 14px 5px;
+    flex: 1 0 auto;
+    white-space: nowrap;
+    padding: 14px 12px;
     background: none;
     border: none;
     font-family: 'Tajawal', sans-serif;
@@ -1786,3 +1789,54 @@ body {
 
 .header-left { display: flex !important; align-items: center !important; min-width: 50px !important; visibility: visible !important; }
 .btn-logout { background: #ffebeb !important; border: 2px solid #ff6b6b !important; border-radius: 10px !important; padding: 8px 14px !important; font-size: 20px !important; cursor: pointer !important; display: flex !important; visibility: visible !important; opacity: 1 !important; z-index: 9999 !important; }
+
+
+/* ======= الحركات : lettres × positions × mouvements, avec prononciation ======= */
+.harakat-container { max-width: 720px; margin: 0 auto; padding-bottom: 30px; }
+.harakat-letter-strip {
+    display: flex; gap: 8px; overflow-x: auto; padding: 6px 2px 12px;
+    -webkit-overflow-scrolling: touch;
+}
+.harakat-letter-chip {
+    flex: 0 0 auto; width: 46px; height: 46px; border-radius: 50%;
+    border: 2px solid #eee; background: #fff; color: var(--text);
+    font-size: 26px; line-height: 1; cursor: pointer; transition: all .15s;
+    font-family: 'Noto Naskh Arabic', 'Tajawal', serif;
+    display: flex; align-items: center; justify-content: center; padding: 0;
+}
+.harakat-letter-chip.active {
+    background: var(--primary); border-color: var(--primary); color: #fff; transform: scale(1.12);
+}
+.harakat-preview {
+    text-align: center; color: #fff; border-radius: 24px; padding: 14px 10px 14px; margin: 4px 0 14px;
+    background: linear-gradient(135deg, #667eea, #764ba2); box-shadow: var(--shadow-sm);
+}
+.harakat-big {
+    font-size: 88px; line-height: 1.6; min-height: 130px; direction: rtl; unicode-bidi: isolate;
+    font-family: 'Noto Naskh Arabic', 'Tajawal', serif;
+}
+.harakat-latin { font-size: 24px; font-weight: 800; letter-spacing: 1px; }
+.harakat-latin small { display: block; font-size: 14px; font-weight: 400; letter-spacing: 0; opacity: .9; margin-top: 2px; }
+.harakat-positions { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: 8px; }
+.harakat-pos-btn {
+    padding: 8px 14px; border-radius: 20px; border: 2px solid #eee; background: #fff; cursor: pointer;
+    font-family: 'Tajawal', sans-serif; font-size: 14px; font-weight: 700; color: var(--text-light);
+}
+.harakat-pos-btn.active { border-color: var(--primary); color: var(--primary); background: #fff5f5; }
+.harakat-group-title { font-size: 15px; font-weight: 800; color: var(--text-light); margin: 16px 4px 8px; }
+.harakat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(84px, 1fr)); gap: 10px; }
+.harakat-tile {
+    background: #fff; border: 2px solid #eee; border-radius: 18px; padding: 8px 4px 8px; text-align: center;
+    cursor: pointer; box-shadow: var(--shadow-sm); transition: transform .12s, border-color .12s;
+    font-family: 'Tajawal', sans-serif;
+}
+.harakat-tile:active { transform: scale(.95); }
+.harakat-tile.selected { border-color: var(--primary); background: #fff5f5; }
+.harakat-tile.disabled { opacity: .35; cursor: not-allowed; }
+.harakat-tile-text {
+    font-size: 40px; line-height: 1.7; color: var(--text); direction: rtl; unicode-bidi: isolate;
+    font-family: 'Noto Naskh Arabic', 'Tajawal', serif;
+}
+.harakat-tile-latin { font-size: 17px; font-weight: 800; color: var(--primary); }
+.harakat-tile-name { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+.harakat-note { font-size: 13px; color: #666; text-align: center; margin-top: 14px; min-height: 18px; line-height: 1.6; }

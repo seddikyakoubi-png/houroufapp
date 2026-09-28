@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حروفي - تعلم الأبجدية العربية</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20260922">
+    <link rel="stylesheet" href="style.css?v=20260952">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -135,6 +135,7 @@
     </div>
     <div class="tabs">
         <button class="tab-btn active" id="tab-btn-learn" onclick="switchTab('learn',this)"><span class="tab-label">📖 تعلّم</span></button>
+        <button class="tab-btn" id="tab-btn-harakat" onclick="switchTab('harakat',this)"><span class="tab-label">🔤 الحركات</span></button>
         <button class="tab-btn" id="tab-btn-quiz" onclick="switchTab('quiz',this)"><span class="tab-label">🎯 اختبار</span></button>
         <button class="tab-btn" id="tab-btn-trace" onclick="switchTab('trace',this)"><span class="tab-label">✏️ أتتبع</span></button>
         <button class="tab-btn" id="tab-btn-exercises" onclick="switchTab('exercises',this)"><span class="tab-label">📋 تمارين</span> <span id="exercise-badge" class="notif-badge hidden">!</span></button>
@@ -143,6 +144,18 @@
     </div>
     <div id="tab-learn" class="tab-content active">
         <div class="grid" id="lettersGrid"></div>
+    </div>
+    <div id="tab-harakat" class="tab-content hidden">
+        <div class="harakat-container">
+            <div id="harakat-letter-strip" class="harakat-letter-strip"></div>
+            <div class="harakat-preview">
+                <div id="harakat-big" class="harakat-big"></div>
+                <div id="harakat-latin" class="harakat-latin"></div>
+            </div>
+            <div id="harakat-positions" class="harakat-positions"></div>
+            <div id="harakat-tiles"></div>
+            <p id="harakat-note" class="harakat-note"></p>
+        </div>
     </div>
     <div id="tab-quiz" class="tab-content hidden">
         <div class="quiz-intro" id="quiz-intro">
@@ -822,6 +835,6 @@
     </div>
 </div>
 
-<script type="module" src="script.js?v=20260951"></script>
+<script type="module" src="script.js?v=20260952"></script>
 </body>
 </html>

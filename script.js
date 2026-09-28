@@ -256,6 +256,7 @@ const FEATURE_I18N = {
     "role-label-text": { emoji:"", ar:"من أنت؟", fr:"Qui es-tu ?", nl:"Wie ben je?", en:"Who are you?", es:"¿Quién eres?" },
     // Onglets élève (arabe toujours affiché + langue secondaire)
     "tab-btn-learn":      { emoji:"📖", ar:"تعلّم",  fr:"Apprendre",        nl:"Leren",            en:"Learn",       es:"Aprender" },
+    "tab-btn-harakat":    { emoji:"🔤", ar:"الحركات", fr:"Voyelles",         nl:"Klinkertekens",    en:"Vowel marks", es:"Vocales" },
     "tab-btn-quiz":       { emoji:"🎯", ar:"اختبار", fr:"Quiz",             nl:"Quiz",             en:"Quiz",        es:"Cuestionario" },
     "tab-btn-trace":      { emoji:"✏️", ar:"أتتبع",  fr:"Tracé",            nl:"Natrekken",        en:"Tracing",     es:"Trazado" },
     "tab-btn-exercises":  { emoji:"📋", ar:"تمارين", fr:"Exercices",        nl:"Oefeningen",       en:"Exercises",   es:"Ejercicios" },
@@ -443,6 +444,16 @@ const DYNAMIC_I18N = {
     noTeacherYet:     { fr:"Aucun professeur", nl:"Geen leerkracht", en:"No teacher", es:"Ningún profesor" },
     noStudentInClass: { fr:"Aucun élève dans cette classe", nl:"Geen leerling in deze klas", en:"No student in this class", es:"Ningún alumno en esta clase" },
     noMessageYet:     { fr:"Aucun message pour le moment", nl:"Nog geen bericht", en:"No message yet", es:"Aún no hay mensajes" },
+    posIsolated:      { fr:"Isolée", nl:"Los", en:"Isolated", es:"Aislada" },
+    posInitial:       { fr:"Début", nl:"Begin", en:"Start", es:"Inicio" },
+    posMedial:        { fr:"Milieu", nl:"Midden", en:"Middle", es:"Medio" },
+    posFinal:         { fr:"Fin", nl:"Einde", en:"End", es:"Final" },
+    harakatBasic:     { fr:"Voyelles brèves et soukoun", nl:"Korte klinkers en sukun", en:"Short vowels and sukun", es:"Vocales breves y sukun" },
+    harakatAdvanced:  { fr:"Avancé : chadda et tanwin", nl:"Gevorderd: shadda en tanwin", en:"Advanced: shadda and tanwin", es:"Avanzado: shadda y tanwin" },
+    harakatHint:      { fr:"Touche une case pour entendre sa prononciation", nl:"Tik op een vakje om de uitspraak te horen", en:"Tap a tile to hear how it sounds", es:"Toca una casilla para oír su pronunciación" },
+    harakatAlifNote:  { fr:"L'alif est une lettre de prolongation : on le travaille avec la hamza", nl:"De alif is een verlengletter: we oefenen hem met de hamza", en:"Alif is a lengthening letter: we practise it with the hamza", es:"El alif es una letra de prolongación: se practica con la hamza" },
+    harakatNonConnector: { fr:"Cette lettre ne se lie pas à la suivante : elle n'a que 2 formes", nl:"Deze letter verbindt niet met de volgende: ze heeft maar 2 vormen", en:"This letter does not join the next one: it has only 2 forms", es:"Esta letra no se une a la siguiente: solo tiene 2 formas" },
+    harakatTanwinNote:{ fr:"Le tanwin se place uniquement en fin de mot", nl:"De tanwin staat alleen aan het einde van een woord", en:"Tanwin only appears at the end of a word", es:"El tanwin solo aparece al final de la palabra" },
     schoolMessages:   { fr:"Messages de l'école", nl:"Berichten van de school", en:"School messages", es:"Mensajes de la escuela" },
     dirAnnouncements: { fr:"Annonces de la direction", nl:"Mededelingen van de directie", en:"Announcements from the principal", es:"Anuncios de la dirección" },
     dirDiscussion:    { fr:"Discussion avec la direction", nl:"Gesprek met de directie", en:"Discussion with the principal", es:"Conversación con la dirección" },
@@ -3054,6 +3065,7 @@ window.switchTab = (name, btn) => {
     _origSwitchTab(name, btn);
     if (name === "exercises") loadStudentExercises();
     if (name === "vocab") loadVocab();
+    if (name === "harakat") initHarakat();
     if (name === "learn") { buildMenu(); updateProgress(); }
     if (name === "quran") { loadQuranProgress().then(() => showQuranHome()); }
     // FIX: reset quiz view when switching to ikhtebar tab
@@ -3065,6 +3077,169 @@ window.switchTab = (name, btn) => {
         if (game)  game.classList.add("hidden");
         if (res)   res.classList.add("hidden");
     }
+};
+
+// ============================================================
+//  الحركات — chaque lettre × ses positions × ses mouvements, avec prononciation
+// ============================================================
+// Pour chaque combinaison, l'appli cherche d'abord un enregistrement à toi :
+//        sons/harakat/{sonDeLaLettre}_{mouvement}.mp3        ex : sons/harakat/ba_fatha.mp3
+// et retombe sur la synthèse vocale arabe si le fichier n'existe pas encore — même principe que
+// pour le Coran, les lettres et le vocabulaire. Le son ne dépend PAS de la position (début / milieu /
+// fin) : il suffit donc d'UN enregistrement par lettre et par mouvement.
+const HARAKAT_LIST = [
+    { key:"fatha",       ar:"فتحة",      latinName:"Fatha",       mark:"\u064E",       vowel:"a",  group:"basic" },
+    { key:"kasra",       ar:"كسرة",      latinName:"Kasra",       mark:"\u0650",       vowel:"i",  group:"basic" },
+    { key:"damma",       ar:"ضمة",       latinName:"Damma",       mark:"\u064F",       vowel:"u",  group:"basic" },
+    { key:"sukun",       ar:"سكون",      latinName:"Sukun",       mark:"\u0652",       vowel:"",   group:"basic" },
+    { key:"shadda",      ar:"شدّة",      latinName:"Shadda",      mark:"\u0651\u064E", vowel:"a",  group:"advanced", doubled:true },
+    { key:"tanwin_fath", ar:"تنوين فتح", latinName:"Tanwin fath", mark:"\u064B",       vowel:"an", group:"advanced", tanwin:true },
+    { key:"tanwin_kasr", ar:"تنوين كسر", latinName:"Tanwin kasr", mark:"\u064D",       vowel:"in", group:"advanced", tanwin:true },
+    { key:"tanwin_damm", ar:"تنوين ضم",  latinName:"Tanwin damm", mark:"\u064C",       vowel:"un", group:"advanced", tanwin:true },
+];
+const HARAKAT_TRANSLIT = {
+    "ا":"", "ب":"b", "ت":"t", "ث":"th", "ج":"j", "ح":"ḥ", "خ":"kh", "د":"d", "ذ":"dh", "ر":"r",
+    "ز":"z", "س":"s", "ش":"sh", "ص":"ṣ", "ض":"ḍ", "ط":"ṭ", "ظ":"ẓ", "ع":"ʿ", "غ":"gh", "ف":"f",
+    "ق":"q", "ك":"k", "ل":"l", "م":"m", "ن":"n", "ه":"h", "و":"w", "ي":"y"
+};
+// Ces 6 lettres ne se lient JAMAIS à la lettre suivante : pas de forme initiale ni médiane.
+const HARAKAT_NON_CONNECTORS = new Set(["ا", "د", "ذ", "ر", "ز", "و"]);
+let harakatLetterIdx = 1;          // ب par défaut (l'alif est un cas particulier)
+let harakatPos = "isolated";       // isolated | initial | medial | final
+let harakatKey = "fatha";
+let harakatPlayToken = 0;
+const harakatMissingAudio = new Set(); // évite de redemander en boucle un fichier qui n'existe pas encore
+
+function harakatBase(item) { return item.l.replace(/[\u0640\u064B-\u065F\u0670\s]/g, ""); }
+
+// Texte affiché : lettre + mouvement, avec le trait de liaison (ـ) selon la position
+function harakatBuild(base, h, pos) {
+    if (base === "ا") return (h.key === "kasra" ? "إ" : "أ") + h.mark; // l'alif porte la hamza
+    let t = base + h.mark;
+    if (h.key === "tanwin_fath") t += "ا"; // ex: بًا
+    if (pos === "initial") return t + "\u0640";
+    if (pos === "medial")  return "\u0640" + t + "\u0640";
+    if (pos === "final")   return "\u0640" + t;
+    return t;
+}
+// Texte donné à la synthèse vocale : une consonne seule avec soukoun/chadda est imprononçable,
+// on l'appuie donc sur une voyelle (méthode classique : أَبْ = "ab", أَبَّ = "abba")
+function harakatSpoken(base, h) {
+    if (base === "ا") return harakatBuild(base, h, "isolated");
+    if (h.key === "sukun")  return "أَ" + base + "\u0652";
+    if (h.key === "shadda") return "أَ" + base + "\u0651\u064E";
+    if (h.key === "tanwin_fath") return base + "\u064B" + "ا";
+    return base + h.mark;
+}
+function harakatDoubleCons(c) { return c.length > 1 ? c[0] + c : c + c; }
+function harakatLatin(base, h) {
+    if (base === "ا") return h.key === "kasra" ? "i" : h.key === "damma" ? "u" : "a";
+    const c = HARAKAT_TRANSLIT[base] ?? "";
+    if (h.key === "sukun") return "a" + c;
+    if (h.doubled) return harakatDoubleCons(c) + h.vowel;
+    return c + h.vowel;
+}
+function harakatAvailablePositions(base) {
+    if (base === "ا") return ["isolated"];
+    if (HARAKAT_NON_CONNECTORS.has(base)) return ["isolated", "final"];
+    return ["isolated", "initial", "medial", "final"];
+}
+
+function initHarakat() {
+    if (!lettres[harakatLetterIdx]) harakatLetterIdx = 1;
+    renderHarakatStrip();
+    renderHarakatBody();
+}
+
+function renderHarakatStrip() {
+    const strip = document.getElementById("harakat-letter-strip");
+    if (!strip) return;
+    strip.innerHTML = lettres.map((it, i) =>
+        `<button class="harakat-letter-chip ${i === harakatLetterIdx ? "active" : ""}" onclick="harakatSelectLetter(${i})">${harakatBase(it)}</button>`
+    ).join("");
+    // Recentre la lettre choisie dans la bande défilante (ignoré sans erreur si le navigateur ne sait pas)
+    const activeChip = strip.querySelector(".active");
+    if (activeChip && typeof activeChip.scrollIntoView === "function") activeChip.scrollIntoView({ inline: "center", block: "nearest" });
+}
+
+function renderHarakatBody() {
+    const item = lettres[harakatLetterIdx];
+    const base = harakatBase(item);
+    const positions = harakatAvailablePositions(base);
+    if (!positions.includes(harakatPos)) harakatPos = "isolated";
+    const tanwinAllowed = harakatPos === "isolated" || harakatPos === "final";
+    const list = base === "ا" ? HARAKAT_LIST.filter(h => ["fatha", "kasra", "damma"].includes(h.key)) : HARAKAT_LIST;
+    const current = list.find(h => h.key === harakatKey);
+    if (!current || (current.tanwin && !tanwinAllowed)) harakatKey = "fatha";
+    const h = HARAKAT_LIST.find(x => x.key === harakatKey);
+
+    // Aperçu en grand
+    document.getElementById("harakat-big").textContent = harakatBuild(base, h, harakatPos);
+    document.getElementById("harakat-latin").innerHTML = `${harakatLatin(base, h)}<small>${h.ar} · ${h.latinName}</small>`;
+
+    // Positions (début / milieu / fin ...)
+    const posLabel = {
+        isolated: bi("منفصلة", "posIsolated"), initial: bi("أول الكلمة", "posInitial"),
+        medial:   bi("وسط الكلمة", "posMedial"), final:  bi("آخر الكلمة", "posFinal")
+    };
+    document.getElementById("harakat-positions").innerHTML = positions.length > 1
+        ? positions.map(p => `<button class="harakat-pos-btn ${p === harakatPos ? "active" : ""}" onclick="harakatSelectPos('${p}')">${posLabel[p]}</button>`).join("")
+        : "";
+
+    // Cases : 4 mouvements de base, puis les avancés (chadda, tanwin)
+    const tileHtml = t => {
+        const disabled = t.tanwin && !tanwinAllowed;
+        return `<div class="harakat-tile ${t.key === harakatKey ? "selected" : ""} ${disabled ? "disabled" : ""}" ${disabled ? "" : `onclick="harakatPlay('${t.key}')"`}>
+            <div class="harakat-tile-text">${harakatBuild(base, t, harakatPos)}</div>
+            <div class="harakat-tile-latin">${harakatLatin(base, t)}</div>
+            <div class="harakat-tile-name">${t.ar}</div>
+        </div>`;
+    };
+    const group = (title, arr) => arr.length
+        ? `<div class="harakat-group-title">${title}</div><div class="harakat-grid">${arr.map(tileHtml).join("")}</div>` : "";
+    document.getElementById("harakat-tiles").innerHTML =
+        group(bi("الحركات", "harakatBasic"), list.filter(t => t.group === "basic")) +
+        group(bi("متقدّم: الشدّة والتنوين", "harakatAdvanced"), list.filter(t => t.group === "advanced"));
+
+    // Petites explications adaptées à la lettre choisie
+    let note = bi("اضغط على أي مربّع لتسمع نطقه", "harakatHint");
+    if (base === "ا") note += "<br>" + bi("الألف حرف مدّ؛ نتدرّب عليه مع الهمزة", "harakatAlifNote");
+    else if (HARAKAT_NON_CONNECTORS.has(base)) note += "<br>" + bi("هذا الحرف لا يتّصل بما بعده، فله شكلان فقط", "harakatNonConnector");
+    if (base !== "ا" && !tanwinAllowed) note += "<br>" + bi("التنوين يكون في آخر الكلمة فقط", "harakatTanwinNote");
+    document.getElementById("harakat-note").innerHTML = note;
+}
+
+window.harakatSelectLetter = async (i) => {
+    harakatLetterIdx = i;
+    renderHarakatStrip();
+    renderHarakatBody();
+    // On fait entendre le nom de la lettre (enregistrement déjà existant dans l'appli)
+    const item = lettres[i];
+    const token = ++harakatPlayToken;
+    stopCurrentQuranAudio();
+    const ok = await window.playNormalizedAudio(item.son);
+    if (!ok && token === harakatPlayToken) window.speakArabic(harakatBase(item));
+};
+
+window.harakatSelectPos = (pos) => { harakatPos = pos; renderHarakatBody(); };
+
+window.harakatPlay = async (key) => {
+    const h = HARAKAT_LIST.find(x => x.key === key);
+    if (!h) return;
+    harakatKey = key;
+    renderHarakatBody();
+    const item = lettres[harakatLetterIdx];
+    const base = harakatBase(item);
+    const token = ++harakatPlayToken; // si l'élève retape vite, seul le DERNIER appui doit parler
+    stopCurrentQuranAudio();
+    const soundBase = (item.son || "").split("/").pop().replace(/\.mp3$/i, "");
+    const path = `sons/harakat/${soundBase}_${key}.mp3`;
+    if (!harakatMissingAudio.has(path)) {
+        const ok = await window.playNormalizedAudio(path);
+        if (ok) return;
+        harakatMissingAudio.add(path);
+    }
+    if (token === harakatPlayToken) trySpeechSynthesis(harakatSpoken(base, h));
 };
 
 // ====== CHECK EXERCISES ON LOGIN (badge) ======
