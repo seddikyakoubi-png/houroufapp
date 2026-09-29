@@ -1247,8 +1247,7 @@ window.resetQuiz=()=>{document.getElementById("quiz-intro").classList.remove("hi
 // TRACÉ
 function initTrace(){
     const picker=document.getElementById("trace-picker");picker.innerHTML="";
-    lettres.forEach((item,i)=>{const btn=document.createElement("button");btn.className="trace-pick-btn"+(i===traceSelectedLetter?" active":"");btn.textContent=item.l;btn.onclick=()=>{traceSelectedLetter=i;document.querySelectorAll(".trace-pick-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");document.getElementById("trace-guide").textContent=item.l;clearCanvas();};picker.appendChild(btn);});
-    document.getElementById("trace-guide").textContent=lettres[traceSelectedLetter].l;
+    lettres.forEach((item,i)=>{const btn=document.createElement("button");btn.className="trace-pick-btn"+(i===traceSelectedLetter?" active":"");btn.textContent=item.l;btn.onclick=()=>{traceSelectedLetter=i;document.querySelectorAll(".trace-pick-btn").forEach(b=>b.classList.remove("active"));btn.classList.add("active");clearCanvas();drawNotebookBg();};picker.appendChild(btn);});
     // Use enhanced canvas setup
     setupEnhancedCanvas("trace-canvas");
     drawNotebookBg();
@@ -3784,6 +3783,22 @@ function drawNotebookBg() {
         ctx.strokeStyle = "#8FB8E8";
         ctx.lineWidth = 2;
         ctx.beginPath(); ctx.moveTo(0, h * 0.75); ctx.lineTo(w, h * 0.75); ctx.stroke();
+    }
+
+    // ✏️ Lettre-guide grisée, dessinée DANS LE CANEVAS (et non plus en HTML par-dessus) :
+    // avec textBaseline="alphabetic", la ligne de base du texte tombe exactement sur le y donné,
+    // quelle que soit la police réellement chargée par le navigateur — contrairement à un
+    // positionnement CSS (flex/align-items), qui dépend de la boîte de ligne de la police et
+    // s'est révélé peu fiable (mesuré à des hauteurs différentes selon la police chargée).
+    const guideLetter = lettres[traceSelectedLetter]?.l;
+    if (guideLetter) {
+        ctx.save();
+        ctx.fillStyle = "rgba(0,0,0,0.06)";
+        ctx.font = "900 " + (h * 0.55) + "px 'Noto Naskh Arabic', 'Tajawal', sans-serif";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "alphabetic";
+        ctx.fillText(guideLetter, w / 2, h * 0.75);
+        ctx.restore();
     }
 }
 
