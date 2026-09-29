@@ -1730,18 +1730,63 @@ function generateDemoData(){
     return { school, teachers, students };
 }
 
+// ===== Dates d'accès (début / expiration) =====
+// Une date valide est au format ISO "AAAA-MM-JJ" ET existe vraiment au calendrier (pas de 31/02).
+function isIsoDate(str) {
+    if (typeof str !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(str)) return false;
+    const [y, m, d] = str.split("-").map(Number);
+    const dt = new Date(Date.UTC(y, m - 1, d));
+    return dt.getUTCFullYear() === y && dt.getUTCMonth() === m - 1 && dt.getUTCDate() === d;
+}
+// Date du jour selon l'horloge LOCALE de l'utilisateur (et non l'heure UTC, qui décale d'un jour la nuit)
+function todayLocalIso() {
+    const n = new Date();
+    return `${n.getFullYear()}-${String(n.getMonth() + 1).padStart(2, "0")}-${String(n.getDate()).padStart(2, "0")}`;
+}
+function isoToFr(iso) { return isIsoDate(iso) ? iso.split("-").reverse().join("/") : iso; }
+function daysBetweenIso(fromIso, toIso) {
+    return Math.round((Date.parse(toIso + "T00:00:00Z") - Date.parse(fromIso + "T00:00:00Z")) / 86400000);
+}
+// Accepte AAAA-MM-JJ, JJ/MM/AAAA, JJ-MM-AAAA, JJ.MM.AAAA. Vide = "aucune restriction".
+// Retourne { ok:true, iso:"AAAA-MM-JJ" | null } ou { ok:false }.
+function parseDateInput(text) {
+    const t = (text || "").trim();
+    if (!t) return { ok: true, iso: null };
+    let iso = null, m;
+    if ((m = t.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})$/))) iso = `${m[1]}-${m[2].padStart(2, "0")}-${m[3].padStart(2, "0")}`;
+    else if ((m = t.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})$/))) iso = `${m[3]}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}`;
+    return iso && isIsoDate(iso) ? { ok: true, iso } : { ok: false };
+}
+
 // Vérifie que l'école/famille est dans sa période d'accès autorisée (accessStart / accessExpiry,
 // fixées par le super-admin selon le contrat). Retourne null si tout va bien, sinon un message
-// d'erreur bilingue à afficher au lieu de laisser entrer la personne.
+// d'erreur bilingue. Une valeur qui n'est pas une vraie date est IGNORÉE (jamais de blocage par erreur).
 function checkSchoolAccessValid(school) {
-    const today = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
-    if (school.accessStart && today < school.accessStart) {
-        return `⏳ الوصول لم يبدأ بعد (يبدأ في ${school.accessStart}) / L'accès n'a pas encore commencé (débute le ${school.accessStart})`;
+    const today = todayLocalIso();
+    if (isIsoDate(school.accessStart) && today < school.accessStart) {
+        const d = isoToFr(school.accessStart);
+        return `⏳ الوصول لم يبدأ بعد (يبدأ في ${d}) / L'accès n'a pas encore commencé (débute le ${d})`;
     }
-    if (school.accessExpiry && today > school.accessExpiry) {
-        return `⌛ انتهت صلاحية الاشتراك (${school.accessExpiry}) / L'abonnement a expiré le ${school.accessExpiry}. Contactez l'administrateur.`;
+    if (isIsoDate(school.accessExpiry) && today > school.accessExpiry) {
+        const d = isoToFr(school.accessExpiry);
+        return `⌛ انتهت صلاحية الاشتراك (${d}) / L'abonnement a expiré le ${d}. Contactez l'administrateur.`;
     }
     return null;
+}
+
+// Badge coloré affiché pour CHAQUE école dans la liste super-admin (même sans date d'expiration)
+function subscriptionBadgeHtml(s) {
+    const pill = (bg, fg, text) => `<span class="school-city" style="background:${bg};color:${fg};padding:2px 8px;border-radius:8px;font-weight:700">${text}</span>`;
+    const today = todayLocalIso();
+    const startBad  = s.accessStart  && !isIsoDate(s.accessStart);
+    const expiryBad = s.accessExpiry && !isIsoDate(s.accessExpiry);
+    if (startBad || expiryBad) return pill("#fdecea", "#c0392b", "⚠️ Date invalide — à corriger (⚙️)");
+    if (s.accessStart && today < s.accessStart) return pill("#e8f0fe", "#1a56db", `⏳ Débute le ${isoToFr(s.accessStart)}`);
+    if (!s.accessExpiry) return pill("#eef2f3", "#4b6a72", "♾️ Sans expiration");
+    const left = daysBetweenIso(today, s.accessExpiry);
+    if (left < 0)   return pill("#fdecea", "#c0392b", `⌛ Expiré depuis le ${isoToFr(s.accessExpiry)}`);
+    if (left <= 14) return pill("#fff1e0", "#d35400", `⚠️ Expire dans ${left} j (${isoToFr(s.accessExpiry)})`);
+    return pill("#e6f6ea", "#1e8449", `✅ Actif jusqu'au ${isoToFr(s.accessExpiry)}`);
 }
 
 const DEMO_ACCESS_CODE = "HOUROUF-2026"; // ✏️ Changez ce code quand vous voulez
@@ -1942,14 +1987,7 @@ async function supLoadSchools(){
         const orgBadge = s.orgType === "family"
             ? `<span class="school-city" style="background:#eee7fb;color:#764ba2;padding:2px 8px;border-radius:8px">👨‍👩‍👧 Famille</span>`
             : `<span class="school-city" style="background:#e7f3fb;color:#2980b9;padding:2px 8px;border-radius:8px">🏫 École</span>`;
-        // Badge d'abonnement : rouge si expiré, orange si expire dans ≤ 14 jours, vert sinon
-        let expiryBadge = "";
-        if (s.accessExpiry) {
-            const daysLeft = Math.ceil((new Date(s.accessExpiry) - new Date()) / 86400000);
-            const color = daysLeft < 0 ? "#e74c3c" : daysLeft <= 14 ? "#e67e22" : "#27ae60";
-            const label = daysLeft < 0 ? `Expiré (${s.accessExpiry})` : daysLeft <= 14 ? `Expire dans ${daysLeft}j` : `Jusqu'au ${s.accessExpiry}`;
-            expiryBadge = `<span class="school-city" style="color:${color};font-weight:700">📅 ${label}</span>`;
-        }
+        const expiryBadge = subscriptionBadgeHtml(s); // toujours affiché, même sans date d'expiration
         return `<div class="school-card"><div class="school-card-header">
             <div><strong>🏫 ${s.name}</strong> <span class="school-city">${s.city}</span> ${orgBadge} <span class="school-city">${classes} classe(s)</span> <span class="school-city">${langBadge}</span> ${expiryBadge}</div>
             <div>${s.code ? `<span class="code-badge" style="margin-inline-end:8px">🔑 ${s.code}</span>` : `<button onclick="supGenerateSchoolCode('${id}')" class="btn-sm-add" style="margin-inline-end:8px">🔑 Générer un code</button>`}<span class="school-city" style="color:var(--text-light)">${s.adminEmail||""}</span> <button onclick="supResetAdminPassword('${id}','${s.adminEmail||""}')" class="btn-sm-add" style="margin-inline-end:8px" title="Réinitialiser le mot de passe du directeur">🔑 Reset mdp directeur</button> <button onclick="supEditFeatures('${id}')" class="btn-sm-add" style="margin-inline-end:8px" title="Fonctionnalités à la carte (personnalisation payante)">⚙️ Fonctionnalités</button><button onclick="supDeleteSchool('${id}')" class="btn-delete">🗑️</button></div>
@@ -1981,17 +2019,26 @@ window.supEditFeatures = async (schoolId) => {
     );
     if (newMsg === null) return; // annulé
 
-    const newStart = prompt(
-        `Date de DÉBUT d'accès (format AAAA-MM-JJ, laisser vide = pas de restriction) :`,
-        school.accessStart || ""
-    );
-    if (newStart === null) return;
-
-    const newExpiry = prompt(
-        `Date d'EXPIRATION de l'abonnement (format AAAA-MM-JJ, laisser vide = pas d'expiration) :`,
-        school.accessExpiry || ""
-    );
-    if (newExpiry === null) return;
+    // Demande une date, la valide, et redemande tant qu'elle est invalide. Annuler = null.
+    const askDate = (label, currentValue) => {
+        let shown = isIsoDate(currentValue) ? isoToFr(currentValue) : ""; // une ancienne valeur invalide n'est pas pré-remplie
+        while (true) {
+            const answer = prompt(`${label}\n(format JJ/MM/AAAA — laisser VIDE = aucune restriction)`, shown);
+            if (answer === null) return null;
+            const parsed = parseDateInput(answer);
+            if (parsed.ok) return parsed;
+            alert(`❌ "${answer}" n'est pas une date valide.\n\nExemples acceptés : 31/12/2026  ou  2026-12-31\nPour ne mettre AUCUNE date, laissez le champ vide.`);
+            shown = answer;
+        }
+    };
+    const startResult = askDate("Date de DÉBUT d'accès :", school.accessStart);
+    if (startResult === null) return;
+    const expiryResult = askDate("Date d'EXPIRATION de l'abonnement :", school.accessExpiry);
+    if (expiryResult === null) return;
+    if (startResult.iso && expiryResult.iso && expiryResult.iso < startResult.iso) {
+        alert("❌ La date d'expiration est AVANT la date de début : rien n'a été enregistré.");
+        return;
+    }
 
     const features = { ...current, customWelcomeMessage: newMsg.trim() || null };
     // Nettoyer les clés vides pour garder le document propre
@@ -1999,8 +2046,8 @@ window.supEditFeatures = async (schoolId) => {
 
     await setDoc(doc(db, "ecoles", schoolId), {
         features,
-        accessStart: newStart.trim() || null,
-        accessExpiry: newExpiry.trim() || null
+        accessStart: startResult.iso,
+        accessExpiry: expiryResult.iso
     }, { merge: true });
     alert("✅ Fonctionnalités et dates mises à jour pour " + school.name);
 };
