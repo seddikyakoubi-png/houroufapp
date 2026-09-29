@@ -449,6 +449,8 @@ const DYNAMIC_I18N = {
     posMedial:        { fr:"Milieu", nl:"Midden", en:"Middle", es:"Medio" },
     posFinal:         { fr:"Fin", nl:"Einde", en:"End", es:"Final" },
     harakatBasic:     { fr:"Voyelles brèves et soukoun", nl:"Korte klinkers en sukun", en:"Short vowels and sukun", es:"Vocales breves y sukun" },
+    harakatMadd:      { fr:"Voyelles longues : lettres de prolongation (حروف المدّ)", nl:"Lange klinkers: verlengletters (حروف المدّ)", en:"Long vowels: lengthening letters (حروف المدّ)", es:"Vocales largas: letras de prolongación (حروف المدّ)" },
+    harakatMaddNote:  { fr:"ا, و et ي allongent la voyelle : بَا se lit bā (deux temps), plus long que بَ (ba)", nl:"ا, و en ي verlengen de klinker: بَا lees je als bā (twee tellen), langer dan بَ (ba)", en:"ا, و and ي lengthen the vowel: بَا is read bā (two beats), longer than بَ (ba)", es:"ا, و y ي alargan la vocal: بَا se lee bā (dos tiempos), más largo que بَ (ba)" },
     harakatAdvanced:  { fr:"Avancé : chadda et tanwin", nl:"Gevorderd: shadda en tanwin", en:"Advanced: shadda and tanwin", es:"Avanzado: shadda y tanwin" },
     harakatHint:      { fr:"Touche une case pour entendre sa prononciation", nl:"Tik op een vakje om de uitspraak te horen", en:"Tap a tile to hear how it sounds", es:"Toca una casilla para oír su pronunciación" },
     harakatAlifNote:  { fr:"L'alif est une lettre de prolongation : on le travaille avec la hamza", nl:"De alif is een verlengletter: we oefenen hem met de hamza", en:"Alif is a lengthening letter: we practise it with the hamza", es:"El alif es una letra de prolongación: se practica con la hamza" },
@@ -3138,6 +3140,9 @@ const HARAKAT_LIST = [
     { key:"kasra",       ar:"كسرة",      latinName:"Kasra",       mark:"\u0650",       vowel:"i",  group:"basic" },
     { key:"damma",       ar:"ضمة",       latinName:"Damma",       mark:"\u064F",       vowel:"u",  group:"basic" },
     { key:"sukun",       ar:"سكون",      latinName:"Sukun",       mark:"\u0652",       vowel:"",   group:"basic" },
+    { key:"mad_alif",    ar:"مدّ بالألف", latinName:"Madd alif",   mark:"\u064E",       vowel:"ā",  group:"madd", tail:"ا" },
+    { key:"mad_waw",     ar:"مدّ بالواو", latinName:"Madd waw",    mark:"\u064F",       vowel:"ū",  group:"madd", tail:"و" },
+    { key:"mad_ya",      ar:"مدّ بالياء", latinName:"Madd ya",     mark:"\u0650",       vowel:"ī",  group:"madd", tail:"ي" },
     { key:"shadda",      ar:"شدّة",      latinName:"Shadda",      mark:"\u0651\u064E", vowel:"a",  group:"advanced", doubled:true },
     { key:"tanwin_fath", ar:"تنوين فتح", latinName:"Tanwin fath", mark:"\u064B",       vowel:"an", group:"advanced", tanwin:true },
     { key:"tanwin_kasr", ar:"تنوين كسر", latinName:"Tanwin kasr", mark:"\u064D",       vowel:"in", group:"advanced", tanwin:true },
@@ -3159,8 +3164,19 @@ const harakatMissingAudio = new Set(); // évite de redemander en boucle un fich
 function harakatBase(item) { return item.l.replace(/[\u0640\u064B-\u065F\u0670\s]/g, ""); }
 
 // Texte affiché : lettre + mouvement, avec le trait de liaison (ـ) selon la position
+// Alif + madd : آ (bā → ā), أُو (ū), إِي (ī)
+const HARAKAT_ALIF_MADD = { mad_alif:"آ", mad_waw:"أُو", mad_ya:"إِي" };
 function harakatBuild(base, h, pos) {
-    if (base === "ا") return (h.key === "kasra" ? "إ" : "أ") + h.mark; // l'alif porte la hamza
+    if (base === "ا") return HARAKAT_ALIF_MADD[h.key] || ((h.key === "kasra" ? "إ" : "أ") + h.mark); // l'alif porte la hamza
+    if (h.tail) {
+        // Lettre + voyelle + lettre de prolongation. ا et و ne se lient jamais à la suivante :
+        // pas de trait de liaison après eux ; ي se lie, donc il le garde (بِيـ).
+        const core = base + h.mark + h.tail;
+        const joinsNext = !HARAKAT_NON_CONNECTORS.has(h.tail);
+        const before = (pos === "medial" || pos === "final") ? "\u0640" : "";
+        const after  = (pos === "initial" || pos === "medial") && joinsNext ? "\u0640" : "";
+        return before + core + after;
+    }
     let t = base + h.mark;
     if (h.key === "tanwin_fath") t += "ا"; // ex: بًا
     if (pos === "initial") return t + "\u0640";
@@ -3172,6 +3188,7 @@ function harakatBuild(base, h, pos) {
 // on l'appuie donc sur une voyelle (méthode classique : أَبْ = "ab", أَبَّ = "abba")
 function harakatSpoken(base, h) {
     if (base === "ا") return harakatBuild(base, h, "isolated");
+    if (h.tail) return base + h.mark + h.tail;
     if (h.key === "sukun")  return "أَ" + base + "\u0652";
     if (h.key === "shadda") return "أَ" + base + "\u0651\u064E";
     if (h.key === "tanwin_fath") return base + "\u064B" + "ا";
@@ -3179,7 +3196,7 @@ function harakatSpoken(base, h) {
 }
 function harakatDoubleCons(c) { return c.length > 1 ? c[0] + c : c + c; }
 function harakatLatin(base, h) {
-    if (base === "ا") return h.key === "kasra" ? "i" : h.key === "damma" ? "u" : "a";
+    if (base === "ا") return h.tail ? h.vowel : h.key === "kasra" ? "i" : h.key === "damma" ? "u" : "a";
     const c = HARAKAT_TRANSLIT[base] ?? "";
     if (h.key === "sukun") return "a" + c;
     if (h.doubled) return harakatDoubleCons(c) + h.vowel;
@@ -3214,7 +3231,7 @@ function renderHarakatBody() {
     const positions = harakatAvailablePositions(base);
     if (!positions.includes(harakatPos)) harakatPos = "isolated";
     const tanwinAllowed = harakatPos === "isolated" || harakatPos === "final";
-    const list = base === "ا" ? HARAKAT_LIST.filter(h => ["fatha", "kasra", "damma"].includes(h.key)) : HARAKAT_LIST;
+    const list = base === "ا" ? HARAKAT_LIST.filter(h => ["fatha", "kasra", "damma"].includes(h.key) || h.tail) : HARAKAT_LIST;
     const current = list.find(h => h.key === harakatKey);
     if (!current || (current.tanwin && !tanwinAllowed)) harakatKey = "fatha";
     const h = HARAKAT_LIST.find(x => x.key === harakatKey);
@@ -3232,7 +3249,7 @@ function renderHarakatBody() {
         ? positions.map(p => `<button class="harakat-pos-btn ${p === harakatPos ? "active" : ""}" onclick="harakatSelectPos('${p}')">${posLabel[p]}</button>`).join("")
         : "";
 
-    // Cases : 4 mouvements de base, puis les avancés (chadda, tanwin)
+    // Cases : 4 mouvements de base, puis les حروف المدّ (بَا بُو بِي), puis les avancés (chadda, tanwin)
     const tileHtml = t => {
         const disabled = t.tanwin && !tanwinAllowed;
         return `<div class="harakat-tile ${t.key === harakatKey ? "selected" : ""} ${disabled ? "disabled" : ""}" ${disabled ? "" : `onclick="harakatPlay('${t.key}')"`}>
@@ -3245,12 +3262,14 @@ function renderHarakatBody() {
         ? `<div class="harakat-group-title">${title}</div><div class="harakat-grid">${arr.map(tileHtml).join("")}</div>` : "";
     document.getElementById("harakat-tiles").innerHTML =
         group(bi("الحركات", "harakatBasic"), list.filter(t => t.group === "basic")) +
+        group(bi("حروف المدّ", "harakatMadd"), list.filter(t => t.group === "madd")) +
         group(bi("متقدّم: الشدّة والتنوين", "harakatAdvanced"), list.filter(t => t.group === "advanced"));
 
     // Petites explications adaptées à la lettre choisie
     let note = bi("اضغط على أي مربّع لتسمع نطقه", "harakatHint");
     if (base === "ا") note += "<br>" + bi("الألف حرف مدّ؛ نتدرّب عليه مع الهمزة", "harakatAlifNote");
     else if (HARAKAT_NON_CONNECTORS.has(base)) note += "<br>" + bi("هذا الحرف لا يتّصل بما بعده، فله شكلان فقط", "harakatNonConnector");
+    if (h.tail) note += "<br>" + bi("الألف والواو والياء تمدّ الصوت: بَا أطول من بَ", "harakatMaddNote");
     if (base !== "ا" && !tanwinAllowed) note += "<br>" + bi("التنوين يكون في آخر الكلمة فقط", "harakatTanwinNote");
     document.getElementById("harakat-note").innerHTML = note;
 }
