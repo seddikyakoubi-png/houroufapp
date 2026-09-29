@@ -833,7 +833,12 @@ body {
     .circle { width: 62px; height: 62px; font-size: 28px; }
     .quiz-choices { gap: 8px; }
     .choice-btn { font-size: 24px; padding: 12px 8px; }
-    #trace-canvas { width: 250px !important; height: 250px !important; }
+    /* ⚠️ Ancienne règle "width/height: 250px !important" retirée ici : elle figeait UNIQUEMENT
+       le calque de dessin (#trace-canvas) à une taille fixe, alors que le fond ligné (#trace-bg-canvas)
+       et la lettre-guide (#trace-guide) restent responsives (100% du cadre, lui-même limité à 92vw
+       plus haut dans le fichier) — les 3 calques se désalignaient donc entre eux sur mobile.
+       Sans cette ligne, #trace-canvas reste à width:100%;height:100% (son style en ligne dans le HTML),
+       exactement comme ses deux calques voisins. */
 }
 
 .btn-reset-all {
