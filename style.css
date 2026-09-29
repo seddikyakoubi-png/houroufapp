@@ -644,12 +644,15 @@ body {
     color: rgba(0,0,0,0.06);
     font-family: 'Tajawal', sans-serif;
     font-weight: 900;
-    height: 300px;
+    line-height: 1;
     display: flex;
-    align-items: center;
+    align-items: flex-end;    /* la lettre "pose" sur le bord bas de sa boîte, donc sur la ligne bleue */
     justify-content: center;
     position: absolute;
-    width: 300px;
+    top: 0;
+    bottom: 28%;   /* 25% + un petit ajustement : la police déborde légèrement sous sa boîte de ligne */
+    left: 0;
+    right: 0;
     user-select: none;
     pointer-events: none;
 }
@@ -830,7 +833,6 @@ body {
     .circle { width: 62px; height: 62px; font-size: 28px; }
     .quiz-choices { gap: 8px; }
     .choice-btn { font-size: 24px; padding: 12px 8px; }
-    .trace-guide { width: 250px; }
     #trace-canvas { width: 250px !important; height: 250px !important; }
 }
 
