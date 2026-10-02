@@ -452,6 +452,30 @@ const DYNAMIC_I18N = {
     harakatMadd:      { fr:"Voyelles longues : lettres de prolongation (حروف المدّ)", nl:"Lange klinkers: verlengletters (حروف المدّ)", en:"Long vowels: lengthening letters (حروف المدّ)", es:"Vocales largas: letras de prolongación (حروف المدّ)" },
     harakatMaddNote:  { fr:"ا, و et ي allongent la voyelle : بَا se lit bā (deux temps), plus long que بَ (ba)", nl:"ا, و en ي verlengen de klinker: بَا lees je als bā (twee tellen), langer dan بَ (ba)", en:"ا, و and ي lengthen the vowel: بَا is read bā (two beats), longer than بَ (ba)", es:"ا, و y ي alargan la vocal: بَا se lee bā (dos tiempos), más largo que بَ (ba)" },
     harakatAdvanced:  { fr:"Avancé : chadda et tanwin", nl:"Gevorderd: shadda en tanwin", en:"Advanced: shadda and tanwin", es:"Avanzado: shadda y tanwin" },
+    seriesTitle:      { fr:"Lecture en série", nl:"Reeks afspelen", en:"Syllable series", es:"Lectura en serie" },
+    seriesLetters:    { fr:"Lettres", nl:"Letters", en:"Letters", es:"Letras" },
+    seriesCurrent:    { fr:"Lettre choisie", nl:"Gekozen letter", en:"Chosen letter", es:"Letra elegida" },
+    seriesAll:        { fr:"Tout l'alphabet", nl:"Heel het alfabet", en:"Whole alphabet", es:"Todo el alfabeto" },
+    seriesCustom:     { fr:"Mon choix", nl:"Mijn keuze", en:"My choice", es:"Mi elección" },
+    seriesMoves:      { fr:"Voyelles", nl:"Klinkers", en:"Vowels", es:"Vocales" },
+    seriesOrder:      { fr:"Ordre", nl:"Volgorde", en:"Order", es:"Orden" },
+    seriesByLetter:   { fr:"Lettre par lettre", nl:"Letter per letter", en:"Letter by letter", es:"Letra por letra" },
+    seriesByMove:     { fr:"Voyelle par voyelle", nl:"Klinker per klinker", en:"Vowel by vowel", es:"Vocal por vocal" },
+    seriesSpeed:      { fr:"Vitesse", nl:"Snelheid", en:"Speed", es:"Velocidad" },
+    speedFast:        { fr:"Rapide", nl:"Snel", en:"Fast", es:"Rápido" },
+    speedNormal:      { fr:"Normal", nl:"Normaal", en:"Normal", es:"Normal" },
+    speedSlow:        { fr:"Lent", nl:"Traag", en:"Slow", es:"Lento" },
+    speedEcho:        { fr:"Répète après moi", nl:"Zeg het na", en:"Repeat after me", es:"Repite después de mí" },
+    seriesLoop:       { fr:"En boucle", nl:"Herhalen", en:"Loop", es:"En bucle" },
+    seriesPlay:       { fr:"Écouter la série", nl:"Reeks beluisteren", en:"Play the series", es:"Escuchar la serie" },
+    seriesPause:      { fr:"Pause", nl:"Pauze", en:"Pause", es:"Pausa" },
+    seriesResume:     { fr:"Reprendre", nl:"Hervatten", en:"Resume", es:"Reanudar" },
+    seriesStop:       { fr:"Arrêter", nl:"Stoppen", en:"Stop", es:"Detener" },
+    seriesDone:       { fr:"Bravo, série terminée !", nl:"Bravo, reeks afgelopen!", en:"Well done, series finished!", es:"¡Bravo, serie terminada!" },
+    seriesEmpty:      { fr:"Choisis au moins une lettre et une voyelle", nl:"Kies minstens één letter en één klinker", en:"Choose at least one letter and one vowel", es:"Elige al menos una letra y una vocal" },
+    seriesEchoHint:   { fr:"Après chaque syllabe, l'appli attend que tu la répètes à voix haute", nl:"Na elke lettergreep wacht de app tot je ze hardop herhaalt", en:"After each syllable, the app waits for you to repeat it aloud", es:"Después de cada sílaba, la app espera a que la repitas en voz alta" },
+    seriesLocked:     { fr:"Option premium", nl:"Premium-optie", en:"Premium option", es:"Opción premium" },
+    seriesLockedHint: { fr:"Fais défiler automatiquement des séries de syllabes (بَ بُ بِ، تَ تُ تِ…) à la vitesse de ton choix. Disponible avec l'abonnement premium.", nl:"Laat reeksen lettergrepen (بَ بُ بِ، تَ تُ تِ…) automatisch afspelen op jouw tempo. Beschikbaar met het premium-abonnement.", en:"Automatically play series of syllables (بَ بُ بِ، تَ تُ تِ…) at the speed you choose. Available with the premium subscription.", es:"Reproduce automáticamente series de sílabas (بَ بُ بِ، تَ تُ تِ…) a la velocidad que elijas. Disponible con la suscripción premium." },
     harakatHint:      { fr:"Touche une case pour entendre sa prononciation", nl:"Tik op een vakje om de uitspraak te horen", en:"Tap a tile to hear how it sounds", es:"Toca una casilla para oír su pronunciación" },
     harakatAlifNote:  { fr:"L'alif est une lettre de prolongation : on le travaille avec la hamza", nl:"De alif is een verlengletter: we oefenen hem met de hamza", en:"Alif is a lengthening letter: we practise it with the hamza", es:"El alif es una letra de prolongación: se practica con la hamza" },
     harakatNonConnector: { fr:"Cette lettre ne se lie pas à la suivante : elle n'a que 2 formes", nl:"Deze letter verbindt niet met de volgende: ze heeft maar 2 vormen", en:"This letter does not join the next one: it has only 2 forms", es:"Esta letra no se une a la siguiente: solo tiene 2 formas" },
@@ -2020,6 +2044,12 @@ window.supEditFeatures = async (schoolId) => {
     );
     if (newMsg === null) return; // annulé
 
+    const seriesOn = confirm(
+        `Option PREMIUM « Lecture en série des syllabes » (onglet الحركات) pour "${school.name}" :\n\n` +
+        `Actuellement : ${current.syllableSeries ? "✅ ACTIVÉE" : "❌ désactivée"}\n\n` +
+        `OK = activer   ·   Annuler = désactiver`
+    );
+
     // Demande une date, la valide, et redemande tant qu'elle est invalide. Annuler = null.
     const askDate = (label, currentValue) => {
         let shown = isIsoDate(currentValue) ? isoToFr(currentValue) : ""; // une ancienne valeur invalide n'est pas pré-remplie
@@ -2041,7 +2071,7 @@ window.supEditFeatures = async (schoolId) => {
         return;
     }
 
-    const features = { ...current, customWelcomeMessage: newMsg.trim() || null };
+    const features = { ...current, customWelcomeMessage: newMsg.trim() || null, syllableSeries: seriesOn || null };
     // Nettoyer les clés vides pour garder le document propre
     Object.keys(features).forEach(k => { if (!features[k]) delete features[k]; });
 
@@ -3113,7 +3143,7 @@ window.switchTab = (name, btn) => {
     _origSwitchTab(name, btn);
     if (name === "exercises") loadStudentExercises();
     if (name === "vocab") loadVocab();
-    if (name === "harakat") initHarakat();
+    if (name === "harakat") initHarakat(); else hkSeriesStop(); // on coupe la série si on quitte l'onglet
     if (name === "learn") { buildMenu(); updateProgress(); }
     if (name === "quran") { loadQuranProgress().then(() => showQuranHome()); }
     // FIX: reset quiz view when switching to ikhtebar tab
@@ -3214,6 +3244,12 @@ function initHarakat() {
     harakatKey = "fatha";
     harakatPos = "isolated";
     if (!lettres[harakatLetterIdx]) harakatLetterIdx = 0;
+    hkSeriesStop();
+    hkSeries.letters = "current";
+    // Option premium : on vérifie une seule fois à l'ouverture, puis on redessine le bloc
+    hkSeriesAllowed = null;
+    hasFeature("syllableSeries").then(ok => { hkSeriesAllowed = ok; renderHarakatSeries(); })
+                                .catch(() => { hkSeriesAllowed = false; renderHarakatSeries(); });
     renderHarakatStrip();
     renderHarakatBody();
 }
@@ -3276,6 +3312,7 @@ function renderHarakatBody() {
     if (h.tail) note += "<br>" + bi("الألف والواو والياء تمدّ الصوت: بَا أطول من بَ", "harakatMaddNote");
     if (base !== "ا" && !tanwinAllowed) note += "<br>" + bi("التنوين يكون في آخر الكلمة فقط", "harakatTanwinNote");
     document.getElementById("harakat-note").innerHTML = note;
+    if (!hkSeries.playing && !hkSeries.paused) renderHarakatSeries();
 }
 
 window.harakatSelectLetter = (i) => {
@@ -3291,6 +3328,7 @@ window.harakatSelectPos = (pos) => { harakatPos = pos; renderHarakatBody(); };
 window.harakatPlay = async (key) => {
     const h = HARAKAT_LIST.find(x => x.key === key);
     if (!h) return;
+    if (hkSeries.playing || hkSeries.paused) hkSeriesStop(); // un appui manuel interrompt la série
     harakatKey = key;
     renderHarakatBody();
     const item = lettres[harakatLetterIdx];
@@ -3306,6 +3344,214 @@ window.harakatPlay = async (key) => {
     }
     if (token === harakatPlayToken) trySpeechSynthesis(harakatSpoken(base, h));
 };
+
+
+// ============================================================
+//  🎵 LECTURE EN SÉRIE (option premium « syllableSeries »)
+//  Ex. : بَ بُ بِ ، تَ تُ تِ ، ثَ ثُ ثِ … jouées automatiquement,
+//  avec choix des lettres, des voyelles, de l'ordre et de la vitesse.
+// ============================================================
+const HK_SERIES_KEYS = ["fatha", "damma", "kasra", "sukun", "mad_alif", "mad_waw", "mad_ya",
+                        "shadda", "tanwin_fath", "tanwin_damm", "tanwin_kasr"]; // ordre traditionnel : a, u, i
+const HK_SPEED_PAUSE = { fast: 250, normal: 700, slow: 1300 }; // pause (ms) après chaque syllabe
+let hkSeriesAllowed = null; // null = vérification en cours
+const hkSeries = {
+    letters: "current", custom: new Set([1, 2, 3]), keys: ["fatha", "damma", "kasra"],
+    order: "letter", speed: "normal", loop: false,
+    playing: false, paused: false, done: false, token: 0, idx: 0, seq: []
+};
+
+function hkSeriesBuild() {
+    const s = hkSeries;
+    let idxs = s.letters === "all" ? lettres.map((_, i) => i)
+             : s.letters === "custom" ? [...s.custom].sort((a, b) => a - b)
+             : [harakatLetterIdx];
+    const keys = HK_SERIES_KEYS.filter(k => s.keys.includes(k));
+    const make = (i, key) => {
+        const item = lettres[i], base = harakatBase(item);
+        if (base === "ا" && !["fatha", "kasra", "damma", "mad_alif", "mad_waw", "mad_ya"].includes(key)) return null;
+        const h = HARAKAT_LIST.find(x => x.key === key);
+        const soundBase = (item.son || "").split("/").pop().replace(/\.mp3$/i, "");
+        return { text: harakatBuild(base, h, "isolated"), latin: harakatLatin(base, h),
+                 spoken: harakatSpoken(base, h), path: `sons/harakat/${soundBase}_${key}.mp3` };
+    };
+    const seq = [];
+    if (s.order === "move") keys.forEach(k => idxs.forEach(i => { const it = make(i, k); if (it) seq.push(it); }));
+    else idxs.forEach(i => keys.forEach(k => { const it = make(i, k); if (it) seq.push(it); }));
+    s.seq = seq;
+}
+
+// Attente interrompue dès que la série est arrêtée (le jeton change)
+function hkUntilStopped(promise, token) {
+    return new Promise(resolve => {
+        const timer = setInterval(() => { if (token !== hkSeries.token) { clearInterval(timer); resolve(); } }, 80);
+        promise.then(() => { clearInterval(timer); resolve(); });
+    });
+}
+function hkSleep(ms, token) { return hkUntilStopped(new Promise(r => setTimeout(r, ms)), token); }
+function hkSpeakAndWait(text) {
+    return new Promise(resolve => {
+        try {
+            window.speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = "ar-SA"; u.rate = 0.75;
+            const v = window.speechSynthesis.getVoices().find(x => x.lang && x.lang.startsWith("ar"));
+            if (v) u.voice = v;
+            u.onend = resolve; u.onerror = resolve;
+            window.speechSynthesis.speak(u);
+            setTimeout(resolve, 2500); // filet de sécurité
+        } catch (e) { resolve(); }
+    });
+}
+
+async function hkSeriesRun(token) {
+    const s = hkSeries;
+    let next = loadNormalizedBuffer(s.seq[s.idx].path);
+    while (token === s.token) {
+        hkSeriesShow(s.idx);
+        const loaded = await next;
+        if (token !== s.token) return;
+        // On prépare déjà la syllabe suivante pendant que celle-ci joue (pas de blanc entre les deux)
+        const ni = s.idx + 1 < s.seq.length ? s.idx + 1 : (s.loop ? 0 : -1);
+        next = ni >= 0 ? loadNormalizedBuffer(s.seq[ni].path) : null;
+        let duration = 0.8;
+        if (loaded) { duration = loaded.audioBuffer.duration; await hkUntilStopped(playLoadedBuffer(loaded), token); }
+        else await hkUntilStopped(hkSpeakAndWait(s.seq[s.idx].spoken), token);
+        if (token !== s.token) return;
+        const pause = s.speed === "echo" ? Math.round(duration * 1000) + 1000 : HK_SPEED_PAUSE[s.speed];
+        await hkSleep(pause, token);
+        if (token !== s.token) return;
+        if (ni < 0) { s.playing = false; s.done = true; s.idx = 0; renderHarakatSeries(); return; }
+        s.idx = ni;
+    }
+}
+
+// Met à jour l'affichage pendant la lecture, sans tout redessiner
+function hkSeriesShow(n) {
+    const it = hkSeries.seq[n]; if (!it) return;
+    const big = document.getElementById("hk-s-big"), lat = document.getElementById("hk-s-latin"),
+          cnt = document.getElementById("hk-s-count");
+    if (big) { big.textContent = it.text; big.classList.remove("pop"); void big.offsetWidth; big.classList.add("pop"); }
+    if (lat) lat.textContent = it.latin;
+    if (cnt) cnt.textContent = `${n + 1} / ${hkSeries.seq.length}`;
+    document.querySelectorAll(".hk-s-item").forEach((el, k) => {
+        el.classList.toggle("current", k === n);
+        el.classList.toggle("past", k < n);
+    });
+    const cur = document.getElementById(`hk-s-it-${n}`);
+    if (cur && typeof cur.scrollIntoView === "function") cur.scrollIntoView({ inline: "center", block: "nearest" });
+}
+
+function hkSeriesStop() {
+    hkSeries.token++;
+    if (hkSeries.playing) stopCurrentQuranAudio();
+    hkSeries.playing = false; hkSeries.paused = false; hkSeries.done = false; hkSeries.idx = 0;
+}
+
+window.hkSeriesPlay = () => {
+    const s = hkSeries;
+    if (!s.paused) { hkSeriesBuild(); s.idx = 0; }
+    if (!s.seq.length) return;
+    s.playing = true; s.paused = false; s.done = false;
+    const token = ++s.token;
+    stopCurrentQuranAudio();
+    renderHarakatSeries();
+    hkSeriesRun(token);
+};
+window.hkSeriesPause = () => {
+    hkSeries.token++; stopCurrentQuranAudio();
+    hkSeries.playing = false; hkSeries.paused = true;
+    renderHarakatSeries();
+};
+window.hkSeriesStopBtn = () => { hkSeriesStop(); renderHarakatSeries(); };
+
+// Changement d'un réglage : on arrête la série en cours puis on redessine
+window.hkSeriesSet = (field, value) => {
+    const s = hkSeries;
+    hkSeriesStop();
+    if (field === "key") { s.keys = s.keys.includes(value) ? s.keys.filter(k => k !== value) : [...s.keys, value]; }
+    else if (field === "letter") { s.custom.has(value) ? s.custom.delete(value) : s.custom.add(value); }
+    else if (field === "loop") { s.loop = !s.loop; }
+    else s[field] = value;
+    renderHarakatSeries();
+};
+
+function renderHarakatSeries() {
+    const box = document.getElementById("harakat-series");
+    if (!box) return;
+    if (hkSeriesAllowed === null) { box.innerHTML = ""; return; }
+    if (!hkSeriesAllowed) {
+        box.innerHTML = `<div class="hk-series hk-locked">
+            <div class="hk-series-title">🎵 ${bi("سلسلة المقاطع", "seriesTitle")} <span class="hk-premium">🔒 ${bi("ميزة مميّزة", "seriesLocked")}</span></div>
+            <div class="hk-locked-demo">بَ بُ بِ ‹ تَ تُ تِ ‹ ثَ ثُ ثِ …</div>
+            <p class="hk-locked-text">${bi("تشغيل سلاسل المقاطع تلقائيًا بالسرعة التي تختارها", "seriesLockedHint")}</p>
+        </div>`;
+        return;
+    }
+    const s = hkSeries;
+    if (!s.playing && !s.paused) hkSeriesBuild();
+    const busy = s.playing || s.paused;
+    const chip = (label, active, call, extra = "") =>
+        `<button class="hk-chip ${active ? "active" : ""} ${extra}" onclick="${call}">${label}</button>`;
+    const cur = s.seq[s.idx];
+
+    const letterChips = s.letters === "custom"
+        ? `<div class="hk-s-letters">${lettres.map((it, i) =>
+            chip(harakatBase(it), s.custom.has(i), `hkSeriesSet('letter',${i})`, "hk-chip-letter")).join("")}</div>` : "";
+    const moveChips = HK_SERIES_KEYS.map(k => {
+        const h = HARAKAT_LIST.find(x => x.key === k);
+        return chip(`<span class="hk-chip-ar">${harakatBuild("ب", h, "isolated")}</span>`, s.keys.includes(k), `hkSeriesSet('key','${k}')`, "hk-chip-move");
+    }).join("");
+
+    const controls = s.playing
+        ? `<button class="hk-btn hk-btn-main" onclick="hkSeriesPause()">⏸️ ${bi("إيقاف مؤقّت", "seriesPause")}</button>
+           <button class="hk-btn" onclick="hkSeriesStopBtn()">⏹️ ${bi("إيقاف", "seriesStop")}</button>`
+        : s.paused
+        ? `<button class="hk-btn hk-btn-main" onclick="hkSeriesPlay()">▶️ ${bi("متابعة", "seriesResume")}</button>
+           <button class="hk-btn" onclick="hkSeriesStopBtn()">⏹️ ${bi("إيقاف", "seriesStop")}</button>`
+        : `<button class="hk-btn hk-btn-main" onclick="hkSeriesPlay()" ${s.seq.length ? "" : "disabled"}>▶️ ${bi("استمع إلى السلسلة", "seriesPlay")}</button>`;
+
+    box.innerHTML = `<div class="hk-series">
+        <div class="hk-series-title">🎵 ${bi("سلسلة المقاطع", "seriesTitle")}</div>
+        <div class="hk-s-display ${s.done ? "done" : ""}">
+            <div id="hk-s-big" class="hk-s-big">${s.done ? "🎉" : busy && cur ? cur.text : (s.seq[0]?.text || "—")}</div>
+            <div id="hk-s-latin" class="hk-s-latin">${s.done ? bi("أحسنت! انتهت السلسلة", "seriesDone") : busy && cur ? cur.latin : (s.seq[0]?.latin || "")}</div>
+            <div id="hk-s-count" class="hk-s-count">${s.seq.length ? (busy ? `${s.idx + 1} / ${s.seq.length}` : `${s.seq.length} 🔊`) : ""}</div>
+        </div>
+        <div class="hk-s-ribbon">${s.seq.length
+            ? s.seq.map((it, n) => `<span id="hk-s-it-${n}" class="hk-s-item ${busy && n === s.idx ? "current" : ""} ${busy && n < s.idx ? "past" : ""}">${it.text}</span>`).join("")
+            : `<span class="hk-s-empty">${bi("اختر حرفًا وحركة على الأقل", "seriesEmpty")}</span>`}</div>
+        <div class="hk-s-controls">${controls}</div>
+
+        <div class="hk-s-label">${bi("الحروف", "seriesLetters")}</div>
+        <div class="hk-s-row">
+            ${chip(bi("الحرف المختار", "seriesCurrent") + ` (${harakatBase(lettres[harakatLetterIdx])})`, s.letters === "current", "hkSeriesSet('letters','current')")}
+            ${chip(bi("كلّ الحروف", "seriesAll"), s.letters === "all", "hkSeriesSet('letters','all')")}
+            ${chip(bi("اختياري", "seriesCustom"), s.letters === "custom", "hkSeriesSet('letters','custom')")}
+        </div>
+        ${letterChips}
+
+        <div class="hk-s-label">${bi("الحركات", "seriesMoves")}</div>
+        <div class="hk-s-row">${moveChips}</div>
+
+        <div class="hk-s-label">${bi("الترتيب", "seriesOrder")}</div>
+        <div class="hk-s-row">
+            ${chip(bi("حرفًا حرفًا", "seriesByLetter") + " <span class='hk-chip-ar'>(بَ بُ ‹ تَ تُ)</span>", s.order === "letter", "hkSeriesSet('order','letter')")}
+            ${chip(bi("حركةً حركةً", "seriesByMove") + " <span class='hk-chip-ar'>(بَ تَ ‹ بُ تُ)</span>", s.order === "move", "hkSeriesSet('order','move')")}
+        </div>
+
+        <div class="hk-s-label">${bi("السرعة", "seriesSpeed")}</div>
+        <div class="hk-s-row">
+            ${chip("🐇 " + bi("سريع", "speedFast"), s.speed === "fast", "hkSeriesSet('speed','fast')")}
+            ${chip("🚶 " + bi("عادي", "speedNormal"), s.speed === "normal", "hkSeriesSet('speed','normal')")}
+            ${chip("🐢 " + bi("بطيء", "speedSlow"), s.speed === "slow", "hkSeriesSet('speed','slow')")}
+            ${chip("🗣️ " + bi("أعد بعدي", "speedEcho"), s.speed === "echo", "hkSeriesSet('speed','echo')")}
+            ${chip("🔁 " + bi("تكرار", "seriesLoop"), s.loop, "hkSeriesSet('loop')")}
+        </div>
+        ${s.speed === "echo" ? `<p class="hk-s-hint">${bi("بعد كلّ مقطع، انتظر وردّده بصوت عالٍ", "seriesEchoHint")}</p>` : ""}
+    </div>`;
+    if (busy) hkSeriesShow(s.idx);
+}
 
 // ====== CHECK EXERCISES ON LOGIN (badge) ======
 async function checkExerciseBadge() {

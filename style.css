@@ -1829,3 +1829,67 @@ body {
 .harakat-tile-latin { font-size: 17px; font-weight: 800; color: var(--primary); }
 .harakat-tile-name { font-size: 12px; color: var(--text-light); margin-top: 2px; }
 .harakat-note { font-size: 13px; color: #666; text-align: center; margin-top: 14px; min-height: 18px; line-height: 1.6; }
+
+
+/* ===== 🎵 Lecture en série des syllabes (premium) ===== */
+.hk-series {
+    margin-top: 22px; background: #fff; border-radius: 24px; padding: 16px 14px 18px;
+    box-shadow: var(--shadow-sm); border: 2px solid #f0eafc; font-family: 'Tajawal', sans-serif;
+}
+.hk-series-title { font-size: 18px; font-weight: 900; color: #764ba2; text-align: center; margin-bottom: 10px; }
+.hk-s-display {
+    text-align: center; color: #fff; border-radius: 20px; padding: 6px 10px 10px;
+    background: linear-gradient(135deg, #4ECDC4, #556fd8); transition: background .3s;
+}
+.hk-s-display.done { background: linear-gradient(135deg, #6BCB77, #2ea89a); }
+.hk-s-big {
+    font-size: 84px; line-height: 1.55; min-height: 120px; direction: rtl; unicode-bidi: isolate;
+    font-family: 'Noto Naskh Arabic', 'Tajawal', serif;
+}
+.hk-s-big.pop { animation: hkPop .35s ease-out; }
+@keyframes hkPop { 0% { transform: scale(.6); opacity: .3; } 70% { transform: scale(1.12); } 100% { transform: scale(1); opacity: 1; } }
+.hk-s-latin { font-size: 22px; font-weight: 800; letter-spacing: 1px; min-height: 26px; }
+.hk-s-count { font-size: 13px; opacity: .9; margin-top: 2px; }
+.hk-s-ribbon {
+    display: flex; gap: 6px; overflow-x: auto; padding: 10px 2px; direction: rtl;
+    -webkit-overflow-scrolling: touch;
+}
+.hk-s-item {
+    flex: 0 0 auto; min-width: 44px; padding: 2px 8px; border-radius: 12px; text-align: center;
+    background: #f6f3fd; border: 2px solid transparent; color: var(--text);
+    font-size: 26px; line-height: 1.6; font-family: 'Noto Naskh Arabic', 'Tajawal', serif; transition: all .2s;
+}
+.hk-s-item.past { opacity: .4; }
+.hk-s-item.current { background: #FFE66D; border-color: #f4c430; transform: scale(1.15); }
+.hk-s-empty { font-size: 14px; color: var(--text-light); padding: 8px; }
+.hk-s-controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 4px 0 6px; }
+.hk-btn {
+    padding: 10px 18px; border-radius: 24px; border: 2px solid #e5def7; background: #fff; cursor: pointer;
+    font-family: 'Tajawal', sans-serif; font-size: 15px; font-weight: 800; color: #764ba2;
+}
+.hk-btn-main { background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; border-color: transparent; }
+.hk-btn:disabled { opacity: .4; cursor: not-allowed; }
+.hk-s-label { font-size: 14px; font-weight: 800; color: var(--text-light); margin: 12px 4px 6px; }
+.hk-s-row, .hk-s-letters { display: flex; gap: 6px; flex-wrap: wrap; }
+.hk-chip {
+    padding: 6px 12px; border-radius: 18px; border: 2px solid #eee; background: #fff; cursor: pointer;
+    font-family: 'Tajawal', sans-serif; font-size: 13px; font-weight: 700; color: var(--text-light);
+}
+.hk-chip.active { border-color: #764ba2; color: #764ba2; background: #f4effc; }
+.hk-chip-ar { font-family: 'Noto Naskh Arabic', 'Tajawal', serif; direction: rtl; unicode-bidi: isolate; }
+.hk-chip-move { font-size: 22px; padding: 0 10px; min-width: 48px; line-height: 1.7; }
+.hk-chip-letter {
+    width: 38px; height: 38px; padding: 0; border-radius: 50%; font-size: 20px;
+    font-family: 'Noto Naskh Arabic', 'Tajawal', serif;
+}
+.hk-s-hint { font-size: 12px; color: var(--text-light); margin: 6px 4px 0; }
+.hk-locked { text-align: center; background: #faf8ff; border-style: dashed; }
+.hk-premium {
+    display: inline-block; font-size: 12px; font-weight: 800; color: #b8860b; background: #fff6d6;
+    border-radius: 10px; padding: 2px 8px; margin-inline-start: 6px; vertical-align: middle;
+}
+.hk-locked-demo {
+    font-size: 30px; direction: rtl; color: #b9b0d6; filter: blur(.4px); margin: 6px 0;
+    font-family: 'Noto Naskh Arabic', 'Tajawal', serif;
+}
+.hk-locked-text { font-size: 13px; color: var(--text-light); line-height: 1.6; margin: 4px 8px 0; }
