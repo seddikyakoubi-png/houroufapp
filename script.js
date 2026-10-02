@@ -3209,7 +3209,11 @@ function harakatAvailablePositions(base) {
 }
 
 function initHarakat() {
-    if (!lettres[harakatLetterIdx]) harakatLetterIdx = 1;
+    // On repart toujours de la même façon : ب, fatha, forme isolée (et sans son à l'ouverture)
+    harakatLetterIdx = 1;
+    harakatKey = "fatha";
+    harakatPos = "isolated";
+    if (!lettres[harakatLetterIdx]) harakatLetterIdx = 0;
     renderHarakatStrip();
     renderHarakatBody();
 }
@@ -3274,16 +3278,12 @@ function renderHarakatBody() {
     document.getElementById("harakat-note").innerHTML = note;
 }
 
-window.harakatSelectLetter = async (i) => {
+window.harakatSelectLetter = (i) => {
     harakatLetterIdx = i;
     renderHarakatStrip();
-    renderHarakatBody();
-    // On fait entendre le nom de la lettre (enregistrement déjà existant dans l'appli)
-    const item = lettres[i];
-    const token = ++harakatPlayToken;
-    stopCurrentQuranAudio();
-    const ok = await window.playNormalizedAudio(item.son);
-    if (!ok && token === harakatPlayToken) window.speakArabic(harakatBase(item));
+    renderHarakatBody(); // corrige au besoin le mouvement (ex. l'alif n'a pas de soukoun)
+    // On fait entendre la lettre AVEC le mouvement choisi (ex. بَ → تَ), et non plus le nom de la lettre
+    window.harakatPlay(harakatKey);
 };
 
 window.harakatSelectPos = (pos) => { harakatPos = pos; renderHarakatBody(); };
