@@ -1900,3 +1900,18 @@ body {
 .hk-s-item.removable { cursor: pointer; }
 .hk-s-item.removable:hover { background: #ffe3e3; text-decoration: line-through; }
 .hk-s-count-inline { font-size: 12px; color: var(--text-light); align-self: center; margin-inline-start: auto; }
+
+/* Mot formé (mode composer) */
+.hk-word {
+    margin: 10px 0 4px; padding: 10px 10px 12px; border-radius: 20px; text-align: center;
+    background: #fffaf0; border: 2px solid #ffe7a8;
+}
+.hk-word-label { font-size: 14px; font-weight: 800; color: #b8860b; }
+/* Les syllabes restent dans le même bloc de texte : les lettres se lient naturellement */
+.hk-word-text {
+    font-size: 64px; line-height: 1.7; direction: rtl; unicode-bidi: isolate; color: var(--text);
+    font-family: 'Noto Naskh Arabic', 'Tajawal', serif; word-spacing: 18px;
+}
+.hk-word-syl { transition: color .15s; }
+.hk-word-syl.on { color: var(--primary); }
+.hk-word-latin { font-size: 20px; font-weight: 800; color: #b8860b; letter-spacing: 1px; margin-bottom: 4px; }

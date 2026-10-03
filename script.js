@@ -462,6 +462,11 @@ const DYNAMIC_I18N = {
     seriesByLetter:   { fr:"Lettre par lettre", nl:"Letter per letter", en:"Letter by letter", es:"Letra por letra" },
     seriesByMove:     { fr:"Voyelle par voyelle", nl:"Klinker per klinker", en:"Vowel by vowel", es:"Vocal por vocal" },
     seriesSpeed:      { fr:"Vitesse", nl:"Snelheid", en:"Speed", es:"Velocidad" },
+    wordTitle:        { fr:"Le mot formé", nl:"Het gevormde woord", en:"The word you built", es:"La palabra formada" },
+    wordChain:        { fr:"Lecture liée (enregistrements)", nl:"Verbonden lezen (opnames)", en:"Linked reading (recordings)", es:"Lectura ligada (grabaciones)" },
+    wordNatural:      { fr:"Lecture naturelle (voix de synthèse)", nl:"Natuurlijk lezen (computerstem)", en:"Natural reading (synthetic voice)", es:"Lectura natural (voz sintética)" },
+    wordNoVoice:      { fr:"Aucune voix arabe n'est installée sur cet appareil : la lecture naturelle peut ne pas fonctionner.", nl:"Er is geen Arabische stem op dit toestel: natuurlijk lezen werkt misschien niet.", en:"No Arabic voice is installed on this device: natural reading may not work.", es:"No hay ninguna voz árabe instalada en este dispositivo: la lectura natural puede no funcionar." },
+    composeSpace:     { fr:"Espace (nouveau mot)", nl:"Spatie (nieuw woord)", en:"Space (new word)", es:"Espacio (nueva palabra)" },
     speedVeryFast:    { fr:"Très rapide", nl:"Heel snel", en:"Very fast", es:"Muy rápido" },
     seriesCompose:    { fr:"Composer ma série", nl:"Mijn reeks samenstellen", en:"Build my series", es:"Crear mi serie" },
     composeHint:      { fr:"Choisis une lettre, puis touche une voyelle pour ajouter la syllabe. Touche une syllabe de la série pour l'enlever.", nl:"Kies een letter en tik dan op een klinker om de lettergreep toe te voegen. Tik op een lettergreep in de reeks om ze te verwijderen.", en:"Pick a letter, then tap a vowel to add the syllable. Tap a syllable in the series to remove it.", es:"Elige una letra y toca una vocal para añadir la sílaba. Toca una sílaba de la serie para quitarla." },
@@ -3336,6 +3341,7 @@ window.harakatPlay = async (key) => {
     const h = HARAKAT_LIST.find(x => x.key === key);
     if (!h) return;
     if (hkSeries.playing || hkSeries.paused) hkSeriesStop(); // un appui manuel interrompt la série
+    hkStopChain();
     harakatKey = key;
     renderHarakatBody();
     const item = lettres[harakatLetterIdx];
@@ -3385,7 +3391,13 @@ function hkSeriesBuild() {
                  spoken: harakatSpoken(base, h), path: `sons/harakat/${soundBase}_${key}.mp3` };
     };
     const seq = [];
-    if (s.letters === "compose") { s.composed.forEach(c => { const it = make(c.i, c.key); if (it) seq.push(it); }); s.seq = seq; return; }
+    if (s.letters === "compose") {
+        s.composed.forEach(c => {
+            if (c.space) { seq.push({ space: true, text: "␣", latin: "", spoken: "", path: null }); return; }
+            const it = make(c.i, c.key); if (it) seq.push(it);
+        });
+        s.seq = seq; return;
+    }
     if (s.order === "move") keys.forEach(k => idxs.forEach(i => { const it = make(i, k); if (it) seq.push(it); }));
     else idxs.forEach(i => keys.forEach(k => { const it = make(i, k); if (it) seq.push(it); }));
     s.seq = seq;
@@ -3424,6 +3436,73 @@ async function hkPreview(it) {
     if (loaded) hkPlayTrimmed(loaded); else trySpeechSynthesis(it.spoken);
 }
 
+// ===== Lecture du MOT formé (mode « composer ») =====
+// Texte du mot : les syllabes collées les unes aux autres → le navigateur lie les lettres tout seul
+function hkWordParts() {
+    const words = [[]];
+    hkSeries.composed.forEach(c => {
+        if (c.space) { words.push([]); return; }
+        const item = lettres[c.i], base = harakatBase(item);
+        const h = HARAKAT_LIST.find(x => x.key === c.key);
+        const w = words[words.length - 1], mid = w.length > 0 && base !== "ا";
+        // Dans un mot, le soukoun se lit sans le « a » d'appui : نَوْ = naw (et non « na-aw »)
+        const latin = (mid && c.key === "sukun") ? (HARAKAT_TRANSLIT[base] ?? "") : harakatLatin(base, h);
+        w.push({ c, mid, text: harakatBuild(base, h, "isolated"), latin, spoken: harakatSpoken(base, h),
+            path: `sons/harakat/${(item.son || "").split("/").pop().replace(/\.mp3$/i, "")}_${c.key}.mp3` });
+    });
+    return words.filter(w => w.length);
+}
+let hkChain = { master: null, timers: [] };
+function hkStopChain() {
+    hkChain.timers.forEach(clearTimeout); hkChain.timers = [];
+    if (hkChain.master) { try { hkChain.master.disconnect(); } catch (e) {} hkChain.master = null; }
+    document.querySelectorAll(".hk-word-syl.on").forEach(el => el.classList.remove("on"));
+}
+// 🔗 Lecture liée : on enchaîne VOS enregistrements sans blanc, avec un léger fondu entre les syllabes
+window.hkWordChain = async () => {
+    hkSeriesStop(); stopCurrentQuranAudio(); hkStopChain();
+    const words = hkWordParts(); if (!words.length) return;
+    const flat = words.flatMap((w, wi) => w.map((p, pi) => ({ ...p, wordEnd: pi === w.length - 1 && wi < words.length - 1 })));
+    const loaded = await Promise.all(flat.map(p => loadNormalizedBuffer(p.path)));
+    if (loaded.some(l => !l)) { hkWordNatural(); return; } // un enregistrement manque → voix de synthèse
+    const ctx = getAudioCtx(); if (ctx.state === "suspended") await ctx.resume();
+    const master = ctx.createGain(); master.connect(ctx.destination); hkChain.master = master;
+    const OVERLAP = 0.045, FADE = 0.02;
+    let t = ctx.currentTime + 0.08;
+    flat.forEach((p, k) => {
+        const l = loaded[k];
+        let { start, dur } = hkTrimBounds(l.audioBuffer);
+        // Les enregistrements du soukoun et de la chadda commencent par un « a » d'appui (أَبْ، أَبَّ) :
+        // au milieu d'un mot, on saute ce début pour coller la consonne à la syllabe précédente.
+        if (p.mid && (p.c.key === "sukun" || p.c.key === "shadda")) { const skip = dur * 0.38; start += skip; dur -= skip; }
+        const src = ctx.createBufferSource(), g = ctx.createGain();
+        src.buffer = l.audioBuffer; src.connect(g); g.connect(master);
+        g.gain.setValueAtTime(0, t);
+        g.gain.linearRampToValueAtTime(l.gainValue, t + FADE);
+        g.gain.setValueAtTime(l.gainValue, Math.max(t + FADE, t + dur - FADE));
+        g.gain.linearRampToValueAtTime(0, t + dur);
+        src.start(t, start, dur);
+        // Surlignage de la syllabe pendant qu'elle se fait entendre
+        const delay = (t - ctx.currentTime) * 1000;
+        hkChain.timers.push(setTimeout(() => {
+            document.querySelectorAll(".hk-word-syl").forEach((el, n) => el.classList.toggle("on", n === k));
+        }, delay));
+        t += dur - OVERLAP + (p.wordEnd ? 0.35 : 0);
+    });
+    hkChain.timers.push(setTimeout(() => document.querySelectorAll(".hk-word-syl.on").forEach(el => el.classList.remove("on")),
+        (t - ctx.currentTime) * 1000 + 100));
+};
+// 🗣️ Lecture naturelle : la voix de synthèse arabe lit le mot entier, lettres liées
+window.hkWordNatural = () => {
+    hkSeriesStop(); stopCurrentQuranAudio(); hkStopChain();
+    const words = hkWordParts(); if (!words.length) return;
+    const text = words.map(w => w.map(p => p.text).join("")).join(" ");
+    const hasArabic = (window.speechSynthesis?.getVoices() || []).some(v => v.lang && v.lang.startsWith("ar"));
+    const warn = document.getElementById("hk-word-warn");
+    if (warn) warn.classList.toggle("hidden", hasArabic || !(window.speechSynthesis?.getVoices() || []).length);
+    trySpeechSynthesis(text);
+};
+
 // Attente interrompue dès que la série est arrêtée (le jeton change)
 function hkUntilStopped(promise, token) {
     return new Promise(resolve => {
@@ -3449,16 +3528,18 @@ function hkSpeakAndWait(text) {
 
 async function hkSeriesRun(token) {
     const s = hkSeries;
-    let next = loadNormalizedBuffer(s.seq[s.idx].path);
+    const loadItem = it => it.space ? Promise.resolve(null) : loadNormalizedBuffer(it.path);
+    let next = loadItem(s.seq[s.idx]);
     while (token === s.token) {
         hkSeriesShow(s.idx);
         const loaded = await next;
         if (token !== s.token) return;
         // On prépare déjà la syllabe suivante pendant que celle-ci joue (pas de blanc entre les deux)
         const ni = s.idx + 1 < s.seq.length ? s.idx + 1 : (s.loop ? 0 : -1);
-        next = ni >= 0 ? loadNormalizedBuffer(s.seq[ni].path) : null;
+        next = ni >= 0 ? loadItem(s.seq[ni]) : null;
         let duration = 0.8;
-        if (loaded) { duration = hkTrimBounds(loaded.audioBuffer).dur; await hkUntilStopped(hkPlayTrimmed(loaded), token); }
+        if (s.seq[s.idx].space) duration = 0.3; // un espace = petit silence entre deux mots
+        else if (loaded) { duration = hkTrimBounds(loaded.audioBuffer).dur; await hkUntilStopped(hkPlayTrimmed(loaded), token); }
         else await hkUntilStopped(hkSpeakAndWait(s.seq[s.idx].spoken), token);
         if (token !== s.token) return;
         const pause = s.speed === "echo" ? Math.round(duration * 1000) + 1000 : HK_SPEED_PAUSE[s.speed];
@@ -3487,6 +3568,7 @@ function hkSeriesShow(n) {
 
 function hkSeriesStop() {
     hkSeries.token++;
+    hkStopChain();
     if (hkSeries.playing) stopCurrentQuranAudio();
     hkSeries.playing = false; hkSeries.paused = false; hkSeries.done = false; hkSeries.idx = 0;
 }
@@ -3512,7 +3594,8 @@ window.hkSeriesStopBtn = () => { hkSeriesStop(); renderHarakatSeries(); };
 window.hkSeriesSet = (field, value) => {
     const s = hkSeries;
     hkSeriesStop();
-    if (field === "key") { s.keys = s.keys.includes(value) ? s.keys.filter(k => k !== value) : [...s.keys, value]; }
+    if (field === "space") { if (s.composed.length && !s.composed[s.composed.length - 1].space && s.composed.length < HK_COMPOSE_MAX) s.composed.push({ space: true }); }
+    else if (field === "key") { s.keys = s.keys.includes(value) ? s.keys.filter(k => k !== value) : [...s.keys, value]; }
     else if (field === "letter") { s.custom.has(value) ? s.custom.delete(value) : s.custom.add(value); }
     else if (field === "loop") { s.loop = !s.loop; }
     else if (field === "composeLetter") { s.composeLetter = value; }
@@ -3569,10 +3652,23 @@ function renderHarakatSeries() {
             return `<button class="hk-chip hk-chip-move hk-chip-add" onclick="hkSeriesSet('add','${k}')"><span class="hk-chip-ar">${harakatBuild(cBase, h, "isolated")}</span></button>`;
         }).join("")}</div>
         <div class="hk-s-row" style="margin-top:8px">
+            <button class="hk-chip" onclick="hkSeriesSet('space')" ${s.composed.length ? "" : "disabled"}>␣ ${bi("فاصل (كلمة جديدة)", "composeSpace")}</button>
             <button class="hk-chip" onclick="hkSeriesSet('undo')" ${s.composed.length ? "" : "disabled"}>↩️ ${bi("تراجع", "composeUndo")}</button>
             <button class="hk-chip" onclick="hkSeriesSet('clear')" ${s.composed.length ? "" : "disabled"}>🗑️ ${bi("مسح الكلّ", "composeClear")}</button>
             <span class="hk-s-count-inline">${s.composed.length} / ${HK_COMPOSE_MAX}</span>
         </div>` : "";
+    const words = compose ? hkWordParts() : [];
+    let sylIdx = 0;
+    const wordHtml = words.length ? `<div class="hk-word">
+        <div class="hk-word-label">🔗 ${bi("الكلمة المكوَّنة", "wordTitle")}</div>
+        <div class="hk-word-text">${words.map(w => `<span class="hk-word-one">${w.map(p => `<span class="hk-word-syl" data-n="${sylIdx++}">${p.text}</span>`).join("")}</span>`).join(" ")}</div>
+        <div class="hk-word-latin">${words.map(w => w.map(p => p.latin).join("")).join(" ")}</div>
+        <div class="hk-s-controls">
+            <button class="hk-btn hk-btn-main" onclick="hkWordChain()">🔗 ${bi("قراءة موصولة", "wordChain")}</button>
+            <button class="hk-btn" onclick="hkWordNatural()">🗣️ ${bi("قراءة طبيعية", "wordNatural")}</button>
+        </div>
+        <p id="hk-word-warn" class="hk-s-hint hidden">⚠️ ${bi("لا يوجد صوت عربي في هذا الجهاز", "wordNoVoice")}</p>
+    </div>` : "";
     const controls = s.playing
         ? `<button class="hk-btn hk-btn-main" onclick="hkSeriesPause()">⏸️ ${bi("إيقاف مؤقّت", "seriesPause")}</button>
            <button class="hk-btn" onclick="hkSeriesStopBtn()">⏹️ ${bi("إيقاف", "seriesStop")}</button>`
@@ -3592,6 +3688,7 @@ function renderHarakatSeries() {
             ? s.seq.map((it, n) => `<span id="hk-s-it-${n}" class="hk-s-item ${busy && n === s.idx ? "current" : ""} ${busy && n < s.idx ? "past" : ""} ${compose && !busy ? "removable" : ""}" ${compose && !busy ? `onclick="hkSeriesSet('remove',${n})"` : ""}>${it.text}</span>`).join("")
             : `<span class="hk-s-empty">${bi("اختر حرفًا وحركة على الأقل", "seriesEmpty")}</span>`}</div>
         <div class="hk-s-controls">${controls}</div>
+        ${wordHtml}
 
         <div class="hk-s-label">${bi("الحروف", "seriesLetters")}</div>
         <div class="hk-s-row">
