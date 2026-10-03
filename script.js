@@ -462,6 +462,13 @@ const DYNAMIC_I18N = {
     seriesByLetter:   { fr:"Lettre par lettre", nl:"Letter per letter", en:"Letter by letter", es:"Letra por letra" },
     seriesByMove:     { fr:"Voyelle par voyelle", nl:"Klinker per klinker", en:"Vowel by vowel", es:"Vocal por vocal" },
     seriesSpeed:      { fr:"Vitesse", nl:"Snelheid", en:"Speed", es:"Velocidad" },
+    speedVeryFast:    { fr:"Très rapide", nl:"Heel snel", en:"Very fast", es:"Muy rápido" },
+    seriesCompose:    { fr:"Composer ma série", nl:"Mijn reeks samenstellen", en:"Build my series", es:"Crear mi serie" },
+    composeHint:      { fr:"Choisis une lettre, puis touche une voyelle pour ajouter la syllabe. Touche une syllabe de la série pour l'enlever.", nl:"Kies een letter en tik dan op een klinker om de lettergreep toe te voegen. Tik op een lettergreep in de reeks om ze te verwijderen.", en:"Pick a letter, then tap a vowel to add the syllable. Tap a syllable in the series to remove it.", es:"Elige una letra y toca una vocal para añadir la sílaba. Toca una sílaba de la serie para quitarla." },
+    composeLetter:    { fr:"1. Choisis la lettre", nl:"1. Kies de letter", en:"1. Pick the letter", es:"1. Elige la letra" },
+    composeVowel:     { fr:"2. Touche la voyelle pour ajouter", nl:"2. Tik op de klinker om toe te voegen", en:"2. Tap the vowel to add", es:"2. Toca la vocal para añadir" },
+    composeUndo:      { fr:"Annuler la dernière", nl:"Laatste ongedaan maken", en:"Undo last", es:"Deshacer la última" },
+    composeClear:     { fr:"Tout effacer", nl:"Alles wissen", en:"Clear all", es:"Borrar todo" },
     speedFast:        { fr:"Rapide", nl:"Snel", en:"Fast", es:"Rápido" },
     speedNormal:      { fr:"Normal", nl:"Normaal", en:"Normal", es:"Normal" },
     speedSlow:        { fr:"Lent", nl:"Traag", en:"Slow", es:"Lento" },
@@ -3353,11 +3360,13 @@ window.harakatPlay = async (key) => {
 // ============================================================
 const HK_SERIES_KEYS = ["fatha", "damma", "kasra", "sukun", "mad_alif", "mad_waw", "mad_ya",
                         "shadda", "tanwin_fath", "tanwin_damm", "tanwin_kasr"]; // ordre traditionnel : a, u, i
-const HK_SPEED_PAUSE = { fast: 250, normal: 700, slow: 1300 }; // pause (ms) après chaque syllabe
+const HK_SPEED_PAUSE = { veryfast: 0, fast: 150, normal: 500, slow: 1100 }; // pause (ms) après chaque syllabe
+const HK_COMPOSE_MAX = 60;
 let hkSeriesAllowed = null; // null = vérification en cours
 const hkSeries = {
     letters: "current", custom: new Set([1, 2, 3]), keys: ["fatha", "damma", "kasra"],
     order: "letter", speed: "normal", loop: false,
+    composed: [], composeLetter: 1,          // mode « composer » : syllabes choisies une à une {i, key}
     playing: false, paused: false, done: false, token: 0, idx: 0, seq: []
 };
 
@@ -3376,9 +3385,43 @@ function hkSeriesBuild() {
                  spoken: harakatSpoken(base, h), path: `sons/harakat/${soundBase}_${key}.mp3` };
     };
     const seq = [];
+    if (s.letters === "compose") { s.composed.forEach(c => { const it = make(c.i, c.key); if (it) seq.push(it); }); s.seq = seq; return; }
     if (s.order === "move") keys.forEach(k => idxs.forEach(i => { const it = make(i, k); if (it) seq.push(it); }));
     else idxs.forEach(i => keys.forEach(k => { const it = make(i, k); if (it) seq.push(it); }));
     s.seq = seq;
+}
+
+// Repère où la voix commence et finit dans le fichier (pour ne pas jouer les silences)
+function hkTrimBounds(audioBuffer) {
+    if (audioBuffer._hkBounds) return audioBuffer._hkBounds;
+    const data = audioBuffer.getChannelData(0), rate = audioBuffer.sampleRate;
+    let peak = 0;
+    for (let i = 0; i < data.length; i += 16) peak = Math.max(peak, Math.abs(data[i]));
+    const thr = peak * 0.06;
+    let a = 0, b = data.length - 1;
+    while (a < b && Math.abs(data[a]) < thr) a++;
+    while (b > a && Math.abs(data[b]) < thr) b--;
+    const margin = Math.round(rate * 0.03); // 30 ms de marge pour ne rien couper de la voix
+    const start = Math.max(0, a - margin) / rate, end = Math.min(data.length, b + margin) / rate;
+    return (audioBuffer._hkBounds = (end > start + 0.05) ? { start, dur: end - start } : { start: 0, dur: audioBuffer.duration });
+}
+function hkPlayTrimmed(loaded) {
+    return new Promise(resolve => {
+        stopCurrentQuranAudio();
+        const ctx = getAudioCtx(), src = ctx.createBufferSource(), gain = ctx.createGain();
+        const { start, dur } = hkTrimBounds(loaded.audioBuffer);
+        src.buffer = loaded.audioBuffer; gain.gain.value = loaded.gainValue;
+        src.connect(gain); gain.connect(ctx.destination);
+        src.onended = () => resolve(dur);
+        src.start(0, start, dur);
+        window._currentQuranSource = src;
+    });
+}
+// Fait entendre une seule syllabe (quand on l'ajoute à sa série)
+async function hkPreview(it) {
+    if (!it) return;
+    const loaded = await loadNormalizedBuffer(it.path);
+    if (loaded) hkPlayTrimmed(loaded); else trySpeechSynthesis(it.spoken);
 }
 
 // Attente interrompue dès que la série est arrêtée (le jeton change)
@@ -3415,7 +3458,7 @@ async function hkSeriesRun(token) {
         const ni = s.idx + 1 < s.seq.length ? s.idx + 1 : (s.loop ? 0 : -1);
         next = ni >= 0 ? loadNormalizedBuffer(s.seq[ni].path) : null;
         let duration = 0.8;
-        if (loaded) { duration = loaded.audioBuffer.duration; await hkUntilStopped(playLoadedBuffer(loaded), token); }
+        if (loaded) { duration = hkTrimBounds(loaded.audioBuffer).dur; await hkUntilStopped(hkPlayTrimmed(loaded), token); }
         else await hkUntilStopped(hkSpeakAndWait(s.seq[s.idx].spoken), token);
         if (token !== s.token) return;
         const pause = s.speed === "echo" ? Math.round(duration * 1000) + 1000 : HK_SPEED_PAUSE[s.speed];
@@ -3472,6 +3515,16 @@ window.hkSeriesSet = (field, value) => {
     if (field === "key") { s.keys = s.keys.includes(value) ? s.keys.filter(k => k !== value) : [...s.keys, value]; }
     else if (field === "letter") { s.custom.has(value) ? s.custom.delete(value) : s.custom.add(value); }
     else if (field === "loop") { s.loop = !s.loop; }
+    else if (field === "composeLetter") { s.composeLetter = value; }
+    else if (field === "add") {
+        if (s.composed.length < HK_COMPOSE_MAX) {
+            s.composed.push({ i: s.composeLetter, key: value });
+            hkSeriesBuild(); hkPreview(s.seq[s.seq.length - 1]);
+        }
+    }
+    else if (field === "remove") { s.composed.splice(value, 1); }
+    else if (field === "undo") { s.composed.pop(); }
+    else if (field === "clear") { s.composed = []; }
     else s[field] = value;
     renderHarakatSeries();
 };
@@ -3503,6 +3556,23 @@ function renderHarakatSeries() {
         return chip(`<span class="hk-chip-ar">${harakatBuild("ب", h, "isolated")}</span>`, s.keys.includes(k), `hkSeriesSet('key','${k}')`, "hk-chip-move");
     }).join("");
 
+    const compose = s.letters === "compose";
+    const cBase = harakatBase(lettres[s.composeLetter]);
+    const composeHtml = compose ? `
+        <p class="hk-s-hint">${bi("اختر حرفًا ثمّ اضغط على حركة لإضافة المقطع", "composeHint")}</p>
+        <div class="hk-s-label">${bi("١. اختر الحرف", "composeLetter")}</div>
+        <div class="hk-s-letters">${lettres.map((it, i) =>
+            chip(harakatBase(it), i === s.composeLetter, `hkSeriesSet('composeLetter',${i})`, "hk-chip-letter")).join("")}</div>
+        <div class="hk-s-label">${bi("٢. اضغط على الحركة للإضافة", "composeVowel")}</div>
+        <div class="hk-s-row">${HK_SERIES_KEYS.filter(k => cBase !== "ا" || ["fatha", "kasra", "damma", "mad_alif", "mad_waw", "mad_ya"].includes(k)).map(k => {
+            const h = HARAKAT_LIST.find(x => x.key === k);
+            return `<button class="hk-chip hk-chip-move hk-chip-add" onclick="hkSeriesSet('add','${k}')"><span class="hk-chip-ar">${harakatBuild(cBase, h, "isolated")}</span></button>`;
+        }).join("")}</div>
+        <div class="hk-s-row" style="margin-top:8px">
+            <button class="hk-chip" onclick="hkSeriesSet('undo')" ${s.composed.length ? "" : "disabled"}>↩️ ${bi("تراجع", "composeUndo")}</button>
+            <button class="hk-chip" onclick="hkSeriesSet('clear')" ${s.composed.length ? "" : "disabled"}>🗑️ ${bi("مسح الكلّ", "composeClear")}</button>
+            <span class="hk-s-count-inline">${s.composed.length} / ${HK_COMPOSE_MAX}</span>
+        </div>` : "";
     const controls = s.playing
         ? `<button class="hk-btn hk-btn-main" onclick="hkSeriesPause()">⏸️ ${bi("إيقاف مؤقّت", "seriesPause")}</button>
            <button class="hk-btn" onclick="hkSeriesStopBtn()">⏹️ ${bi("إيقاف", "seriesStop")}</button>`
@@ -3519,7 +3589,7 @@ function renderHarakatSeries() {
             <div id="hk-s-count" class="hk-s-count">${s.seq.length ? (busy ? `${s.idx + 1} / ${s.seq.length}` : `${s.seq.length} 🔊`) : ""}</div>
         </div>
         <div class="hk-s-ribbon">${s.seq.length
-            ? s.seq.map((it, n) => `<span id="hk-s-it-${n}" class="hk-s-item ${busy && n === s.idx ? "current" : ""} ${busy && n < s.idx ? "past" : ""}">${it.text}</span>`).join("")
+            ? s.seq.map((it, n) => `<span id="hk-s-it-${n}" class="hk-s-item ${busy && n === s.idx ? "current" : ""} ${busy && n < s.idx ? "past" : ""} ${compose && !busy ? "removable" : ""}" ${compose && !busy ? `onclick="hkSeriesSet('remove',${n})"` : ""}>${it.text}</span>`).join("")
             : `<span class="hk-s-empty">${bi("اختر حرفًا وحركة على الأقل", "seriesEmpty")}</span>`}</div>
         <div class="hk-s-controls">${controls}</div>
 
@@ -3528,9 +3598,9 @@ function renderHarakatSeries() {
             ${chip(bi("الحرف المختار", "seriesCurrent") + ` (${harakatBase(lettres[harakatLetterIdx])})`, s.letters === "current", "hkSeriesSet('letters','current')")}
             ${chip(bi("كلّ الحروف", "seriesAll"), s.letters === "all", "hkSeriesSet('letters','all')")}
             ${chip(bi("اختياري", "seriesCustom"), s.letters === "custom", "hkSeriesSet('letters','custom')")}
+            ${chip("✏️ " + bi("أكوّن سلسلتي", "seriesCompose"), s.letters === "compose", "hkSeriesSet('letters','compose')")}
         </div>
-        ${letterChips}
-
+        ${compose ? composeHtml : `${letterChips}
         <div class="hk-s-label">${bi("الحركات", "seriesMoves")}</div>
         <div class="hk-s-row">${moveChips}</div>
 
@@ -3538,10 +3608,11 @@ function renderHarakatSeries() {
         <div class="hk-s-row">
             ${chip(bi("حرفًا حرفًا", "seriesByLetter") + " <span class='hk-chip-ar'>(بَ بُ ‹ تَ تُ)</span>", s.order === "letter", "hkSeriesSet('order','letter')")}
             ${chip(bi("حركةً حركةً", "seriesByMove") + " <span class='hk-chip-ar'>(بَ تَ ‹ بُ تُ)</span>", s.order === "move", "hkSeriesSet('order','move')")}
-        </div>
+        </div>`}
 
         <div class="hk-s-label">${bi("السرعة", "seriesSpeed")}</div>
         <div class="hk-s-row">
+            ${chip("⚡ " + bi("سريع جدًّا", "speedVeryFast"), s.speed === "veryfast", "hkSeriesSet('speed','veryfast')")}
             ${chip("🐇 " + bi("سريع", "speedFast"), s.speed === "fast", "hkSeriesSet('speed','fast')")}
             ${chip("🚶 " + bi("عادي", "speedNormal"), s.speed === "normal", "hkSeriesSet('speed','normal')")}
             ${chip("🐢 " + bi("بطيء", "speedSlow"), s.speed === "slow", "hkSeriesSet('speed','slow')")}
