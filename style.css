@@ -1915,3 +1915,10 @@ body {
 .hk-word-syl { transition: color .15s; }
 .hk-word-syl.on { color: var(--primary); }
 .hk-word-latin { font-size: 20px; font-weight: 800; color: #b8860b; letter-spacing: 1px; margin-bottom: 4px; }
+
+.hk-voice-row { display: flex; gap: 8px; align-items: center; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+.hk-voice-row label { font-size: 13px; font-weight: 800; color: #b8860b; }
+.hk-voice-select {
+    max-width: 100%; padding: 7px 10px; border-radius: 14px; border: 2px solid #ffe7a8; background: #fff;
+    font-family: 'Tajawal', sans-serif; font-size: 13px; color: var(--text);
+}

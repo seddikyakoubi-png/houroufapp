@@ -56,15 +56,40 @@ window.speakArabic = (text) => {
     }
 };
 
+// Choisit la meilleure voix arabe disponible : d'abord les voix « naturelles » (Edge, Windows 11),
+// puis Google / Microsoft, puis n'importe quelle voix arabe
+function arabicVoices() {
+    return (window.speechSynthesis?.getVoices() || []).filter(v => v.lang && v.lang.toLowerCase().startsWith("ar"));
+}
+function savedVoiceName() { try { return localStorage.getItem("hourouf_voice") || ""; } catch (e) { return ""; } }
+function voiceLabel(v) {
+    return v.name.replace(/^Microsoft\s+/i, "").replace(/\s*Online\s*\(Natural\)/i, "").replace(/^Google\s+/i, "Google ");
+}
+function bestArabicVoice() {
+    const voices = arabicVoices();
+    const chosen = voices.find(v => v.name === savedVoiceName());
+    if (chosen) return chosen; // la voix choisie par l'utilisateur passe en premier
+    const score = v => (/natural|online|neural/i.test(v.name) ? 3 : 0) + (/google|microsoft/i.test(v.name) ? 1 : 0)
+                     + (/sa|eg/i.test(v.lang.slice(3)) ? 1 : 0);
+    return voices.sort((a, b) => score(b) - score(a))[0] || null;
+}
+// Les voix arrivent parfois après le chargement de la page : on les « réveille » une fois
+try {
+    window.speechSynthesis?.getVoices();
+    if (window.speechSynthesis) window.speechSynthesis.onvoiceschanged = () => {
+        // Les voix sont arrivées : on met à jour la liste des voix du mot formé
+        if (typeof hkSeries !== "undefined" && hkSeries.letters === "compose" && !hkSeries.playing && !hkSeries.paused
+            && document.getElementById("harakat-series")) renderHarakatSeries();
+    };
+} catch (e) {}
 function trySpeechSynthesis(text) {
     try {
         window.speechSynthesis.cancel();
         const utt = new SpeechSynthesisUtterance(text.trim());
         utt.lang = "ar-SA";
         utt.rate = 0.75;
-        const voices = window.speechSynthesis.getVoices();
-        const arabicVoice = voices.find(v => v.lang && v.lang.startsWith("ar"));
-        if (arabicVoice) utt.voice = arabicVoice;
+        const arabicVoice = bestArabicVoice();
+        if (arabicVoice) { utt.voice = arabicVoice; utt.lang = arabicVoice.lang; }
         window.speechSynthesis.speak(utt);
     } catch(e) { console.warn("speakArabic error:", e); }
 }
@@ -462,6 +487,7 @@ const DYNAMIC_I18N = {
     seriesByLetter:   { fr:"Lettre par lettre", nl:"Letter per letter", en:"Letter by letter", es:"Letra por letra" },
     seriesByMove:     { fr:"Voyelle par voyelle", nl:"Klinker per klinker", en:"Vowel by vowel", es:"Vocal por vocal" },
     seriesSpeed:      { fr:"Vitesse", nl:"Snelheid", en:"Speed", es:"Velocidad" },
+    voiceLabel:       { fr:"Voix", nl:"Stem", en:"Voice", es:"Voz" },
     wordTitle:        { fr:"Le mot formé", nl:"Het gevormde woord", en:"The word you built", es:"La palabra formada" },
     wordChain:        { fr:"Lecture liée (enregistrements)", nl:"Verbonden lezen (opnames)", en:"Linked reading (recordings)", es:"Lectura ligada (grabaciones)" },
     wordNatural:      { fr:"Lecture naturelle (voix de synthèse)", nl:"Natuurlijk lezen (computerstem)", en:"Natural reading (synthetic voice)", es:"Lectura natural (voz sintética)" },
@@ -3492,14 +3518,18 @@ window.hkWordChain = async () => {
     hkChain.timers.push(setTimeout(() => document.querySelectorAll(".hk-word-syl.on").forEach(el => el.classList.remove("on")),
         (t - ctx.currentTime) * 1000 + 100));
 };
+// 🎙️ Choix de la voix : mémorisé sur l'appareil, puis on fait entendre le mot avec cette voix
+window.hkSetVoice = (name) => {
+    try { localStorage.setItem("hourouf_voice", name); } catch (e) {}
+    hkWordNatural();
+};
 // 🗣️ Lecture naturelle : la voix de synthèse arabe lit le mot entier, lettres liées
 window.hkWordNatural = () => {
     hkSeriesStop(); stopCurrentQuranAudio(); hkStopChain();
     const words = hkWordParts(); if (!words.length) return;
     const text = words.map(w => w.map(p => p.text).join("")).join(" ");
-    const hasArabic = (window.speechSynthesis?.getVoices() || []).some(v => v.lang && v.lang.startsWith("ar"));
     const warn = document.getElementById("hk-word-warn");
-    if (warn) warn.classList.toggle("hidden", hasArabic || !(window.speechSynthesis?.getVoices() || []).length);
+    if (warn) warn.classList.toggle("hidden", !!bestArabicVoice() || !(window.speechSynthesis?.getVoices() || []).length);
     trySpeechSynthesis(text);
 };
 
@@ -3517,8 +3547,8 @@ function hkSpeakAndWait(text) {
             window.speechSynthesis.cancel();
             const u = new SpeechSynthesisUtterance(text);
             u.lang = "ar-SA"; u.rate = 0.75;
-            const v = window.speechSynthesis.getVoices().find(x => x.lang && x.lang.startsWith("ar"));
-            if (v) u.voice = v;
+            const v = bestArabicVoice();
+            if (v) { u.voice = v; u.lang = v.lang; }
             u.onend = resolve; u.onerror = resolve;
             window.speechSynthesis.speak(u);
             setTimeout(resolve, 2500); // filet de sécurité
@@ -3667,6 +3697,17 @@ function renderHarakatSeries() {
             <button class="hk-btn hk-btn-main" onclick="hkWordChain()">🔗 ${bi("قراءة موصولة", "wordChain")}</button>
             <button class="hk-btn" onclick="hkWordNatural()">🗣️ ${bi("قراءة طبيعية", "wordNatural")}</button>
         </div>
+        ${(() => {
+            const voices = arabicVoices();
+            if (voices.length < 2) return "";
+            const current = bestArabicVoice();
+            return `<div class="hk-voice-row">
+                <label for="hk-voice">🎙️ ${bi("الصوت", "voiceLabel")}</label>
+                <select id="hk-voice" class="hk-voice-select" onchange="hkSetVoice(this.value)">
+                    ${voices.map(v => `<option value="${v.name.replace(/"/g, "&quot;")}" ${current && v.name === current.name ? "selected" : ""}>${voiceLabel(v)}</option>`).join("")}
+                </select>
+            </div>`;
+        })()}
         <p id="hk-word-warn" class="hk-s-hint hidden">⚠️ ${bi("لا يوجد صوت عربي في هذا الجهاز", "wordNoVoice")}</p>
     </div>` : "";
     const controls = s.playing
