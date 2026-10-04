@@ -487,6 +487,15 @@ const DYNAMIC_I18N = {
     seriesByLetter:   { fr:"Lettre par lettre", nl:"Letter per letter", en:"Letter by letter", es:"Letra por letra" },
     seriesByMove:     { fr:"Voyelle par voyelle", nl:"Klinker per klinker", en:"Vowel by vowel", es:"Vocal por vocal" },
     seriesSpeed:      { fr:"Vitesse", nl:"Snelheid", en:"Speed", es:"Velocidad" },
+    micTitle:         { fr:"Écoute-toi et compare", nl:"Luister naar jezelf en vergelijk", en:"Listen to yourself and compare", es:"Escúchate y compara" },
+    micModel:         { fr:"Modèle", nl:"Voorbeeld", en:"Model", es:"Modelo" },
+    micRecord:        { fr:"M'enregistrer", nl:"Mezelf opnemen", en:"Record myself", es:"Grabarme" },
+    micStop:          { fr:"Arrêter", nl:"Stoppen", en:"Stop", es:"Detener" },
+    micMine:          { fr:"Ma voix", nl:"Mijn stem", en:"My voice", es:"Mi voz" },
+    micCompare:       { fr:"Comparer", nl:"Vergelijken", en:"Compare", es:"Comparar" },
+    micPrivacy:       { fr:"Ton enregistrement reste sur cet appareil : il n'est envoyé nulle part et s'efface tout seul.", nl:"Je opname blijft op dit toestel: ze wordt nergens naartoe gestuurd en wordt vanzelf gewist.", en:"Your recording stays on this device: it is never sent anywhere and is deleted automatically.", es:"Tu grabación se queda en este dispositivo: no se envía a ninguna parte y se borra sola." },
+    micDenied:        { fr:"Le micro n'est pas autorisé. Autorise-le dans ton navigateur (icône 🔒 ou 🎤 à côté de l'adresse).", nl:"De microfoon is niet toegestaan. Sta hem toe in je browser (🔒- of 🎤-icoon naast het adres).", en:"The microphone is not allowed. Allow it in your browser (🔒 or 🎤 icon next to the address).", es:"El micrófono no está autorizado. Autorízalo en tu navegador (icono 🔒 o 🎤 junto a la dirección)." },
+    micUnsupported:   { fr:"Ce navigateur ne permet pas de s'enregistrer.", nl:"Deze browser kan niet opnemen.", en:"This browser cannot record.", es:"Este navegador no permite grabar." },
     voiceLabel:       { fr:"Voix", nl:"Stem", en:"Voice", es:"Voz" },
     wordTitle:        { fr:"Le mot formé", nl:"Het gevormde woord", en:"The word you built", es:"La palabra formada" },
     wordChain:        { fr:"Lecture liée (enregistrements)", nl:"Verbonden lezen (opnames)", en:"Linked reading (recordings)", es:"Lectura ligada (grabaciones)" },
@@ -3181,7 +3190,7 @@ window.switchTab = (name, btn) => {
     _origSwitchTab(name, btn);
     if (name === "exercises") loadStudentExercises();
     if (name === "vocab") loadVocab();
-    if (name === "harakat") initHarakat(); else hkSeriesStop(); // on coupe la série si on quitte l'onglet
+    if (name === "harakat") initHarakat(); else { hkSeriesStop(); hkMicReset(); } // on coupe tout si on quitte l'onglet
     if (name === "learn") { buildMenu(); updateProgress(); }
     if (name === "quran") { loadQuranProgress().then(() => showQuranHome()); }
     // FIX: reset quiz view when switching to ikhtebar tab
@@ -3277,6 +3286,7 @@ function harakatAvailablePositions(base) {
 }
 
 function initHarakat() {
+    hkMicReset();
     // On repart toujours de la même façon : ب, fatha, forme isolée (et sans son à l'ouverture)
     harakatLetterIdx = 1;
     harakatKey = "fatha";
@@ -3313,6 +3323,10 @@ function renderHarakatBody() {
     const current = list.find(h => h.key === harakatKey);
     if (!current || (current.tanwin && !tanwinAllowed)) harakatKey = "fatha";
     const h = HARAKAT_LIST.find(x => x.key === harakatKey);
+
+    // L'enregistrement de l'élève ne vaut que pour la syllabe affichée : on l'efface si elle change
+    if (hkMic.forKey !== `${harakatLetterIdx}|${harakatKey}`) hkMicReset();
+    renderHarakatMic();
 
     // Aperçu en grand
     document.getElementById("harakat-big").textContent = harakatBuild(base, h, harakatPos);
@@ -3384,6 +3398,106 @@ window.harakatPlay = async (key) => {
     if (token === harakatPlayToken) trySpeechSynthesis(harakatSpoken(base, h));
 };
 
+
+// ============================================================
+//  🎤 ÉCOUTE-TOI ET COMPARE — enregistrement 100 % LOCAL
+//  La voix de l'élève reste en mémoire sur l'appareil (jamais envoyée,
+//  jamais stockée) et s'efface dès qu'on change de syllabe ou d'onglet.
+// ============================================================
+const HK_MIC_MAX_MS = 4000; // durée maximale d'un enregistrement
+const hkMic = { rec: null, stream: null, url: null, audio: null, recording: false, forKey: "", timer: null, error: "" };
+const hkMicSupported = () => !!(navigator.mediaDevices?.getUserMedia && window.MediaRecorder);
+
+function hkMicReset() {
+    clearTimeout(hkMic.timer);
+    if (hkMic.rec && hkMic.rec.state !== "inactive") { hkMic.rec.onstop = null; try { hkMic.rec.stop(); } catch (e) {} }
+    if (hkMic.stream) hkMic.stream.getTracks().forEach(t => t.stop()); // on libère le micro
+    if (hkMic.audio) { hkMic.audio.pause(); hkMic.audio = null; }
+    if (hkMic.url) URL.revokeObjectURL(hkMic.url);                     // on efface l'enregistrement
+    Object.assign(hkMic, { rec: null, stream: null, url: null, recording: false, forKey: "", error: "" });
+}
+
+function hkMicModelItem() {
+    const item = lettres[harakatLetterIdx], base = harakatBase(item);
+    const h = HARAKAT_LIST.find(x => x.key === harakatKey);
+    return { spoken: harakatSpoken(base, h),
+             path: `sons/harakat/${(item.son || "").split("/").pop().replace(/\.mp3$/i, "")}_${harakatKey}.mp3` };
+}
+async function hkMicPlayModel() {
+    const it = hkMicModelItem();
+    const loaded = await loadNormalizedBuffer(it.path);
+    if (loaded) await hkPlayTrimmed(loaded); else await hkSpeakAndWait(it.spoken);
+}
+function hkMicPlayMine() {
+    return new Promise(resolve => {
+        if (!hkMic.url) return resolve();
+        if (hkMic.audio) hkMic.audio.pause();
+        const a = new Audio(hkMic.url);
+        hkMic.audio = a;
+        a.onended = resolve; a.onerror = resolve; a.onpause = resolve;
+        a.play().catch(resolve);
+    });
+}
+
+window.hkMicRecord = async () => {
+    if (hkMic.recording) { hkMicStop(); return; }
+    hkSeriesStop(); stopCurrentQuranAudio();
+    hkMicReset();
+    hkMic.forKey = `${harakatLetterIdx}|${harakatKey}`;
+    try {
+        hkMic.stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+    } catch (e) {
+        hkMic.error = "denied"; renderHarakatMic(); return;
+    }
+    const chunks = [];
+    const rec = new MediaRecorder(hkMic.stream);
+    hkMic.rec = rec;
+    rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+    rec.onstop = () => {
+        hkMic.stream?.getTracks().forEach(t => t.stop()); hkMic.stream = null;
+        hkMic.recording = false;
+        if (chunks.length) hkMic.url = URL.createObjectURL(new Blob(chunks, { type: rec.mimeType || "audio/webm" }));
+        renderHarakatMic();
+        hkMicPlayMine(); // on se réécoute tout de suite
+    };
+    rec.start();
+    hkMic.recording = true;
+    renderHarakatMic();
+    hkMic.timer = setTimeout(hkMicStop, HK_MIC_MAX_MS);
+};
+function hkMicStop() {
+    clearTimeout(hkMic.timer);
+    if (hkMic.rec && hkMic.rec.state !== "inactive") hkMic.rec.stop();
+}
+window.hkMicModel = () => { hkSeriesStop(); hkMicPlayModel(); };
+window.hkMicMine = () => { stopCurrentQuranAudio(); hkMicPlayMine(); };
+// 🔁 Comparer : d'abord le modèle (la voix de l'enseignant), puis la voix de l'élève
+window.hkMicCompare = async () => {
+    hkSeriesStop();
+    const btn = document.getElementById("hk-mic-compare"); if (btn) btn.disabled = true;
+    await hkMicPlayModel();
+    await new Promise(r => setTimeout(r, 400));
+    await hkMicPlayMine();
+    if (btn) btn.disabled = false;
+};
+
+function renderHarakatMic() {
+    const box = document.getElementById("harakat-mic");
+    if (!box) return;
+    if (!hkMicSupported()) { box.innerHTML = `<p class="hk-s-hint" style="text-align:center">🎤 ${bi("لا يمكن التسجيل في هذا المتصفّح", "micUnsupported")}</p>`; return; }
+    const has = !!hkMic.url, rec = hkMic.recording;
+    box.innerHTML = `<div class="hk-mic ${rec ? "recording" : ""}">
+        <div class="hk-mic-title">🎤 ${bi("استمع إلى نفسك وقارن", "micTitle")}</div>
+        <div class="hk-mic-buttons">
+            <button class="hk-mic-btn" onclick="hkMicModel()" ${rec ? "disabled" : ""}>🔊 ${bi("النموذج", "micModel")}</button>
+            <button class="hk-mic-btn hk-mic-rec" onclick="hkMicRecord()">${rec ? `<span class="hk-mic-dot"></span> ${bi("إيقاف", "micStop")}` : `🎙️ ${bi("أسجّل صوتي", "micRecord")}`}</button>
+            <button class="hk-mic-btn" onclick="hkMicMine()" ${has && !rec ? "" : "disabled"}>▶️ ${bi("صوتي", "micMine")}</button>
+            <button id="hk-mic-compare" class="hk-mic-btn hk-mic-compare" onclick="hkMicCompare()" ${has && !rec ? "" : "disabled"}>🔁 ${bi("قارن", "micCompare")}</button>
+        </div>
+        ${hkMic.error === "denied" ? `<p class="hk-mic-error">⚠️ ${bi("الميكروفون غير مسموح به", "micDenied")}</p>` : ""}
+        <p class="hk-mic-privacy">🔒 ${bi("تسجيلك يبقى في هذا الجهاز فقط ويُمحى تلقائيًا", "micPrivacy")}</p>
+    </div>`;
+}
 
 // ============================================================
 //  🎵 LECTURE EN SÉRIE (option premium « syllableSeries »)

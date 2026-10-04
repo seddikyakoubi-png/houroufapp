@@ -1922,3 +1922,26 @@ body {
     max-width: 100%; padding: 7px 10px; border-radius: 14px; border: 2px solid #ffe7a8; background: #fff;
     font-family: 'Tajawal', sans-serif; font-size: 13px; color: var(--text);
 }
+
+/* ===== 🎤 Écoute-toi et compare (enregistrement local) ===== */
+.hk-mic {
+    margin: 4px 0 14px; padding: 10px 10px 8px; border-radius: 20px; text-align: center;
+    background: #f2fbfa; border: 2px solid #c9efeb; font-family: 'Tajawal', sans-serif; transition: all .2s;
+}
+.hk-mic.recording { background: #fff1f1; border-color: #ffb3b3; }
+.hk-mic-title { font-size: 15px; font-weight: 900; color: #2ea89a; margin-bottom: 8px; }
+.hk-mic-buttons { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.hk-mic-btn {
+    padding: 8px 14px; border-radius: 20px; border: 2px solid #c9efeb; background: #fff; cursor: pointer;
+    font-family: 'Tajawal', sans-serif; font-size: 14px; font-weight: 800; color: #2ea89a;
+}
+.hk-mic-btn:disabled { opacity: .4; cursor: not-allowed; }
+.hk-mic-rec { background: linear-gradient(135deg, #FF6B6B, #e84a5f); color: #fff; border-color: transparent; }
+.hk-mic-compare:not(:disabled) { background: #2ea89a; color: #fff; border-color: transparent; }
+.hk-mic-dot {
+    display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #fff;
+    animation: hkBlink 1s infinite; vertical-align: middle;
+}
+@keyframes hkBlink { 50% { opacity: .2; } }
+.hk-mic-error { font-size: 12px; color: #c0392b; margin: 8px 6px 0; }
+.hk-mic-privacy { font-size: 11px; color: var(--text-light); margin: 8px 6px 0; }
