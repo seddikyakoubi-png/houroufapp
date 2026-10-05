@@ -215,7 +215,7 @@ let quizMode=null, quizQuestions=[], quizCurrent=0, quizCorrect=0, quizWrong=0;
 let traceSelectedLetter=0, isDrawing=false, lastX=0, lastY=0;
 
 // FIREBASE
-const getStudentData  = async id    => { if(!id) return {learned:[],quizScores:[],lastActivity:null}; await authReady; try { const s=await getDoc(doc(db,"eleves",id)); return s.exists()?{learned:[],quizScores:[],lastActivity:null,...s.data()}:{learned:[],quizScores:[],lastActivity:null}; } catch(e) { return {learned:[],quizScores:[],lastActivity:null}; } };
+const getStudentData  = async id    => { if(isDemoMode && id==="demo_student") return JSON.parse(JSON.stringify(window._demoStudent||{learned:[],quizScores:[]})); if(!id) return {learned:[],quizScores:[],lastActivity:null}; await authReady; try { const s=await getDoc(doc(db,"eleves",id)); return s.exists()?{learned:[],quizScores:[],lastActivity:null,...s.data()}:{learned:[],quizScores:[],lastActivity:null}; } catch(e) { return {learned:[],quizScores:[],lastActivity:null}; } };
 
 // ===== PROGRESSION CORAN (utilisé par les tableaux de bord prof/directeur/super-admin) =====
 function totalQuranAyahs(){ return (typeof SURAHS !== "undefined" && SURAHS.length) ? SURAHS.reduce((a,s)=>a+s.ayahs,0) : 0; }
@@ -230,7 +230,11 @@ function quranSourahsCompleted(data){
     const qm = data?.quranMemorized || {};
     return SURAHS.filter(s => (qm[s.id]?.length || 0) >= s.ayahs).length;
 }
-const saveStudentData = async (id,d)=> { await authReady; return setDoc(doc(db,"eleves",id),d); };
+const saveStudentData = async (id,d)=> {
+    if (id === currentUser && window._game) d.game = window._game; // l'état du jeu n'est jamais écrasé par une ancienne copie
+    if (isDemoMode && id === "demo_student") { window._demoStudent = JSON.parse(JSON.stringify(d)); return; }
+    await authReady; return setDoc(doc(db,"eleves",id),d);
+};
 const delStudent      = async id    => { await authReady; return deleteDoc(doc(db,"eleves",id)); };
 const getSchools      = async ()    => { await authReady; const s=await getDocs(collection(db,"ecoles")); const r={}; s.forEach(d=>r[d.id]=d.data()); return r; };
 const getTeachers     = async ()    => { await authReady; const s=await getDocs(collection(db,"profs")); const r={}; s.forEach(d=>r[d.id]=d.data()); return r; };
@@ -517,7 +521,7 @@ const DYNAMIC_I18N = {
     wordTitle:        { fr:"Le mot formé", nl:"Het gevormde woord", en:"The word you built", es:"La palabra formada" },
     wordChain:        { fr:"Lecture liée (enregistrements)", nl:"Verbonden lezen (opnames)", en:"Linked reading (recordings)", es:"Lectura ligada (grabaciones)" },
     wordNatural:      { fr:"Lecture naturelle (voix de synthèse)", nl:"Natuurlijk lezen (computerstem)", en:"Natural reading (synthetic voice)", es:"Lectura natural (voz sintética)" },
-    wordNoVoice:      { fr:"Aucune voix arabe n'est installée sur cet appareil : la lecture naturelle peut ne pas fonctionner.", nl:"Er is geen Arabische stem op dit toestel: natuurlijk lezen werkt misschien niet.", en:"No Arabic voice is installed on this device: natural reading may not work.", es:"No hay ninguna voz árabe instalada en este dispositivo: la lectura natural puede no funcionar." },
+    wordNoVoice:      { fr:"Ce navigateur n'a pas de voix arabe : le mot a été lu avec les enregistrements. Pour la lecture naturelle, ouvre l'appli dans Microsoft Edge (ordinateur) ou sur un téléphone / une tablette.", nl:"Deze browser heeft geen Arabische stem: het woord werd met de opnames gelezen. Voor natuurlijk lezen: open de app in Microsoft Edge (computer) of op een telefoon / tablet.", en:"This browser has no Arabic voice: the word was read with the recordings. For natural reading, open the app in Microsoft Edge (computer) or on a phone / tablet.", es:"Este navegador no tiene voz árabe: la palabra se leyó con las grabaciones. Para la lectura natural, abre la app en Microsoft Edge (ordenador) o en un teléfono / tableta." },
     composeSpace:     { fr:"Espace (nouveau mot)", nl:"Spatie (nieuw woord)", en:"Space (new word)", es:"Espacio (nueva palabra)" },
     speedVeryFast:    { fr:"Très rapide", nl:"Heel snel", en:"Very fast", es:"Muy rápido" },
     seriesCompose:    { fr:"Composer ma série", nl:"Mijn reeks samenstellen", en:"Build my series", es:"Crear mi serie" },
@@ -1052,6 +1056,7 @@ window.logout = ()=>{
     // Arrêter toute synthèse vocale en cours
     if(window.speechSynthesis) window.speechSynthesis.cancel();
     currentUser=null;currentRole=null;currentSchoolId=null;currentClassId=null;selectedRole="student";isDemoMode=false;
+    _game = window._game = null; try { renderGameBar(); renderDemoNews(); } catch (e) {}
     applyFeatureTranslations(""); // reset : évite qu'une langue d'école reste affichée pour le prochain utilisateur
     const mainLogo = document.getElementById("login-logo-main");
     if (mainLogo) mainLogo.innerHTML = "🌙"; // revient à l'icône par défaut pour le prochain utilisateur (appareil partagé)
@@ -1082,11 +1087,13 @@ window.logout = ()=>{
 // Pour ajouter une nouvelle fonctionnalité à la carte plus tard : ajouter une clé dans `features`
 // (via l'écran super-admin) et un `if (await hasFeature("maCle")) { ... }` à l'endroit concerné.
 async function hasFeature(key) {
+    if (isDemoMode) return true; // la démo montre toutes les options premium
     if (!currentSchoolId) return false;
     const school = (await getDoc(doc(db, "ecoles", currentSchoolId))).data();
     return !!(school?.features && school.features[key]);
 }
 async function getFeatureValue(key) {
+    if (isDemoMode) return key === "customWelcomeMessage" ? "مرحبًا بكم في مدرسة الإحسان 🌙 Bienvenue à l'école Al Ihssane (démo)" : null;
     if (!currentSchoolId) return null;
     const school = (await getDoc(doc(db, "ecoles", currentSchoolId))).data();
     return school?.features?.[key] ?? null;
@@ -1098,7 +1105,8 @@ async function buildMenu(){
     grid.innerHTML="<div style='text-align:center;padding:40px;color:#777'>⏳</div>";
     const data=await getStudentData(currentUser); grid.innerHTML="";
     lettres.forEach((item,i)=>{const div=document.createElement("div");div.className="circle";div.textContent=item.l;if(data.learned.includes(i))div.classList.add("learned");div.onclick=()=>openLetter(i);grid.appendChild(div);});
-    if(currentRole==="student") await checkExerciseBadge();
+    initGame(data);
+    if(currentRole==="student" && !isDemoMode) await checkExerciseBadge();
 
     // Première fonctionnalité à la carte : message de bienvenue personnalisé (activé par école/famille)
     const banner = document.getElementById("custom-welcome-banner");
@@ -1158,7 +1166,7 @@ async function buildDots(){
 window.flipCard=()=>{isFlipped=!isFlipped;document.getElementById("letter-card-inner").classList.toggle("flipped",isFlipped);};
 window.nextLetter=()=>{letterIndex=(letterIndex+1)%lettres.length;loadLetter();};
 window.prevLetter=()=>{letterIndex=(letterIndex-1+lettres.length)%lettres.length;loadLetter();};
-window.playSound=()=>{const a=document.getElementById("audio");a.currentTime=0;a.play().catch(()=>{});};
+window.playSound=()=>{const a=document.getElementById("audio");a.currentTime=0;a.play().catch(()=>{});gameEvent("listen");};
 // ===== ENCOURAGEMENT : mot court, gradué, dans la 2e langue de l'école =====
 // Plutôt qu'une longue phrase arabe tirée au hasard, un seul mot simple est prononcé et affiché,
 // de plus en plus fort à mesure que l'élève progresse (Bien → Bravo → Excellent), dans la langue
@@ -1299,6 +1307,7 @@ window.markLearned=async()=>{
     if(!data.learned.includes(letterIndex)){
         data.learned.push(letterIndex);data.lastActivity=new Date().toISOString();data.schoolId=currentSchoolId;data.classId=currentClassId;
         await saveStudentData(currentUser,data);
+        gameEvent("letter",{n:data.learned.length});
         // 🎉 Encouragement gradué + animation tous les 5 lettres apprises
         if (data.learned.length % 5 === 0) {
             const level = data.learned.length / 5;
@@ -1331,7 +1340,7 @@ function showQuestion(){
     q.choices.forEach(choice=>{const btn=document.createElement("button");btn.className="choice-btn";
         if(quizMode==="image"||quizMode==="word")btn.textContent=choice.l;
         else btn.innerHTML=`<img src="${choice.img}" style="width:60px;height:60px;object-fit:contain;border-radius:8px">`;
-        btn.onclick=()=>{document.querySelectorAll(".choice-btn").forEach(b=>b.onclick=null);const ok=choice.l===q.item.l;btn.classList.add(ok?"correct":"wrong");if(ok)quizCorrect++;else{quizWrong++;document.querySelectorAll(".choice-btn").forEach(b=>{if((quizMode==="image"||quizMode==="word")&&b.textContent===q.item.l)b.classList.add("correct");});}quizCurrent++;setTimeout(showQuestion,900);};ce.appendChild(btn);});
+        btn.onclick=()=>{document.querySelectorAll(".choice-btn").forEach(b=>b.onclick=null);const ok=choice.l===q.item.l;btn.classList.add(ok?"correct":"wrong");if(ok){quizCorrect++;gameEvent("quizRight");}else{quizWrong++;document.querySelectorAll(".choice-btn").forEach(b=>{if((quizMode==="image"||quizMode==="word")&&b.textContent===q.item.l)b.classList.add("correct");});}quizCurrent++;setTimeout(showQuestion,900);};ce.appendChild(btn);});
 }
 async function showQuizResult(){
     document.getElementById("quiz-game").classList.add("hidden");document.getElementById("quiz-result").classList.remove("hidden");
@@ -1339,7 +1348,7 @@ async function showQuizResult(){
     document.getElementById("result-emoji").textContent=pct>=80?"🏆":pct>=50?"😊":"💪";
     document.getElementById("result-title").textContent=pct>=80?"ممتاز!":pct>=50?"أحسنت!":"حاول مجدداً!";
     document.getElementById("result-score").textContent=quizCorrect+" / "+quizQuestions.length+" إجابة صحيحة";
-    const data=await getStudentData(currentUser);data.quizScores=data.quizScores||[];data.quizScores.push({score:quizCorrect,total:quizQuestions.length,date:new Date().toISOString(),mode:quizMode});if(quizMode==="harakat")hqMergeResults(data);data.lastActivity=new Date().toISOString();await saveStudentData(currentUser,data);await updateProgress();
+    const data=await getStudentData(currentUser);data.quizScores=data.quizScores||[];data.quizScores.push({score:quizCorrect,total:quizQuestions.length,date:new Date().toISOString(),mode:quizMode});if(quizMode==="harakat")hqMergeResults(data);data.lastActivity=new Date().toISOString();await saveStudentData(currentUser,data);gameEvent("quizDone",{score:quizCorrect,total:quizQuestions.length,mode:quizMode,data});await updateProgress();
 }
 window.resetQuiz=()=>{if(quizMode==="harakat"){quizMode=null;}document.getElementById("quiz-intro").classList.remove("hidden");document.getElementById("quiz-game").classList.add("hidden");document.getElementById("quiz-result").classList.add("hidden");};
 
@@ -1487,7 +1496,7 @@ async function loadTeacherDashboard(){
             const hasPin = data.pin ? "🔐" : "🔓";
             const pinBtn = `<button class="btn-pin-student" onclick="setPinForStudent('${id}', '${name}')" title="Code personnel">${hasPin}</button>`;
             const msgBtn = `<button class="btn-pin-student" onclick="openMessageModal('${id}', '${name}')" title="Envoyer un message au parent">✉️</button>`;
-            return `<tr><td><strong>${name}</strong></td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${pct}%"></div></div><span>${pct}%</span></div></td><td>${avgS}${avgS!=="-"?"%":""} (${sc.length})</td><td>${harakatCellHtml(data)}</td><td>${date}</td><td style="display:flex;gap:6px">${pinBtn}${msgBtn}<button class="btn-reset-student" onclick="resetOneStudent('${id}')">🔄</button></td></tr>`;}).join("");
+            return `<tr><td><strong>${name}</strong>${gameSummaryHtml(data)}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${pct}%"></div></div><span>${pct}%</span></div></td><td>${avgS}${avgS!=="-"?"%":""} (${sc.length})</td><td>${harakatCellHtml(data)}</td><td>${date}</td><td style="display:flex;gap:6px">${pinBtn}${msgBtn}<button class="btn-reset-student" onclick="resetOneStudent('${id}')">🔄</button></td></tr>`;}).join("");
 
     // Draw charts
     setTimeout(() => {
@@ -1925,7 +1934,9 @@ window.startDemoMode = () => {
     applySchoolBranding(demo.school);
     applyFeatureTranslations(demo.school.uiLang);
     window._demoData = demo;
+    window._demoStudent = null;
     loadDemoDashboard(demo);
+    renderDemoNews();
     setTimeout(() => {
         const logoInput = document.getElementById("sa-logo-url");
         if (logoInput) { logoInput.value = demo.school.logoUrl; window.saPreviewLogo(); }
@@ -3224,6 +3235,7 @@ window.submitExercise = async exId => {
         seen: false
     });
     alert("✅ تم الإرسال للأستاذ!");
+    gameEvent("exercise");
     closeExModal();
     await loadStudentExercises();
 };
@@ -3435,6 +3447,7 @@ window.harakatPlay = async (key) => {
     if (!h) return;
     if (hkSeries.playing || hkSeries.paused) hkSeriesStop(); // un appui manuel interrompt la série
     hkStopChain();
+    gameEvent("listen");
     harakatKey = key;
     renderHarakatBody();
     const item = lettres[harakatLetterIdx];
@@ -3580,7 +3593,7 @@ window.hqAnswer = (n) => {
         b.onclick = null; b.disabled = true;
         if (q.choices[+b.dataset.n].text === q.target.text) b.classList.add("correct");
     });
-    if (ok) quizCorrect++;
+    if (ok) { quizCorrect++; gameEvent("quizRight"); }
     else { quizWrong++; document.querySelector(`.hq-choice[data-n="${n}"]`).classList.add("wrong"); hqPlay(q.target); }
     hqResults.push({ id: `${q.target.i}_${q.target.key}`, ok });
     quizCurrent++;
@@ -3596,6 +3609,387 @@ function hqMergeResults(data) {
     });
     hqResults = [];
 }
+
+// ============================================================
+//  🎮 HOUROUF AVENTURE — le côté jeu de l'application
+//  ⭐ des étoiles pour chaque effort · 🐣 un compagnon qui grandit avec les niveaux
+//  🔥 une série de jours (objectif quotidien) · 🎯 un défi du jour · 🏅 des badges à collectionner
+//  Tout est enregistré dans data.game de l'élève.
+// ============================================================
+Object.assign(DYNAMIC_I18N, {
+    gLevel:        { fr:"Niveau", nl:"Niveau", en:"Level", es:"Nivel" },
+    gGoal:         { fr:"Objectif du jour", nl:"Doel van vandaag", en:"Today's goal", es:"Objetivo del día" },
+    gChallenge:    { fr:"Défi du jour", nl:"Uitdaging van de dag", en:"Daily challenge", es:"Reto del día" },
+    gBadges:       { fr:"Mes badges", nl:"Mijn badges", en:"My badges", es:"Mis insignias" },
+    gStreak:       { fr:"jours de suite", nl:"dagen op rij", en:"days in a row", es:"días seguidos" },
+    gSuper:        { fr:"Super !", nl:"Super!", en:"Great!", es:"¡Genial!" },
+    gLevelUp:      { fr:"Nouveau niveau ! Ton compagnon a grandi", nl:"Nieuw niveau! Je maatje is gegroeid", en:"New level! Your buddy has grown", es:"¡Nuevo nivel! Tu compañero ha crecido" },
+    gNewBadge:     { fr:"Nouveau badge !", nl:"Nieuwe badge!", en:"New badge!", es:"¡Nueva insignia!" },
+    gGoalDone:     { fr:"Objectif du jour atteint !", nl:"Doel van vandaag bereikt!", en:"Today's goal reached!", es:"¡Objetivo del día conseguido!" },
+    gChallengeDone:{ fr:"Défi du jour réussi ! +25 ⭐", nl:"Uitdaging gelukt! +25 ⭐", en:"Challenge done! +25 ⭐", es:"¡Reto conseguido! +25 ⭐" },
+    gLocked:       { fr:"À débloquer", nl:"Nog te verdienen", en:"To unlock", es:"Por desbloquear" },
+    gHowTo:        { fr:"Comment gagner des étoiles ⭐", nl:"Hoe verdien je sterren ⭐", en:"How to earn stars ⭐", es:"Cómo ganar estrellas ⭐" },
+    gDemoBack:     { fr:"Retour à la démo directeur", nl:"Terug naar de directeur-demo", en:"Back to director demo", es:"Volver a la demo del director" },
+});
+
+const GAME_GOAL = 30;                       // ⭐ à gagner chaque jour pour garder sa série 🔥
+const GAME_LV = [0, 50, 150, 300, 500, 800, 1200, 1700, 2300, 3000];
+const GAME_MASCOT = ["🥚", "🐣", "🐥", "🐤", "🦉", "🦉", "🦅", "🦚", "🕊️", "🦄"];
+const GAME_TITLES = [["مبتدئ","Débutant"],["مستكشف","Explorateur"],["قارئ صغير","Petit lecteur"],["قارئ","Lecteur"],["نجم","Étoile"],
+                     ["بطل","Champion"],["حكيم","Sage"],["عالم","Savant"],["أستاذ","Maître"],["أسطورة","Légende"]];
+const GAME_XP = { listen: 1, quizRight: 5, quizDone: 5, quizPerfect: 20, series: 5, compare: 3, word: 3, letter: 10, exercise: 10, challenge: 25 };
+const GAME_LISTEN_CAP = 20;                 // pas plus de 20 ⭐ par jour en écoutant (contre les clics à répétition)
+const GAME_HOWTO = [["🔊","Écouter une lettre ou une syllabe","+1"],["✅","Bonne réponse au quiz","+5"],["🏁","Finir un quiz","+5"],
+                    ["💯","Quiz sans faute","+20"],["🎵","Écouter une série jusqu'au bout","+5"],["🎤","S'enregistrer et comparer","+3"],
+                    ["✏️","Composer et lire un mot","+3"],["📖","Apprendre une lettre","+10"],["📝","Envoyer un exercice","+10"],["🎯","Réussir le défi du jour","+25"]];
+
+const GAME_CHALLENGES = [
+    { id:"quiz8",    emoji:"🏆", ar:"احصل على 8/10 في اختبار",           fr:"Obtiens au moins 8/10 à un quiz",            target:1 },
+    { id:"hq",       emoji:"🔊", ar:"أكمل اختبار المقاطع",              fr:"Termine un quiz « Quelle syllabe entends-tu ? »", target:1 },
+    { id:"series",   emoji:"🎵", ar:"استمع إلى سلسلة حتى النهاية",       fr:"Écoute une série de syllabes jusqu'au bout", target:1 },
+    { id:"compare3", emoji:"🎤", ar:"سجّل صوتك وقارن ٣ مرات",           fr:"Enregistre-toi et compare 3 fois",           target:3 },
+    { id:"word3",    emoji:"✏️", ar:"كوّن كلمة من ٣ مقاطع واستمع إليها", fr:"Compose et écoute un mot de 3 syllabes",     target:1 },
+    { id:"listen15", emoji:"👂", ar:"استمع إلى ١٥ حرفًا أو مقطعًا",      fr:"Écoute 15 lettres ou syllabes",              target:15 },
+    { id:"xp40",     emoji:"⭐", ar:"اجمع ٤٠ نجمة اليوم",                fr:"Gagne 40 ⭐ aujourd'hui",                     target:40 },
+];
+
+const HK_CAT_TOTAL = () => Object.fromEntries(Object.keys(HK_CATS).map(c => [c, hkAllSyllables(HK_CATS[c].keys).length]));
+const GAME_BADGES = [
+    { id:"first_quiz", e:"🎯", ar:"أول اختبار",           fr:"Premier quiz",                       t:g => g.c.quizzes >= 1 },
+    { id:"perfect",    e:"✨", ar:"بدون خطأ",             fr:"Un quiz sans faute",                 t:g => g.c.perfect >= 1 },
+    { id:"perfect10",  e:"💎", ar:"١٠ اختبارات كاملة",    fr:"10 quiz sans faute",                 t:g => g.c.perfect >= 10 },
+    { id:"streak3",    e:"🔥", ar:"٣ أيام متتالية",       fr:"3 jours de suite",                   t:g => g.best >= 3 },
+    { id:"streak7",    e:"☄️", ar:"أسبوع كامل",           fr:"7 jours de suite",                   t:g => g.best >= 7 },
+    { id:"streak30",   e:"🏆", ar:"شهر كامل",             fr:"30 jours de suite",                  t:g => g.best >= 30 },
+    { id:"ear50",      e:"👂", ar:"أذن ذهبية",            fr:"Bonne oreille : 50 syllabes maîtrisées", t:g => (g.hk?.all || 0) >= 50 },
+    { id:"aui",        e:"🔤", ar:"سيّد الحركات القصيرة",  fr:"Maître de a · u · i",                t:g => (g.hk?.short || 0) >= (HK_CAT_TOTAL().short) },
+    { id:"madd",       e:"🌊", ar:"سيّد المدّ",             fr:"Maître des voyelles longues",        t:g => (g.hk?.madd || 0) >= (HK_CAT_TOTAL().madd) },
+    { id:"tanwin",     e:"🎶", ar:"سيّد التنوين",          fr:"Maître du tanwin",                   t:g => (g.hk?.tanwin || 0) >= (HK_CAT_TOTAL().tanwin) },
+    { id:"voice10",    e:"🎤", ar:"صوت جميل",             fr:"10 comparaisons de ma voix",         t:g => g.c.compare >= 10 },
+    { id:"builder10",  e:"🧱", ar:"بنّاء الكلمات",          fr:"10 mots composés",                   t:g => g.c.words >= 10 },
+    { id:"dj10",       e:"🎧", ar:"عازف المقاطع",          fr:"10 séries écoutées",                 t:g => g.c.series >= 10 },
+    { id:"letters28",  e:"🌟", ar:"كلّ الحروف",            fr:"Les 28 lettres apprises",            t:g => (g.learned || 0) >= 28 },
+    { id:"level5",     e:"🦉", ar:"المستوى ٥",             fr:"Niveau 5 atteint",                   t:g => gameLevel(g.xp) >= 5 },
+    { id:"challenger", e:"🎖️", ar:"٥ تحديات",              fr:"5 défis du jour réussis",            t:g => g.c.challenges >= 5 },
+];
+
+let _game = null, _gameSaveTimer = null, _gameQueue = [], _gameModalOpen = false;
+window._game = null;
+const gameActive = () => currentRole === "student" && !!_game;
+const gameLevel = xp => GAME_LV.filter(t => xp >= t).length;            // 1 à 10
+function gameTitle(lv) { const t = GAME_TITLES[lv - 1]; return bi(t[0], null) + (currentUILang ? ` / ${t[1]}` : ""); }
+function gameYesterday() { const d = new Date(); d.setDate(d.getDate() - 1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
+function gameHash(s) { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; }
+function gameCatMastered(data) {
+    const r = data?.harakat?.r || {}, out = { all: 0 };
+    Object.keys(HK_CATS).forEach(c => out[c] = 0);
+    Object.entries(r).forEach(([id, v]) => { if (v[2] !== 1) return; out.all++; const c = hkCatOf(id.split("_").slice(1).join("_")); if (c) out[c]++; });
+    return out;
+}
+
+function gameRollover() {
+    const g = _game, today = todayLocalIso();
+    if (g.day !== today) { g.day = today; g.dayXp = 0; g.dayListen = 0; }
+    if (g.lastGoalDay !== today && g.lastGoalDay !== gameYesterday()) g.streak = 0; // série cassée
+    if (g.ch?.day !== today) {
+        const ch = GAME_CHALLENGES[gameHash(today + (currentUser || "")) % GAME_CHALLENGES.length];
+        g.ch = { day: today, id: ch.id, n: 0, done: false };
+    }
+}
+
+function initGame(data) {
+    if (currentRole !== "student") { _game = window._game = null; renderGameBar(); return; }
+    const g = Object.assign({ xp: 0, day: "", dayXp: 0, dayListen: 0, lastGoalDay: "", streak: 0, best: 0, ch: null, badges: [],
+                              c: {}, hk: {}, learned: 0 }, data.game || {});
+    g.c = Object.assign({ quizzes: 0, perfect: 0, series: 0, compare: 0, words: 0, challenges: 0 }, g.c || {});
+    _game = window._game = g;
+    g.learned = data.learned?.length || 0;
+    g.hk = gameCatMastered(data);
+    gameRollover();
+    gameCheckBadges(true); // badges déjà mérités : attribués sans fête
+    renderGameBar();
+    gameSave();
+    const first = (document.getElementById("header-name")?.textContent || "").split(" ")[0];
+    setTimeout(() => gameSay(`السلام عليكم ${first} 👋 ` + (g.streak ? `🔥 ${g.streak}` : "") + `<br>🎯 ${gameChallengeText()}`), 700);
+}
+
+function gameSave() {
+    if (!_game || !currentUser) return;
+    clearTimeout(_gameSaveTimer);
+    _gameSaveTimer = setTimeout(() => {
+        if (isDemoMode) { if (window._demoStudent) window._demoStudent.game = _game; return; }
+        setDoc(doc(db, "eleves", currentUser), { game: _game }, { merge: true }).catch(e => console.warn("game save", e));
+    }, 1200);
+}
+
+// Point d'entrée unique : chaque action de l'élève appelle gameEvent(...)
+function gameEvent(type, info = {}) {
+    if (!gameActive()) return;
+    const g = _game;
+    gameRollover();
+    let xp = 0;
+    switch (type) {
+        case "listen":    if (g.dayListen < GAME_LISTEN_CAP) { g.dayListen++; xp = GAME_XP.listen; } break;
+        case "quizRight": xp = GAME_XP.quizRight; break;
+        case "quizDone":  g.c.quizzes++; xp = GAME_XP.quizDone;
+                          if (info.score === info.total) { g.c.perfect++; xp += GAME_XP.quizPerfect; gameSound("win"); }
+                          if (info.data) g.hk = gameCatMastered(info.data);
+                          break;
+        case "series":    g.c.series++; xp = GAME_XP.series; break;
+        case "compare":   g.c.compare++; xp = GAME_XP.compare; break;
+        case "word":      if (info.text && info.text !== g._lastWord) { g._lastWord = info.text; g.c.words++; xp = GAME_XP.word; } break;
+        case "letter":    g.learned = info.n || g.learned; xp = GAME_XP.letter; break;
+        case "exercise":  xp = GAME_XP.exercise; break;
+    }
+    // 🎯 Progression du défi du jour
+    const ch = g.ch, def = GAME_CHALLENGES.find(c => c.id === ch?.id);
+    if (def && !ch.done) {
+        if (def.id === "quiz8"    && type === "quizDone" && info.total >= 10 && info.score >= 8) ch.n = 1;
+        if (def.id === "hq"       && type === "quizDone" && info.mode === "harakat") ch.n = 1;
+        if (def.id === "series"   && type === "series") ch.n++;
+        if (def.id === "compare3" && type === "compare") ch.n++;
+        if (def.id === "word3"    && type === "word" && (info.n || 0) >= 3) ch.n = 1;
+        if (def.id === "listen15" && type === "listen") ch.n++;
+    }
+    if (xp) gameAddXp(xp);
+    gameCheckChallenge();
+    gameCheckBadges(false);
+    renderGameBar();
+    gameSave();
+}
+
+function gameAddXp(n) {
+    const g = _game, before = gameLevel(g.xp), today = todayLocalIso();
+    g.xp += n; g.dayXp += n;
+    gameToast(`+${n} ⭐`);
+    if (g.ch && g.ch.id === "xp40" && !g.ch.done) g.ch.n = g.dayXp;
+    // 🔥 Objectif du jour
+    if (g.dayXp >= GAME_GOAL && g.lastGoalDay !== today) {
+        g.streak = g.lastGoalDay === gameYesterday() ? g.streak + 1 : 1;
+        g.best = Math.max(g.best, g.streak);
+        g.lastGoalDay = today;
+        gameCelebrate("🔥", bi("هدف اليوم تحقّق!", "gGoalDone"), `🔥 ${g.streak} ${bi("أيام متتالية", "gStreak")}`);
+    }
+    const after = gameLevel(g.xp);
+    if (after > before) gameCelebrate(GAME_MASCOT[after - 1], `${bi("المستوى", "gLevel")} ${after} !`, `${bi("مستوى جديد! رفيقك كبر", "gLevelUp")} — ${gameTitle(after)}`);
+}
+function gameCheckChallenge() {
+    const g = _game, def = GAME_CHALLENGES.find(c => c.id === g.ch?.id);
+    if (!def || g.ch.done || g.ch.n < def.target) return;
+    g.ch.done = true; g.c.challenges++;
+    gameCelebrate(def.emoji, bi("نجحت في تحدّي اليوم! +٢٥ ⭐", "gChallengeDone"), def[currentUILang] || def.fr);
+    gameAddXp(GAME_XP.challenge);
+}
+function gameCheckBadges(silent) {
+    const g = _game;
+    GAME_BADGES.forEach(b => {
+        if (g.badges.includes(b.id) || !b.t(g)) return;
+        g.badges.push(b.id);
+        if (!silent) gameCelebrate(b.e, bi("وسام جديد!", "gNewBadge"), `${b.ar} — ${b.fr}`);
+    });
+}
+const gameChallengeDef = () => GAME_CHALLENGES.find(c => c.id === _game?.ch?.id);
+function gameChallengeText() {
+    const d = gameChallengeDef(); if (!d) return "";
+    return `${d.emoji} ${d.ar}${currentUILang ? " / " + d.fr : ""}`;
+}
+
+// ---------- Affichage : la barre de jeu ----------
+function renderGameBar() {
+    let bar = document.getElementById("game-bar");
+    if (!bar) {
+        const anchor = document.querySelector("#screen-menu .progress-section");
+        if (!anchor) return;
+        bar = document.createElement("div"); bar.id = "game-bar"; anchor.before(bar);
+    }
+    if (!gameActive()) { bar.innerHTML = ""; return; }
+    const g = _game, lv = gameLevel(g.xp), lo = GAME_LV[lv - 1], hi = GAME_LV[lv];
+    const lvPct = hi ? Math.round((g.xp - lo) / (hi - lo) * 100) : 100;
+    const goalPct = Math.min(100, Math.round(g.dayXp / GAME_GOAL * 100));
+    const def = gameChallengeDef();
+    const chPct = def ? Math.min(100, Math.round(g.ch.n / def.target * 100)) : 0;
+    bar.innerHTML = `
+    <div class="game-bar">
+        <button class="gb-mascot" onclick="gameMascotTalk()" title="${gameTitle(lv)}"><span id="gb-mascot-emoji">${GAME_MASCOT[lv - 1]}</span></button>
+        <div class="gb-main">
+            <div class="gb-level">${bi("المستوى", "gLevel")} ${lv} · ${gameTitle(lv)}</div>
+            <div class="gb-bar"><span style="width:${lvPct}%"></span></div>
+            <div class="gb-xp">⭐ ${g.xp}${hi ? ` / ${hi}` : ""}</div>
+        </div>
+        <div class="gb-chips">
+            <button class="gb-chip ${g.lastGoalDay === todayLocalIso() ? "gb-fire-on" : ""}" onclick="openGameHowTo()" title="${bi("أيام متتالية", "gStreak")}">🔥 ${g.streak}</button>
+            <button class="gb-chip" onclick="openGameBadges()" title="${bi("أوسمتي", "gBadges")}">🏅 ${g.badges.length}</button>
+        </div>
+        <div id="gb-bubble" class="gb-bubble hidden"></div>
+    </div>
+    <div class="gb-goals">
+        <button class="gb-goal" onclick="openGameHowTo()">
+            <span class="gb-goal-label">⭐ ${bi("هدف اليوم", "gGoal")}</span>
+            <span class="gb-goal-bar"><span style="width:${goalPct}%"></span></span>
+            <span class="gb-goal-num">${Math.min(g.dayXp, GAME_GOAL)}/${GAME_GOAL}</span>
+        </button>
+        ${def ? `<button class="gb-goal gb-challenge ${g.ch.done ? "done" : ""}" onclick="gameSay('🎯 ' + gameChallengeText())">
+            <span class="gb-goal-label">🎯 ${bi("تحدّي اليوم", "gChallenge")}</span>
+            <span class="gb-goal-text">${def.emoji} ${currentUILang ? (def[currentUILang] || def.fr) : def.ar}</span>
+            <span class="gb-goal-num">${g.ch.done ? "✅" : `${Math.min(g.ch.n, def.target)}/${def.target}`}</span>
+        </button>` : ""}
+    </div>
+    ${isDemoMode ? `<button class="gb-demo-back" onclick="demoBackToDirector()">⬅️ ${bi("العودة إلى عرض المدير", "gDemoBack")}</button>` : ""}`;
+}
+
+// Le compagnon parle (bulle)
+function gameSay(html) {
+    const b = document.getElementById("gb-bubble"); if (!b) return;
+    b.innerHTML = html; b.classList.remove("hidden");
+    clearTimeout(b._t); b._t = setTimeout(() => b.classList.add("hidden"), 4500);
+    const m = document.getElementById("gb-mascot-emoji"); if (m) { m.classList.remove("gb-hop"); void m.offsetWidth; m.classList.add("gb-hop"); }
+}
+window.gameMascotTalk = () => {
+    if (!_game) return;
+    const g = _game, lv = gameLevel(g.xp), hi = GAME_LV[lv], def = gameChallengeDef();
+    const tips = [];
+    if (g.dayXp < GAME_GOAL) tips.push(`⭐ ${GAME_GOAL - g.dayXp} → 🔥 ${bi("هدف اليوم", "gGoal")}`);
+    if (def && !g.ch.done) tips.push(`🎯 ${gameChallengeText()}`);
+    if (hi) tips.push(`${GAME_MASCOT[lv]} ⭐ ${hi - g.xp} → ${bi("المستوى", "gLevel")} ${lv + 1}`);
+    tips.push("💪 " + ["أحسنت!", "واصل!", "أنت بطل!", "رائع!"][Math.floor(Math.random() * 4)]);
+    gameSay(tips[Math.floor(Math.random() * tips.length)]);
+};
+
+// Petit « +5 ⭐ » qui s'envole
+function gameToast(text) {
+    const t = document.createElement("div");
+    t.className = "gb-toast"; t.textContent = text;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 1300);
+}
+
+// Fêtes : une à la fois (file d'attente)
+function gameCelebrate(emoji, title, sub) {
+    _gameQueue.push({ emoji, title, sub });
+    if (!_gameModalOpen) gameNextCelebration();
+}
+function gameNextCelebration() {
+    const c = _gameQueue.shift();
+    if (!c) { _gameModalOpen = false; return; }
+    _gameModalOpen = true;
+    gameSound("fanfare"); gameConfetti();
+    const m = document.createElement("div");
+    m.className = "gb-modal-bg";
+    m.innerHTML = `<div class="gb-modal"><div class="gb-modal-emoji">${c.emoji}</div><h2>${c.title}</h2><p>${c.sub || ""}</p>
+        <button class="btn-primary" onclick="this.closest('.gb-modal-bg').remove(); gameNextCelebration();">🎉 ${bi("رائع!", "gSuper")}</button></div>`;
+    document.body.appendChild(m);
+}
+window.gameNextCelebration = gameNextCelebration;
+function gameConfetti() {
+    const colors = ["#FF6B6B", "#FFE66D", "#4ECDC4", "#764ba2", "#6BCB77", "#f5a623"];
+    for (let i = 0; i < 70; i++) {
+        const p = document.createElement("span");
+        p.className = "gb-confetti";
+        p.style.left = Math.random() * 100 + "vw";
+        p.style.background = colors[i % colors.length];
+        p.style.animationDelay = Math.random() * .4 + "s";
+        p.style.transform = `rotate(${Math.random() * 360}deg)`;
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 2600);
+    }
+}
+function gameSound(kind) {
+    try {
+        const ctx = getAudioCtx(), now = ctx.currentTime;
+        const notes = kind === "fanfare" ? [523, 659, 784, 1047] : [659, 988];
+        notes.forEach((f, i) => {
+            const o = ctx.createOscillator(), g = ctx.createGain();
+            o.type = "triangle"; o.frequency.value = f;
+            g.gain.setValueAtTime(0.0001, now + i * .11);
+            g.gain.exponentialRampToValueAtTime(0.18, now + i * .11 + .02);
+            g.gain.exponentialRampToValueAtTime(0.0001, now + i * .11 + .25);
+            o.connect(g); g.connect(ctx.destination); o.start(now + i * .11); o.stop(now + i * .11 + .3);
+        });
+    } catch (e) {}
+}
+
+// Fenêtres : badges et « comment gagner des étoiles »
+function gameOpenSheet(html) {
+    const m = document.createElement("div");
+    m.className = "gb-modal-bg";
+    m.onclick = e => { if (e.target === m) m.remove(); };
+    m.innerHTML = `<div class="gb-modal gb-sheet">${html}<button class="btn-secondary" onclick="this.closest('.gb-modal-bg').remove()">✕</button></div>`;
+    document.body.appendChild(m);
+}
+window.openGameBadges = () => {
+    if (!_game) return;
+    gameOpenSheet(`<h2>🏅 ${bi("أوسمتي", "gBadges")} (${_game.badges.length}/${GAME_BADGES.length})</h2>
+        <div class="gb-badges">${GAME_BADGES.map(b => {
+            const on = _game.badges.includes(b.id);
+            return `<div class="gb-badge ${on ? "on" : ""}"><div class="gb-badge-e">${on ? b.e : "🔒"}</div><div class="gb-badge-ar">${b.ar}</div><div class="gb-badge-fr">${b.fr}</div></div>`;
+        }).join("")}</div>`);
+};
+window.openGameHowTo = () => {
+    if (!_game) return;
+    const g = _game;
+    gameOpenSheet(`<h2>🔥 ${g.streak} ${bi("أيام متتالية", "gStreak")}</h2>
+        <p class="gb-sheet-sub">⭐ ${GAME_GOAL} / ${bi("هدف اليوم", "gGoal")} → 🔥 +1</p>
+        <h3>${bi("كيف تربح النجوم", "gHowTo")}</h3>
+        <div class="gb-howto">${GAME_HOWTO.map(([e, t, x]) => `<div><span>${e}</span><span>${t}</span><strong>${x} ⭐</strong></div>`).join("")}</div>
+        <h3>${GAME_MASCOT.map((m, i) => `<span class="gb-evo ${gameLevel(g.xp) > i ? "on" : ""}" title="${bi("المستوى", "gLevel")} ${i + 1}">${m}</span>`).join("")}</h3>`);
+};
+
+// Résumé pour les tableaux de bord prof / directeur
+function gameSummaryHtml(data) {
+    const g = data?.game; if (!g || !g.xp) return "";
+    const alive = g.lastGoalDay === todayLocalIso() || g.lastGoalDay === gameYesterday();
+    return ` <span class="gb-mini">${GAME_MASCOT[gameLevel(g.xp) - 1]} ${gameLevel(g.xp)}${alive && g.streak ? ` · 🔥${g.streak}` : ""}</span>`;
+}
+
+// ============================================================
+//  🎬 DÉMO DIRECTEUR : nouveautés + essai de l'espace élève
+// ============================================================
+function demoStudentData() {
+    const advanced = (window._demoData?.students || []).map(([, d]) => d).sort((a, b) => harakatStats(b).pct - harakatStats(a).pct)[2];
+    const today = todayLocalIso();
+    return {
+        learned: advanced ? advanced.learned.slice(0, 18) : [0, 1, 2, 3, 4, 5],
+        quizScores: advanced ? advanced.quizScores.slice() : [],
+        harakat: advanced ? JSON.parse(JSON.stringify(advanced.harakat)) : { r: {} },
+        quranMemorized: advanced ? advanced.quranMemorized : {},
+        schoolId: "demo_school", classId: "demo_c1", lastActivity: new Date().toISOString(),
+        game: { xp: 455, day: today, dayXp: 12, dayListen: 4, lastGoalDay: gameYesterday(), streak: 5, best: 6,
+                ch: null, badges: [], c: { quizzes: 9, perfect: 2, series: 4, compare: 7, words: 6, challenges: 3 }, hk: {}, learned: 18 },
+    };
+}
+function renderDemoNews() {
+    const screen = document.getElementById("screen-schooladmin");
+    if (!screen) return;
+    let box = document.getElementById("demo-news");
+    if (!box) { box = document.createElement("div"); box.id = "demo-news"; screen.querySelector(".admin-tabs")?.before(box); }
+    if (!isDemoMode) { box.innerHTML = ""; return; }
+    const items = [
+        ["🔤", "الحركات بصوت المعلم", "Harakat avec la voix de l'enseignant", "303 syllabes : voyelles brèves, soukoun, madd, chadda, tanwin"],
+        ["🎵", "سلسلة المقاطع", "Lecture en série (premium)", "بَ بُ بِ ‹ تَ تُ تِ … à la vitesse choisie, mode « répète après moi »"],
+        ["✏️", "أكوّن كلماتي", "Composer des mots", "L'élève assemble des syllabes et entend le mot, lettres liées"],
+        ["🎤", "استمع إلى نفسك", "Écoute-toi et compare", "Enregistrement 100 % local : rien n'est envoyé ni stocké"],
+        ["🔊", "اختبار المقاطع", "Quiz « Quelle syllabe ? »", "3 niveaux, suivi des points faibles par élève et par classe"],
+        ["🎮", "مغامرة حروفي", "Hourouf Aventure", "Étoiles, compagnon qui grandit, série de jours 🔥, défi du jour, 16 badges"],
+    ];
+    box.innerHTML = `<div class="demo-news">
+        <div class="demo-news-title">✨ ${"الجديد في حروفي"} / Nouveautés</div>
+        <div class="demo-news-grid">${items.map(([e, ar, fr, txt]) => `<div class="demo-news-card"><div class="dn-e">${e}</div><div class="dn-ar">${ar}</div><div class="dn-fr">${fr}</div><div class="dn-txt">${txt}</div></div>`).join("")}</div>
+        <button class="demo-try-btn" onclick="demoTryStudent()">👦 جرّب فضاء التلميذ / Essayer l'espace élève</button>
+    </div>`;
+}
+window.demoTryStudent = async () => {
+    if (!isDemoMode) return;
+    window._demoStudent = window._demoStudent || demoStudentData();
+    currentRole = "student"; currentUser = "demo_student"; currentClassId = "demo_c1";
+    const hn = document.getElementById("header-name"); if (hn) hn.textContent = "Yasmine (démo)";
+    await window.showMenu();
+};
+window.demoBackToDirector = () => {
+    hkSeriesStop(); hkMicReset();
+    currentRole = "schooladmin"; currentUser = "demo_admin";
+    _game = window._game = null; renderGameBar();
+    showScreen("screen-schooladmin");
+};
 
 // ============================================================
 //  🎤 ÉCOUTE-TOI ET COMPARE — enregistrement 100 % LOCAL
@@ -3677,6 +4071,7 @@ window.hkMicCompare = async () => {
     await new Promise(r => setTimeout(r, 400));
     await hkMicPlayMine();
     if (btn) btn.disabled = false;
+    gameEvent("compare");
 };
 
 function renderHarakatMic() {
@@ -3800,6 +4195,7 @@ function hkStopChain() {
 window.hkWordChain = async () => {
     hkSeriesStop(); stopCurrentQuranAudio(); hkStopChain();
     const words = hkWordParts(); if (!words.length) return;
+    gameEvent("word", { text: words.map(w => w.map(p => p.text).join("")).join(" "), n: words.reduce((a, w) => a + w.length, 0) });
     const flat = words.flatMap((w, wi) => w.map((p, pi) => ({ ...p, wordEnd: pi === w.length - 1 && wi < words.length - 1 })));
     const loaded = await Promise.all(flat.map(p => loadNormalizedBuffer(p.path)));
     if (loaded.some(l => !l)) { hkWordNatural(); return; } // un enregistrement manque → voix de synthèse
@@ -3836,12 +4232,30 @@ window.hkSetVoice = (name) => {
     hkWordNatural();
 };
 // 🗣️ Lecture naturelle : la voix de synthèse arabe lit le mot entier, lettres liées
-window.hkWordNatural = () => {
+// Les voix du navigateur arrivent parfois avec retard : on les attend (1,5 s maximum)
+function waitForVoices() {
+    return new Promise(resolve => {
+        if (!window.speechSynthesis) return resolve([]);
+        const v = window.speechSynthesis.getVoices();
+        if (v.length) return resolve(v);
+        const t = setTimeout(() => resolve(window.speechSynthesis.getVoices()), 1500);
+        window.speechSynthesis.addEventListener?.("voiceschanged", () => { clearTimeout(t); resolve(window.speechSynthesis.getVoices()); }, { once: true });
+    });
+}
+window.hkWordNatural = async () => {
     hkSeriesStop(); stopCurrentQuranAudio(); hkStopChain();
     const words = hkWordParts(); if (!words.length) return;
     const text = words.map(w => w.map(p => p.text).join("")).join(" ");
+    await waitForVoices();
     const warn = document.getElementById("hk-word-warn");
-    if (warn) warn.classList.toggle("hidden", !!bestArabicVoice() || !(window.speechSynthesis?.getVoices() || []).length);
+    if (!bestArabicVoice()) {
+        // Pas de voix arabe sur cet appareil : on prévient, et on lit quand même le mot avec les enregistrements
+        if (warn) warn.classList.remove("hidden");
+        window.hkWordChain();
+        return;
+    }
+    if (warn) warn.classList.add("hidden");
+    gameEvent("word", { text, n: words.reduce((a, w) => a + w.length, 0) });
     trySpeechSynthesis(text);
 };
 
@@ -3887,7 +4301,7 @@ async function hkSeriesRun(token) {
         const pause = s.speed === "echo" ? Math.round(duration * 1000) + 1000 : HK_SPEED_PAUSE[s.speed];
         await hkSleep(pause, token);
         if (token !== s.token) return;
-        if (ni < 0) { s.playing = false; s.done = true; s.idx = 0; renderHarakatSeries(); return; }
+        if (ni < 0) { s.playing = false; s.done = true; s.idx = 0; renderHarakatSeries(); gameEvent("series"); return; }
         s.idx = ni;
     }
 }
