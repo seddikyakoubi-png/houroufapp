@@ -1945,3 +1945,38 @@ body {
 @keyframes hkBlink { 50% { opacity: .2; } }
 .hk-mic-error { font-size: 12px; color: #c0392b; margin: 8px 6px 0; }
 .hk-mic-privacy { font-size: 11px; color: var(--text-light); margin: 8px 6px 0; }
+
+/* ===== 📊 Harakat : progression et quiz ===== */
+.compteur-harakat { margin-top: 2px; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; }
+.hk-mini-bar { display: inline-block; width: 90px; height: 7px; background: #f1ece2; border-radius: 6px; overflow: hidden; vertical-align: middle; }
+.hk-mini-bar span { display: block; height: 100%; background: linear-gradient(90deg, #ffd166, #f5a623); }
+.hk-tile-star { position: absolute; top: 6px; inset-inline-end: 8px; font-size: 14px; }
+.harakat-tile { position: relative; }
+.hk-weak-tag { font-size: 11px; color: #c0392b; margin-top: 3px; white-space: nowrap; }
+.hk-class-weak {
+    background: #fff6e5; border: 1px solid #ffd99a; color: #8a5a00; border-radius: 12px;
+    padding: 8px 12px; margin: 10px 0; font-size: 14px; text-align: center;
+}
+.quiz-mode-new { position: relative; }
+.quiz-mode-new::after {
+    content: "NEW"; position: absolute; top: -8px; inset-inline-end: -6px; background: #FF6B6B; color: #fff;
+    font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 8px;
+}
+.hq-level-title { font-size: 20px; font-weight: 900; color: #764ba2; text-align: center; line-height: 1.6; }
+.hq-level-title small { font-size: 14px; color: var(--text-light); font-weight: 700; }
+.hq-level-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 4px; width: 100%;
+    padding: 14px; border-radius: 18px; border: 2px solid #eee; background: #fff; cursor: pointer;
+    font-family: 'Tajawal', sans-serif; font-size: 15px; font-weight: 800; color: var(--text);
+}
+.hq-level-btn span { font-size: 14px; color: var(--text-light); }
+.hq-level-1 { border-color: #a8e6cf; } .hq-level-2 { border-color: #ffd3a5; } .hq-level-3 { border-color: #ffaaa5; }
+.hq-listen {
+    display: flex; flex-direction: column; align-items: center; gap: 4px; margin: 0 auto;
+    width: 130px; height: 130px; border-radius: 50%; border: none; cursor: pointer; font-size: 48px;
+    background: linear-gradient(135deg, #4ECDC4, #556fd8); color: #fff; box-shadow: 0 8px 20px rgba(85,111,216,.35);
+    justify-content: center; animation: hqPulse 2s infinite;
+}
+.hq-listen span { font-size: 12px; font-family: 'Tajawal', sans-serif; font-weight: 800; }
+@keyframes hqPulse { 50% { transform: scale(1.05); } }
+.hq-choice { font-size: 40px; font-family: 'Noto Naskh Arabic', 'Tajawal', serif; line-height: 1.6; }

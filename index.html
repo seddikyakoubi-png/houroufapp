@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حروفي - تعلم الأبجدية العربية</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20260965">
+    <link rel="stylesheet" href="style.css?v=20260966">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -167,6 +167,7 @@
                 <button onclick="startQuiz('image')" class="quiz-mode-btn" id="quiz-mode-image"><span class="qm-icon">🖼️</span><span class="tab-label">ما هذه الصورة؟</span></button>
                 <button onclick="startQuiz('letter')" class="quiz-mode-btn" id="quiz-mode-letter"><span class="qm-icon">🔤</span><span class="tab-label">ما هذا الحرف؟</span></button>
                 <button onclick="startQuiz('word')" class="quiz-mode-btn" id="quiz-mode-word"><span class="qm-icon">📝</span><span class="tab-label">ما هذه الكلمة؟</span></button>
+                <button onclick="startHarakatQuizMenu()" class="quiz-mode-btn quiz-mode-new" id="quiz-mode-harakat"><span class="qm-icon">🔊</span><span class="tab-label">ما هذا المقطع؟</span></button>
             </div>
         </div>
         <div id="quiz-game" class="hidden">
@@ -399,7 +400,7 @@
             <!-- Tableau -->
             <div class="teacher-table-wrap">
                 <table class="teacher-table">
-                    <thead><tr><th id="th-t-eleve"><span class="tab-label">👤 Élève</span></th><th id="th-t-progression"><span class="tab-label">📊 Progression</span></th><th id="th-t-quiz"><span class="tab-label">🏆 Quiz</span></th><th id="th-t-activite"><span class="tab-label">📅 Activité</span></th><th>⚙️</th></tr></thead>
+                    <thead><tr><th id="th-t-eleve"><span class="tab-label">👤 Élève</span></th><th id="th-t-progression"><span class="tab-label">📊 Progression</span></th><th id="th-t-quiz"><span class="tab-label">🏆 Quiz</span></th><th id="th-t-harakat"><span class="tab-label">🔤 Harakat</span></th><th id="th-t-activite"><span class="tab-label">📅 Activité</span></th><th>⚙️</th></tr></thead>
                     <tbody id="teacher-tbody"></tbody>
                 </table>
             </div>
@@ -626,7 +627,7 @@
             <!-- Tableau détaillé -->
             <div class="teacher-table-wrap">
                 <table class="teacher-table">
-                    <thead><tr><th id="sa-th-eleve"><span class="tab-label">👤 Élève</span></th><th id="sa-th-classe"><span class="tab-label">📚 Classe</span></th><th id="sa-th-progression"><span class="tab-label">📊 Progression</span></th><th id="sa-th-quiz"><span class="tab-label">🏆 Quiz</span></th><th id="sa-th-activite"><span class="tab-label">📅 Activité</span></th><th id="sa-th-coran"><span class="tab-label">📖 Coran</span></th><th>✉️</th></tr></thead>
+                    <thead><tr><th id="sa-th-eleve"><span class="tab-label">👤 Élève</span></th><th id="sa-th-classe"><span class="tab-label">📚 Classe</span></th><th id="sa-th-progression"><span class="tab-label">📊 Progression</span></th><th id="sa-th-quiz"><span class="tab-label">🏆 Quiz</span></th><th id="sa-th-activite"><span class="tab-label">📅 Activité</span></th><th id="sa-th-coran"><span class="tab-label">📖 Coran</span></th><th id="sa-th-harakat"><span class="tab-label">🔤 Harakat</span></th><th>✉️</th></tr></thead>
                     <tbody id="sa-tbody"></tbody>
                 </table>
             </div>
@@ -836,6 +837,6 @@
     </div>
 </div>
 
-<script type="module" src="script.js?v=20260965"></script>
+<script type="module" src="script.js?v=20260966"></script>
 </body>
 </html>

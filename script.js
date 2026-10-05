@@ -310,6 +310,7 @@ const FEATURE_I18N = {
     "quiz-subtitle":    { emoji:"", ar:"هل أنت مستعد؟", fr:"Es-tu prêt ?", nl:"Ben je klaar?", en:"Are you ready?", es:"¿Estás listo?" },
     "quiz-mode-image":  { emoji:"", ar:"ما هذه الصورة؟", fr:"Quelle est cette image ?", nl:"Wat is deze afbeelding?", en:"What is this picture?", es:"¿Qué es esta imagen?" },
     "quiz-mode-letter": { emoji:"", ar:"ما هذا الحرف؟", fr:"Quelle est cette lettre ?", nl:"Welke letter is dit?", en:"What is this letter?", es:"¿Qué letra es esta?" },
+    "quiz-mode-harakat":{ emoji:"", ar:"ما هذا المقطع؟", fr:"Quelle syllabe entends-tu ?", nl:"Welke lettergreep hoor je?", en:"Which syllable do you hear?", es:"¿Qué sílaba oyes?" },
     "quiz-mode-word":   { emoji:"", ar:"ما هذه الكلمة؟", fr:"Quel est ce mot ?", nl:"Wat is dit woord?", en:"What is this word?", es:"¿Qué palabra es esta?" },
     "btn-quiz-reset":      { emoji:"🔄", ar:"إعادة", fr:"Recommencer", nl:"Opnieuw", en:"Retry", es:"Reintentar" },
     "btn-quiz-gotolearn":  { emoji:"📖", ar:"تعلّم", fr:"Apprendre", nl:"Leren", en:"Learn", es:"Aprender" },
@@ -341,6 +342,7 @@ const FEATURE_I18N = {
     "th-t-eleve":       { emoji:"👤", ar:"التلميذ",  fr:"Élève",      nl:"Leerling",  en:"Student",  es:"Alumno" },
     "th-t-progression": { emoji:"📊", ar:"التقدّم",  fr:"Progression",nl:"Voortgang", en:"Progress", es:"Progreso" },
     "th-t-quiz":        { emoji:"🏆", ar:"اختبار",  fr:"Quiz",       nl:"Quiz",      en:"Quiz",     es:"Cuestionario" },
+    "th-t-harakat":     { emoji:"🔤", ar:"الحركات", fr:"Harakat", nl:"Harakat", en:"Harakat", es:"Harakat" },
     "th-t-activite":    { emoji:"📅", ar:"النشاط",  fr:"Activité",   nl:"Activiteit",en:"Activity", es:"Actividad" },
     "t-attendance-title": { emoji:"📅", ar:"تسجيل الحضور", fr:"Faire l'appel", nl:"Aanwezigheid noteren", en:"Take attendance", es:"Pasar lista" },
     "btn-load-attendance":{ emoji:"📋", ar:"تحميل", fr:"Charger", nl:"Laden", en:"Load", es:"Cargar" },
@@ -373,6 +375,7 @@ const FEATURE_I18N = {
     "sa-th-progression": { emoji:"📊", ar:"التقدّم", fr:"Progression", nl:"Voortgang", en:"Progress", es:"Progreso" },
     "sa-th-quiz":        { emoji:"🏆", ar:"اختبار", fr:"Quiz",    nl:"Quiz",      en:"Quiz",     es:"Cuestionario" },
     "sa-th-activite":    { emoji:"📅", ar:"النشاط", fr:"Activité",nl:"Activiteit",en:"Activity", es:"Actividad" },
+    "sa-th-harakat":     { emoji:"🔤", ar:"الحركات", fr:"Harakat", nl:"Harakat", en:"Harakat", es:"Harakat" },
     "sa-th-coran":       { emoji:"📖", ar:"القرآن", fr:"Coran",   nl:"Koran",     en:"Quran",    es:"Corán" },
     "sa-settings-logo-title": { emoji:"🎨", ar:"تخصيص المدرسة", fr:"Personnalisation de l'école", nl:"Personalisatie van de school", en:"School customization", es:"Personalización de la escuela" },
     "btn-save-logo":     { emoji:"💾", ar:"حفظ الشعار", fr:"Enregistrer le logo", nl:"Logo opslaan", en:"Save the logo", es:"Guardar el logo" },
@@ -487,6 +490,20 @@ const DYNAMIC_I18N = {
     seriesByLetter:   { fr:"Lettre par lettre", nl:"Letter per letter", en:"Letter by letter", es:"Letra por letra" },
     seriesByMove:     { fr:"Voyelle par voyelle", nl:"Klinker per klinker", en:"Vowel by vowel", es:"Vocal por vocal" },
     seriesSpeed:      { fr:"Vitesse", nl:"Snelheid", en:"Speed", es:"Velocidad" },
+    hqTitle:          { fr:"Quelle syllabe entends-tu ?", nl:"Welke lettergreep hoor je?", en:"Which syllable do you hear?", es:"¿Qué sílaba oyes?" },
+    hqLevel:          { fr:"Choisis ton niveau", nl:"Kies je niveau", en:"Choose your level", es:"Elige tu nivel" },
+    hqLevel1:         { fr:"Niveau 1 : a · u · i", nl:"Niveau 1: a · u · i", en:"Level 1: a · u · i", es:"Nivel 1: a · u · i" },
+    hqLevel2:         { fr:"Niveau 2 : + soukoun et voyelles longues", nl:"Niveau 2: + soekoen en lange klinkers", en:"Level 2: + sukun and long vowels", es:"Nivel 2: + sukún y vocales largas" },
+    hqLevel3:         { fr:"Niveau 3 : tout (+ chadda et tanwin)", nl:"Niveau 3: alles (+ sjadda en tanwien)", en:"Level 3: everything (+ shadda and tanwin)", es:"Nivel 3: todo (+ shadda y tanwín)" },
+    hqListen:         { fr:"Réécouter", nl:"Opnieuw luisteren", en:"Listen again", es:"Volver a escuchar" },
+    hkMastered:       { fr:"Voyelles maîtrisées", nl:"Beheerste klinkers", en:"Vowels mastered", es:"Vocales dominadas" },
+    hkWeak:           { fr:"À revoir", nl:"Te herhalen", en:"To review", es:"Para repasar" },
+    hkCatShort:       { fr:"a · u · i", nl:"a · u · i", en:"a · u · i", es:"a · u · i" },
+    hkCatSukun:       { fr:"Soukoun", nl:"Soekoen", en:"Sukun", es:"Sukún" },
+    hkCatMadd:        { fr:"Voyelles longues", nl:"Lange klinkers", en:"Long vowels", es:"Vocales largas" },
+    hkCatShadda:      { fr:"Chadda", nl:"Sjadda", en:"Shadda", es:"Shadda" },
+    hkCatTanwin:      { fr:"Tanwin", nl:"Tanwien", en:"Tanwin", es:"Tanwín" },
+    statHarakat:      { fr:"Harakat (moyenne)", nl:"Harakat (gemiddeld)", en:"Harakat (average)", es:"Harakat (promedio)" },
     micTitle:         { fr:"Écoute-toi et compare", nl:"Luister naar jezelf en vergelijk", en:"Listen to yourself and compare", es:"Escúchate y compara" },
     micModel:         { fr:"Modèle", nl:"Voorbeeld", en:"Model", es:"Modelo" },
     micRecord:        { fr:"M'enregistrer", nl:"Mezelf opnemen", en:"Record myself", es:"Grabarme" },
@@ -835,6 +852,7 @@ async function loadParentDashboard(studentId, studentName) {
     const quranPct = totalQuranAyahs > 0 ? Math.round(memorizedAyahs / totalQuranAyahs * 100) : 0;
     const sourahsDone = quranSourahsCompleted(data);
     const sourahsTotal = typeof SURAHS !== "undefined" ? SURAHS.length : 0;
+    const hks = harakatStats(data);
     const sc = data.quizScores || [];
     const avgQuiz = sc.length > 0 ? Math.round(sc.reduce((a,s)=>a+(s.score/s.total*100),0)/sc.length) : null;
     const lastActivity = data.lastActivity ? new Date(data.lastActivity).toLocaleDateString("fr-FR") : "لا يوجد نشاط بعد";
@@ -856,7 +874,9 @@ async function loadParentDashboard(studentId, studentName) {
             <div class="summary-card"><div class="s-num">${quranPct}%</div><div class="s-label">📖 القرآن / Coran (versets)</div></div>
             <div class="summary-card"><div class="s-num">${sourahsDone}/${sourahsTotal}</div><div class="s-label">✅ سور كاملة / Sourates complètes</div></div>
             <div class="summary-card"><div class="s-num">${avgQuiz !== null ? avgQuiz+"%" : "—"}</div><div class="s-label">🏆 الاختبارات / Quiz (${sc.length})</div></div>
+            <div class="summary-card"><div class="s-num">${hks.pct}%</div><div class="s-label">🔤 الحركات / Voyelles (${hks.mastered}/${hks.total})</div></div>
         </div>
+        ${hks.weak ? `<div class="hk-class-weak" style="margin-bottom:20px">💡 ${bi("للمراجعة","hkWeak")} : <strong>${hkCatLabel(hks.weak)}</strong></div>` : ""}
 
         <div class="admin-section" style="margin-bottom:20px">
             <h3 style="margin-bottom:10px">📅 آخر نشاط / Dernière activité</h3>
@@ -1097,6 +1117,12 @@ async function updateProgress(){
         ? `${data.learned.length} / ${lettres.length} حرف تعلّمته  —  ${data.learned.length} / ${lettres.length} ${DYNAMIC_I18N.lettresApprises[currentUILang]}`
         : data.learned.length+" / "+lettres.length+" حرف تعلّمته";
     if(pct===100) setTimeout(showBravoBadge,500);
+    // 🔤 Deuxième ligne : maîtrise des harakat
+    let hkLine = document.getElementById("compteur-harakat");
+    if (!hkLine) { hkLine = document.createElement("p"); hkLine.id = "compteur-harakat"; hkLine.className = "compteur compteur-harakat";
+                   document.getElementById("compteur").after(hkLine); }
+    const hs = harakatStats(data);
+    hkLine.innerHTML = `<span class="hk-mini-bar"><span style="width:${hs.pct}%"></span></span> 🔤 ${hs.mastered} / ${hs.total} — ${bi("الحركات المتقنة", "hkMastered")}`;
 }
 window.showMenu=async()=>{showScreen("screen-menu");await buildMenu();await updateProgress();};
 window.switchTab=(name,btn)=>{
@@ -1313,9 +1339,9 @@ async function showQuizResult(){
     document.getElementById("result-emoji").textContent=pct>=80?"🏆":pct>=50?"😊":"💪";
     document.getElementById("result-title").textContent=pct>=80?"ممتاز!":pct>=50?"أحسنت!":"حاول مجدداً!";
     document.getElementById("result-score").textContent=quizCorrect+" / "+quizQuestions.length+" إجابة صحيحة";
-    const data=await getStudentData(currentUser);data.quizScores=data.quizScores||[];data.quizScores.push({score:quizCorrect,total:quizQuestions.length,date:new Date().toISOString(),mode:quizMode});data.lastActivity=new Date().toISOString();await saveStudentData(currentUser,data);
+    const data=await getStudentData(currentUser);data.quizScores=data.quizScores||[];data.quizScores.push({score:quizCorrect,total:quizQuestions.length,date:new Date().toISOString(),mode:quizMode});if(quizMode==="harakat")hqMergeResults(data);data.lastActivity=new Date().toISOString();await saveStudentData(currentUser,data);await updateProgress();
 }
-window.resetQuiz=()=>{document.getElementById("quiz-intro").classList.remove("hidden");document.getElementById("quiz-game").classList.add("hidden");document.getElementById("quiz-result").classList.add("hidden");};
+window.resetQuiz=()=>{if(quizMode==="harakat"){quizMode=null;}document.getElementById("quiz-intro").classList.remove("hidden");document.getElementById("quiz-game").classList.add("hidden");document.getElementById("quiz-result").classList.add("hidden");};
 
 // TRACÉ
 function initTrace(){
@@ -1441,22 +1467,27 @@ async function loadTeacherDashboard(){
     const avg=mine.length>0?Math.round(mine.reduce((a,[,d])=>a+(d.learned.length/lettres.length*100),0)/mine.length):0;
     const finished=mine.filter(([,d])=>d.learned.length===lettres.length).length;
     const totalQuiz=mine.reduce((a,[,d])=>a+(d.quizScores?.length||0),0);
+    const hkAvg=mine.length>0?Math.round(mine.reduce((a,[,d])=>a+harakatStats(d).pct,0)/mine.length):0;
 
     document.getElementById("teacher-summary").innerHTML=`
         <div class="summary-card"><div class="s-num">${mine.length}</div><div class="s-label">${bi("الطلاب","statStudents")}</div></div>
         <div class="summary-card"><div class="s-num">${avg}%</div><div class="s-label">${bi("التقدم المتوسط","statAvgProgress")}</div></div>
         <div class="summary-card"><div class="s-num">${finished}</div><div class="s-label">${bi("المكتملون","statFinished")}</div></div>
-        <div class="summary-card"><div class="s-num">${totalQuiz}</div><div class="s-label">${bi("اختبارات","statQuiz")}</div></div>`;
+        <div class="summary-card"><div class="s-num">${totalQuiz}</div><div class="s-label">${bi("اختبارات","statQuiz")}</div></div>
+        <div class="summary-card"><div class="s-num">${hkAvg}%</div><div class="s-label">🔤 ${bi("الحركات","statHarakat")}</div></div>`;
+    const classWeak = (() => { const t={}; mine.forEach(([,d])=>{const w=harakatStats(d).weak; if(w) t[w]=(t[w]||0)+1;}); const top=Object.entries(t).sort((a,b)=>b[1]-a[1])[0]; return top?top:null; })();
+    const weakBox = document.getElementById("teacher-harakat-weak") || (() => { const d=document.createElement("div"); d.id="teacher-harakat-weak"; document.getElementById("teacher-summary").after(d); return d; })();
+    weakBox.innerHTML = classWeak ? `<div class="hk-class-weak">⚠️ ${bi("الحركات","statHarakat")} — ${bi("للمراجعة","hkWeak")} : <strong>${hkCatLabel(classWeak[0])}</strong> (${classWeak[1]} 👤)</div>` : "";
 
     document.getElementById("teacher-tbody").innerHTML=mine.length===0
-        ?`<tr><td colspan="5" style="color:#777;padding:20px">${bi("لا يوجد تلاميذ","noStudentYet")}</td></tr>`
+        ?`<tr><td colspan="6" style="color:#777;padding:20px">${bi("لا يوجد تلاميذ","noStudentYet")}</td></tr>`
         :mine.map(([id,data])=>{
             let name=id;
             if(data.schoolId&&data.classId){const prefix=data.schoolId+"_"+data.classId+"_";if(id.startsWith(prefix))name=id.slice(prefix.length);else name=id.split("_").slice(4).join(" ")||id.split("_").slice(2).join(" ");}else{name=id.split("_").slice(2).join(" ");}const pct=Math.round(data.learned.length/lettres.length*100);const sc=data.quizScores||[];const avgS=sc.length>0?Math.round(sc.reduce((a,s)=>a+(s.score/s.total*100),0)/sc.length):"-";const date=data.lastActivity?new Date(data.lastActivity).toLocaleDateString("fr-FR"):"Jamais";
             const hasPin = data.pin ? "🔐" : "🔓";
             const pinBtn = `<button class="btn-pin-student" onclick="setPinForStudent('${id}', '${name}')" title="Code personnel">${hasPin}</button>`;
             const msgBtn = `<button class="btn-pin-student" onclick="openMessageModal('${id}', '${name}')" title="Envoyer un message au parent">✉️</button>`;
-            return `<tr><td><strong>${name}</strong></td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${pct}%"></div></div><span>${pct}%</span></div></td><td>${avgS}${avgS!=="-"?"%":""} (${sc.length})</td><td>${date}</td><td style="display:flex;gap:6px">${pinBtn}${msgBtn}<button class="btn-reset-student" onclick="resetOneStudent('${id}')">🔄</button></td></tr>`;}).join("");
+            return `<tr><td><strong>${name}</strong></td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${pct}%"></div></div><span>${pct}%</span></div></td><td>${avgS}${avgS!=="-"?"%":""} (${sc.length})</td><td>${harakatCellHtml(data)}</td><td>${date}</td><td style="display:flex;gap:6px">${pinBtn}${msgBtn}<button class="btn-reset-student" onclick="resetOneStudent('${id}')">🔄</button></td></tr>`;}).join("");
 
     // Draw charts
     setTimeout(() => {
@@ -1790,9 +1821,21 @@ function generateDemoData(){
                 quizScores.push({score: 5+Math.round(Math.random()*5), total:10, date:new Date(Date.now()-q*86400000).toISOString(), mode:"random"});
             }
 
+            // Harakat : plus l'élève est avancé, plus il maîtrise de syllabes (d'abord a·u·i, puis le reste)
+            const hr = {};
+            hkAllSyllables().forEach(s => {
+                const cat = hkCatOf(s.key);
+                const chance = cat === "short" ? level * 1.1 : cat === "sukun" || cat === "madd" ? level * 0.8 - 0.15 : level * 0.6 - 0.25;
+                if (Math.random() < Math.max(0, chance)) hr[`${s.i}_${s.key}`] = [1 + Math.round(Math.random() * 2), Math.round(Math.random()), 1];
+                else if (Math.random() < level * 0.5) hr[`${s.i}_${s.key}`] = [Math.round(Math.random()), 1 + Math.round(Math.random()), 0];
+            });
+            for (let q=0; q<Math.round(level*4); q++){
+                quizScores.push({score: 4+Math.round(Math.random()*6), total:10, date:new Date(Date.now()-q*86400000-3600000).toISOString(), mode:"harakat"});
+            }
+
             const daysAgo = Math.round(Math.random()*6);
             students.push([id, {
-                learned, quranMemorized, quizScores,
+                learned, quranMemorized, quizScores, harakat: { r: hr },
                 schoolId: "demo_school", classId: c.id,
                 lastActivity: new Date(Date.now()-daysAgo*86400000).toISOString()
             }]);
@@ -1914,13 +1957,15 @@ function loadDemoDashboard({school, teachers, students}){
     const finished = students.filter(([,d])=>d.learned.length===lettres.length).length;
     const totalQuiz = students.reduce((a,[,d])=>a+(d.quizScores?.length||0),0);
     const quranAvg = students.length>0 ? Math.round(students.reduce((a,[,d])=>a+quranPct(d),0)/students.length) : 0;
+    const hkAvg = students.length>0 ? Math.round(students.reduce((a,[,d])=>a+harakatStats(d).pct,0)/students.length) : 0;
 
     document.getElementById("sa-summary").innerHTML = `
         <div class="summary-card"><div class="s-num">${students.length}</div><div class="s-label">${bi("مجموع الطلاب","statStudentsTotal")}</div></div>
         <div class="summary-card"><div class="s-num">${avg}%</div><div class="s-label">${bi("التقدم المتوسط","statAvgProgress")}</div></div>
         <div class="summary-card"><div class="s-num">${finished}</div><div class="s-label">${bi("المكتملون","statFinished")}</div></div>
         <div class="summary-card"><div class="s-num">${totalQuiz}</div><div class="s-label">${bi("اختبارات","statQuiz")}</div></div>
-        <div class="summary-card"><div class="s-num">${quranAvg}%</div><div class="s-label">📖 Coran moyen</div></div>`;
+        <div class="summary-card"><div class="s-num">${quranAvg}%</div><div class="s-label">📖 Coran moyen</div></div>
+        <div class="summary-card"><div class="s-num">${hkAvg}%</div><div class="s-label">🔤 ${bi("الحركات","statHarakat")}</div></div>`;
 
     document.getElementById("sa-tbody").innerHTML = students.map(([id,data]) => {
         const name = id.split("_").slice(3).join(" ");
@@ -1931,7 +1976,7 @@ function loadDemoDashboard({school, teachers, students}){
         const date = data.lastActivity ? new Date(data.lastActivity).toLocaleDateString("fr-FR") : "Jamais";
         const qPct = quranPct(data);
         const qDone = quranSourahsCompleted(data);
-        return `<tr><td>${name}</td><td>${cls}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${pct}%"></div></div><span>${pct}%</span></div></td><td>${avgS}${avgS!=="-"?"%":""} (${sc.length})</td><td>${date}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${qPct}%;background:#43e97b"></div></div><span>${qPct}% (${qDone} ✅)</span></div></td><td><button class="btn-pin-student" disabled title="Désactivé en mode démo" style="opacity:0.4">✉️</button></td></tr>`;
+        return `<tr><td>${name}</td><td>${cls}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${pct}%"></div></div><span>${pct}%</span></div></td><td>${avgS}${avgS!=="-"?"%":""} (${sc.length})</td><td>${date}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${qPct}%;background:#43e97b"></div></div><span>${qPct}% (${qDone} ✅)</span></div></td><td>${harakatCellHtml(data)}</td><td><button class="btn-pin-student" disabled title="Désactivé en mode démo" style="opacity:0.4">✉️</button></td></tr>`;
     }).join("");
 
     setTimeout(() => {
@@ -2013,20 +2058,22 @@ async function saLoadStats(){
     const finished=mine.filter(([,d])=>d.learned.length===lettres.length).length;
     const totalQuiz=mine.reduce((a,[,d])=>a+(d.quizScores?.length||0),0);
     const quranAvg=mine.length>0?Math.round(mine.reduce((a,[,d])=>a+quranPct(d),0)/mine.length):0;
+    const hkAvg=mine.length>0?Math.round(mine.reduce((a,[,d])=>a+harakatStats(d).pct,0)/mine.length):0;
 
     document.getElementById("sa-summary").innerHTML=`
         <div class="summary-card"><div class="s-num">${mine.length}</div><div class="s-label">${bi("مجموع الطلاب","statStudentsTotal")}</div></div>
         <div class="summary-card"><div class="s-num">${avg}%</div><div class="s-label">${bi("التقدم المتوسط","statAvgProgress")}</div></div>
         <div class="summary-card"><div class="s-num">${finished}</div><div class="s-label">${bi("المكتملون","statFinished")}</div></div>
         <div class="summary-card"><div class="s-num">${totalQuiz}</div><div class="s-label">${bi("اختبارات","statQuiz")}</div></div>
-        <div class="summary-card"><div class="s-num">${quranAvg}%</div><div class="s-label">📖 Coran moyen</div></div>`;
+        <div class="summary-card"><div class="s-num">${quranAvg}%</div><div class="s-label">📖 Coran moyen</div></div>
+        <div class="summary-card"><div class="s-num">${hkAvg}%</div><div class="s-label">🔤 ${bi("الحركات","statHarakat")}</div></div>`;
 
     document.getElementById("sa-tbody").innerHTML=mine.length===0
-        ?`<tr><td colspan="7" style="color:#777;padding:20px">${bi("لا يوجد تلاميذ","noStudentYet")}</td></tr>`
+        ?`<tr><td colspan="8" style="color:#777;padding:20px">${bi("لا يوجد تلاميذ","noStudentYet")}</td></tr>`
         :mine.map(([id,data])=>{
             let name=id;
             if(data.schoolId&&data.classId){const prefix=data.schoolId+"_"+data.classId+"_";if(id.startsWith(prefix))name=id.slice(prefix.length);else name=id.split("_").slice(4).join(" ")||id.split("_").slice(2).join(" ");}else{name=id.split("_").slice(2).join(" ");}const cls=school?.classes?.[data.classId]?.name||"?";const pct=Math.round(data.learned.length/lettres.length*100);const sc=data.quizScores||[];const avgS=sc.length>0?Math.round(sc.reduce((a,s)=>a+(s.score/s.total*100),0)/sc.length):"-";const date=data.lastActivity?new Date(data.lastActivity).toLocaleDateString("fr-FR"):"Jamais";const qPct=quranPct(data);const qDone=quranSourahsCompleted(data);
-            return `<tr><td>${name}</td><td>${cls}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${pct}%"></div></div><span>${pct}%</span></div></td><td>${avgS}${avgS!=="-"?"%":""} (${sc.length})</td><td>${date}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${qPct}%;background:#43e97b"></div></div><span>${qPct}% (${qDone} ✅)</span></div></td><td><button class="btn-pin-student" onclick="openMessageModal('${id}', '${name}')" title="Envoyer un message au parent">✉️</button></td></tr>`;}).join("");
+            return `<tr><td>${name}</td><td>${cls}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${pct}%"></div></div><span>${pct}%</span></div></td><td>${avgS}${avgS!=="-"?"%":""} (${sc.length})</td><td>${date}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${qPct}%;background:#43e97b"></div></div><span>${qPct}% (${qDone} ✅)</span></div></td><td>${harakatCellHtml(data)}</td><td><button class="btn-pin-student" onclick="openMessageModal('${id}', '${name}')" title="Envoyer un message au parent">✉️</button></td></tr>`;}).join("");
 
     // Draw charts
     setTimeout(() => {
@@ -3285,8 +3332,13 @@ function harakatAvailablePositions(base) {
     return ["isolated", "initial", "medial", "final"];
 }
 
+let hkMasteredSet = new Set();
 function initHarakat() {
     hkMicReset();
+    if (currentUser) getStudentData(currentUser).then(d => {
+        hkMasteredSet = new Set(Object.entries(d?.harakat?.r || {}).filter(([, v]) => v[2] === 1).map(([id]) => id));
+        if (!document.getElementById("tab-harakat")?.classList.contains("hidden")) renderHarakatBody();
+    }).catch(() => {});
     // On repart toujours de la même façon : ب, fatha, forme isolée (et sans son à l'ouverture)
     harakatLetterIdx = 1;
     harakatKey = "fatha";
@@ -3344,7 +3396,8 @@ function renderHarakatBody() {
     // Cases : 4 mouvements de base, puis les حروف المدّ (بَا بُو بِي), puis les avancés (chadda, tanwin)
     const tileHtml = t => {
         const disabled = t.tanwin && !tanwinAllowed;
-        return `<div class="harakat-tile ${t.key === harakatKey ? "selected" : ""} ${disabled ? "disabled" : ""}" ${disabled ? "" : `onclick="harakatPlay('${t.key}')"`}>
+        const star = hkMasteredSet.has(`${harakatLetterIdx}_${t.key}`) ? `<span class="hk-tile-star" title="${bi("متقن", "hkMastered")}">⭐</span>` : "";
+        return `<div class="harakat-tile ${t.key === harakatKey ? "selected" : ""} ${disabled ? "disabled" : ""}" ${disabled ? "" : `onclick="harakatPlay('${t.key}')"`}>${star}
             <div class="harakat-tile-text">${harakatBuild(base, t, harakatPos)}</div>
             <div class="harakat-tile-latin">${harakatLatin(base, t)}</div>
             <div class="harakat-tile-name">${t.ar}</div>
@@ -3398,6 +3451,151 @@ window.harakatPlay = async (key) => {
     if (token === harakatPlayToken) trySpeechSynthesis(harakatSpoken(base, h));
 };
 
+
+// ============================================================
+//  📊 HARAKAT : MAÎTRISE ET STATISTIQUES
+//  data.harakat.r = { "<indexLettre>_<clé>": [réussites, erreurs, dernierRésultat(1|0)] }
+//  Une syllabe est « maîtrisée » quand la dernière réponse au quiz était juste.
+// ============================================================
+const HK_CATS = {
+    short:  { keys: ["fatha", "damma", "kasra"],                   i18n: "hkCatShort",  ar: "القصيرة" },
+    sukun:  { keys: ["sukun"],                                     i18n: "hkCatSukun",  ar: "السكون" },
+    madd:   { keys: ["mad_alif", "mad_waw", "mad_ya"],             i18n: "hkCatMadd",   ar: "المدّ" },
+    shadda: { keys: ["shadda"],                                    i18n: "hkCatShadda", ar: "الشدّة" },
+    tanwin: { keys: ["tanwin_fath", "tanwin_damm", "tanwin_kasr"], i18n: "hkCatTanwin", ar: "التنوين" },
+};
+const HK_ALIF_KEYS = ["fatha", "kasra", "damma", "mad_alif", "mad_waw", "mad_ya"];
+const hkCatOf = key => Object.keys(HK_CATS).find(c => HK_CATS[c].keys.includes(key));
+// Toutes les syllabes existantes (303) : l'alif n'a ni soukoun, ni chadda, ni tanwin
+function hkAllSyllables(keysFilter) {
+    const out = [];
+    lettres.forEach((_, i) => Object.values(HK_CATS).flatMap(c => c.keys).forEach(k => {
+        if (i === 0 && !HK_ALIF_KEYS.includes(k)) return;
+        if (keysFilter && !keysFilter.includes(k)) return;
+        out.push({ i, key: k });
+    }));
+    return out;
+}
+function harakatStats(data) {
+    const r = data?.harakat?.r || {};
+    const all = hkAllSyllables();
+    const mastered = all.filter(s => r[`${s.i}_${s.key}`]?.[2] === 1).length;
+    const cats = {};
+    Object.entries(HK_CATS).forEach(([c, def]) => {
+        let ok = 0, ko = 0;
+        Object.entries(r).forEach(([id, v]) => { if (def.keys.includes(id.split("_").slice(1).join("_"))) { ok += v[0] || 0; ko += v[1] || 0; } });
+        cats[c] = { ok, ko, acc: ok + ko > 0 ? Math.round(ok / (ok + ko) * 100) : null };
+    });
+    // Point faible : la catégorie la moins réussie (au moins 3 réponses, moins de 70 %)
+    const weak = Object.entries(cats).filter(([, v]) => v.ok + v.ko >= 3 && v.acc < 70).sort((a, b) => a[1].acc - b[1].acc)[0]?.[0] || null;
+    return { mastered, total: all.length, pct: Math.round(mastered / all.length * 100), cats, weak,
+             answered: Object.values(r).reduce((a, v) => a + (v[0] || 0) + (v[1] || 0), 0) };
+}
+const hkCatLabel = c => c ? bi(HK_CATS[c].ar, HK_CATS[c].i18n) : "";
+// Petite cellule de tableau (prof / directeur) : barre + point faible éventuel
+function harakatCellHtml(data) {
+    const s = harakatStats(data);
+    return `<div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${s.pct}%;background:#f5a623"></div></div><span>${s.pct}%</span></div>`
+        + (s.weak ? `<div class="hk-weak-tag">⚠️ ${hkCatLabel(s.weak)}</div>` : "");
+}
+
+// ============================================================
+//  🎯 QUIZ « QUELLE SYLLABE ENTENDS-TU ? »
+//  L'élève entend une syllabe (voix de l'enseignant) et choisit la bonne parmi 4.
+//  Les syllabes pas encore maîtrisées sortent plus souvent.
+// ============================================================
+const HQ_LEVEL_KEYS = {
+    1: ["fatha", "damma", "kasra"],
+    2: ["fatha", "damma", "kasra", "sukun", "mad_alif", "mad_waw", "mad_ya"],
+    3: Object.values(HK_CATS).flatMap(c => c.keys),
+};
+let hqResults = []; // réponses de la partie en cours, enregistrées à la fin
+
+function hqItem(i, key) {
+    const item = lettres[i], base = harakatBase(item), h = HARAKAT_LIST.find(x => x.key === key);
+    return { i, key, text: harakatBuild(base, h, "isolated"), latin: harakatLatin(base, h), spoken: harakatSpoken(base, h),
+             path: `sons/harakat/${(item.son || "").split("/").pop().replace(/\.mp3$/i, "")}_${key}.mp3` };
+}
+function hqPlay(it) {
+    stopCurrentQuranAudio();
+    loadNormalizedBuffer(it.path).then(l => l ? hkPlayTrimmed(l) : trySpeechSynthesis(it.spoken));
+}
+
+window.startHarakatQuizMenu = () => {
+    document.getElementById("quiz-intro").classList.add("hidden");
+    document.getElementById("quiz-result").classList.add("hidden");
+    document.getElementById("quiz-game").classList.remove("hidden");
+    document.getElementById("quiz-q-count").textContent = "";
+    document.getElementById("quiz-correct-count").textContent = "✓ 0";
+    document.getElementById("quiz-wrong-count").textContent = "✗ 0";
+    document.getElementById("quiz-question").innerHTML = `<div class="hq-level-title">🔊 ${bi("ما هذا المقطع؟", "hqTitle")}<br><small>${bi("اختر مستواك", "hqLevel")}</small></div>`;
+    document.getElementById("quiz-choices").innerHTML = [1, 2, 3].map(n =>
+        `<button class="hq-level-btn hq-level-${n}" onclick="startHarakatQuiz(${n})">${"⭐".repeat(n)}<span>${bi(["", "بَ بُ بِ", "+ بْ بَا بُو بِي", "+ بَّ بً بٌ بٍ"][n], "hqLevel" + n)}</span></button>`).join("");
+};
+
+window.startHarakatQuiz = async (level) => {
+    const keys = HQ_LEVEL_KEYS[level];
+    const data = await getStudentData(currentUser);
+    const r = data?.harakat?.r || {};
+    // Tirage pondéré : une syllabe non maîtrisée a 4 fois plus de chances de sortir
+    const pool = hkAllSyllables(keys).map(s => ({ ...s, w: r[`${s.i}_${s.key}`]?.[2] === 1 ? 1 : 4 }));
+    const picked = [];
+    while (picked.length < 10 && pool.length) {
+        let x = Math.random() * pool.reduce((a, s) => a + s.w, 0), k = 0;
+        while ((x -= pool[k].w) > 0) k++;
+        picked.push(pool.splice(k, 1)[0]);
+    }
+    quizQuestions = picked.map(s => {
+        const target = hqItem(s.i, s.key);
+        const choices = [target];
+        // 2 pièges avec la MÊME lettre (on teste la voyelle), 1 avec la MÊME voyelle (on teste la lettre)
+        const sameLetter = keys.filter(k => k !== s.key && (s.i !== 0 || HK_ALIF_KEYS.includes(k))).sort(() => Math.random() - .5);
+        sameLetter.slice(0, 2).forEach(k => choices.push(hqItem(s.i, k)));
+        const others = lettres.map((_, i) => i).filter(i => i !== s.i && (i !== 0 || HK_ALIF_KEYS.includes(s.key))).sort(() => Math.random() - .5);
+        for (const i of others) { if (choices.length >= 4) break; choices.push(hqItem(i, s.key)); }
+        const uniq = [...new Map(choices.map(c => [c.text, c])).values()];
+        return { target, choices: uniq.sort(() => Math.random() - .5) };
+    });
+    quizMode = "harakat"; quizCurrent = 0; quizCorrect = 0; quizWrong = 0; hqResults = [];
+    hqShowQuestion();
+};
+
+function hqShowQuestion() {
+    if (quizCurrent >= quizQuestions.length) { showQuizResult(); return; }
+    const q = quizQuestions[quizCurrent];
+    document.getElementById("quiz-q-count").textContent = (quizCurrent + 1) + "/" + quizQuestions.length;
+    document.getElementById("quiz-correct-count").textContent = "✓ " + quizCorrect;
+    document.getElementById("quiz-wrong-count").textContent = "✗ " + quizWrong;
+    document.getElementById("quiz-question").innerHTML =
+        `<button class="hq-listen" onclick="hqReplay()">🔊<span>${bi("أعد الاستماع", "hqListen")}</span></button>`;
+    document.getElementById("quiz-choices").innerHTML = q.choices.map((c, n) =>
+        `<button class="choice-btn hq-choice" data-n="${n}" onclick="hqAnswer(${n})">${c.text}</button>`).join("");
+    setTimeout(() => hqPlay(q.target), 250);
+}
+window.hqReplay = () => hqPlay(quizQuestions[quizCurrent].target);
+window.hqAnswer = (n) => {
+    const q = quizQuestions[quizCurrent], chosen = q.choices[n];
+    const ok = chosen.text === q.target.text;
+    document.querySelectorAll(".hq-choice").forEach(b => {
+        b.onclick = null; b.disabled = true;
+        if (q.choices[+b.dataset.n].text === q.target.text) b.classList.add("correct");
+    });
+    if (ok) quizCorrect++;
+    else { quizWrong++; document.querySelector(`.hq-choice[data-n="${n}"]`).classList.add("wrong"); hqPlay(q.target); }
+    hqResults.push({ id: `${q.target.i}_${q.target.key}`, ok });
+    quizCurrent++;
+    setTimeout(hqShowQuestion, ok ? 900 : 1700); // en cas d'erreur, on laisse le temps de réentendre la bonne réponse
+};
+// Ajoute les réponses de la partie à la fiche de l'élève
+function hqMergeResults(data) {
+    data.harakat = data.harakat || {};
+    const r = data.harakat.r = data.harakat.r || {};
+    hqResults.forEach(({ id, ok }) => {
+        const v = r[id] || [0, 0, 0];
+        r[id] = [v[0] + (ok ? 1 : 0), v[1] + (ok ? 0 : 1), ok ? 1 : 0];
+    });
+    hqResults = [];
+}
 
 // ============================================================
 //  🎤 ÉCOUTE-TOI ET COMPARE — enregistrement 100 % LOCAL
