@@ -392,7 +392,7 @@ const FEATURE_I18N = {
     "rec-modal-title":  { emoji:"🎙️", ar:"سجّل صوتك", fr:"Enregistre ta voix", nl:"Neem je stem op", en:"Record your voice", es:"Graba tu voz" },
     "rec-start-btn":    { emoji:"🔴", ar:"ابدأ التسجيل", fr:"Démarrer", nl:"Starten", en:"Start", es:"Empezar" },
     "rec-stop-btn":     { emoji:"⏹️", ar:"إيقاف", fr:"Arrêter", nl:"Stoppen", en:"Stop", es:"Detener" },
-    "rec-send-btn":     { emoji:"📤", ar:"إرسال للمعلم", fr:"Envoyer au professeur", nl:"Verzenden naar leerkracht", en:"Send to teacher", es:"Enviar al profesor" },
+    "rec-send-btn":     { emoji:"📤", ar:"إرسال إلى والديّ", fr:"Envoyer à mes parents", nl:"Naar mijn ouders sturen", en:"Send to my parents", es:"Enviar a mis padres" },
     "btn-autowrite-play": { emoji:"▶️", ar:"عرض الكتابة", fr:"Voir l'écriture", nl:"Schrijven tonen", en:"Show writing", es:"Ver la escritura" },
     "autowrite-help":     { emoji:"", ar:"اختر حرفًا وشكلاً، ثم اضغط \"عرض الكتابة\" لمشاهدة الحرف يُكتب تلقائيًا", fr:"Choisis une lettre et une forme, puis appuie sur \"Voir l'écriture\" pour regarder la lettre s'écrire automatiquement", nl:"Kies een letter en een vorm, druk dan op \"Schrijven tonen\" om de letter automatisch te zien schrijven", en:"Choose a letter and a shape, then press \"Show writing\" to watch the letter write itself", es:"Elige una letra y una forma, luego pulsa \"Ver la escritura\" para ver cómo se escribe la letra automáticamente" },
     // Onglet Communication (directeur)
@@ -443,7 +443,13 @@ const DYNAMIC_I18N = {
     recInProgress:    { fr:"Enregistrement en cours...", nl:"Bezig met opnemen...", en:"Recording...", es:"Grabando..." },
     recMicError:      { fr:"Impossible d'accéder au microphone", nl:"Kan geen toegang krijgen tot de microfoon", en:"Cannot access the microphone", es:"No se puede acceder al micrófono" },
     recSending:       { fr:"Envoi en cours...", nl:"Bezig met verzenden...", en:"Sending...", es:"Enviando..." },
-    recSent:          { fr:"Envoyé au professeur avec succès !", nl:"Succesvol verzonden naar de leerkracht!", en:"Successfully sent to the teacher!", es:"¡Enviado con éxito al profesor!" },
+    recSent:          { fr:"Envoyé à tes parents ! Ils l'écouteront puis le transmettront au professeur.", nl:"Naar je ouders gestuurd! Zij beluisteren het en sturen het door naar de leerkracht.", en:"Sent to your parents! They will listen and pass it on to the teacher.", es:"¡Enviado a tus padres! Lo escucharán y se lo pasarán al profesor." },
+    prTitle:          { fr:"Enregistrements de votre enfant", nl:"Opnames van uw kind", en:"Your child's recordings", es:"Grabaciones de su hijo/a" },
+    prIntro:          { fr:"Écoutez les enregistrements, puis choisissez ceux à transmettre au professeur. Rien n'est envoyé au professeur sans votre accord.", nl:"Beluister de opnames en kies welke u naar de leerkracht doorstuurt. Niets gaat naar de leerkracht zonder uw akkoord.", en:"Listen to the recordings, then choose which ones to pass on to the teacher. Nothing reaches the teacher without your consent.", es:"Escuche las grabaciones y elija cuáles enviar al profesor. Nada llega al profesor sin su consentimiento." },
+    prForward:        { fr:"Transmettre au professeur", nl:"Doorsturen naar de leerkracht", en:"Send to the teacher", es:"Enviar al profesor" },
+    prForwarded:      { fr:"Transmis au professeur", nl:"Doorgestuurd naar de leerkracht", en:"Sent to the teacher", es:"Enviado al profesor" },
+    prNone:           { fr:"Aucun enregistrement en attente.", nl:"Geen opnames in afwachting.", en:"No recordings waiting.", es:"No hay grabaciones pendientes." },
+    prConfirmDelete:  { fr:"Supprimer définitivement cet enregistrement ?", nl:"Deze opname definitief verwijderen?", en:"Delete this recording permanently?", es:"¿Eliminar definitivamente esta grabación?" },
     recSendError:     { fr:"Échec de l'envoi, réessayez", nl:"Verzenden mislukt, probeer opnieuw", en:"Sending failed, try again", es:"Error al enviar, inténtelo de nuevo" },
     noRecordingsYet:  { fr:"Aucun enregistrement pour l'instant", nl:"Nog geen opnames", en:"No recordings yet", es:"Aún no hay grabaciones" },
     reviewed:         { fr:"Écouté", nl:"Beluisterd", en:"Reviewed", es:"Revisado" },
@@ -706,6 +712,16 @@ window.saSaveLogo = async () => {
 // la liste des autres écoles (contrairement à l'ancienne liste déroulante).
 // 🏫 Affiche le logo de l'école en grand plan, juste après la saisie du code, avec un effet
 // d'apparition marquant — puis remplace définitivement l'icône lune de l'écran d'accueil.
+// 💐 Logo / photo de l'école agrandi(e), entouré(e) d'une couronne de fleurs ronde
+function logoWreathHtml(url, size) {
+    const flowers = ["🌸", "🌼", "🌷", "🌺", "🌸", "🌼", "🌷", "🌺", "🌸", "🌼", "🌷", "🌺", "🌸", "🌼"];
+    const n = flowers.length;
+    return `<div class="logo-wreath logo-wreath-${size}">
+        ${flowers.map((f, i) => `<span class="wreath-flower" style="--a:${(360 / n) * i}deg;--d:${(i % 3) * 0.15}s">${f}</span>`).join("")}
+        ${[0, 1, 2, 3, 4, 5, 6].map(i => `<span class="wreath-leaf" style="--a:${(360 / 7) * i + 13}deg">🍃</span>`).join("")}
+        <img src="${url}" alt="logo" class="wreath-img">
+    </div>`;
+}
 function showSchoolLogoReveal(school) {
     const url = school?.logoUrl?.trim();
     if (!url) return; // pas de logo configuré pour cette école, rien à révéler
@@ -713,20 +729,20 @@ function showSchoolLogoReveal(school) {
     // Remplace définitivement l'icône 🌙 en haut de l'écran d'accueil par le logo de l'école
     const mainLogo = document.getElementById("login-logo-main");
     if (mainLogo) {
-        mainLogo.innerHTML = `<img src="${url}" alt="logo" style="width:64px;height:64px;border-radius:50%;object-fit:cover;box-shadow:0 4px 14px rgba(0,0,0,0.15)">`;
+        mainLogo.innerHTML = logoWreathHtml(url, "small");
     }
 
     // Grand plan temporaire, animé, par-dessus tout le reste
     const overlay = document.createElement("div");
     overlay.style.cssText = "position:fixed;inset:0;z-index:10000;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,0.75);backdrop-filter:blur(4px);opacity:0;transition:opacity 0.35s";
     overlay.innerHTML = `
-        <img src="${url}" alt="logo" style="width:180px;height:180px;border-radius:50%;object-fit:cover;box-shadow:0 12px 40px rgba(0,0,0,0.25);border:4px solid #fff;transform:scale(0.6);transition:transform 0.45s cubic-bezier(.34,1.56,.64,1)">
-        <p style="margin-top:16px;font-size:20px;font-weight:900;color:#3D348B;text-align:center;padding:0 20px">${school.name || ""}</p>
+        <div class="wreath-pop">${logoWreathHtml(url, "big")}</div>
+        <p style="margin-top:16px;font-size:22px;font-weight:900;color:#3D348B;text-align:center;padding:0 20px">${school.name || ""}</p>
     `;
     document.body.appendChild(overlay);
     requestAnimationFrame(() => {
         overlay.style.opacity = "1";
-        overlay.querySelector("img").style.transform = "scale(1)";
+        overlay.querySelector(".wreath-pop").classList.add("in");
     });
     setTimeout(() => {
         overlay.style.opacity = "0";
@@ -857,6 +873,7 @@ async function loadParentDashboard(studentId, studentName) {
     const sourahsDone = quranSourahsCompleted(data);
     const sourahsTotal = typeof SURAHS !== "undefined" ? SURAHS.length : 0;
     const hks = harakatStats(data);
+    loadParentRecordings(studentId); // se remplit juste après l'affichage du tableau de bord
     const sc = data.quizScores || [];
     const avgQuiz = sc.length > 0 ? Math.round(sc.reduce((a,s)=>a+(s.score/s.total*100),0)/sc.length) : null;
     const lastActivity = data.lastActivity ? new Date(data.lastActivity).toLocaleDateString("fr-FR") : "لا يوجد نشاط بعد";
@@ -878,9 +895,10 @@ async function loadParentDashboard(studentId, studentName) {
             <div class="summary-card"><div class="s-num">${quranPct}%</div><div class="s-label">📖 القرآن / Coran (versets)</div></div>
             <div class="summary-card"><div class="s-num">${sourahsDone}/${sourahsTotal}</div><div class="s-label">✅ سور كاملة / Sourates complètes</div></div>
             <div class="summary-card"><div class="s-num">${avgQuiz !== null ? avgQuiz+"%" : "—"}</div><div class="s-label">🏆 الاختبارات / Quiz (${sc.length})</div></div>
-            <div class="summary-card"><div class="s-num">${hks.pct}%</div><div class="s-label">🔤 الحركات / Voyelles (${hks.mastered}/${hks.total})</div></div>
+            <div class="summary-card"><div class="s-num">${hks.pct}%</div><div class="s-label">🔤 ${bi("الحركات المتقنة","hkMastered")} (${hks.mastered}/${hks.total})</div></div>
         </div>
         ${hks.weak ? `<div class="hk-class-weak" style="margin-bottom:20px">💡 ${bi("للمراجعة","hkWeak")} : <strong>${hkCatLabel(hks.weak)}</strong></div>` : ""}
+        <div id="parent-recordings"></div>
 
         <div class="admin-section" style="margin-bottom:20px">
             <h3 style="margin-bottom:10px">📅 آخر نشاط / Dernière activité</h3>
@@ -1651,9 +1669,10 @@ window.sendRecordingToTeacher = async () => {
             refText: recordingContext.refText || "",
             url: base64Url,
             reviewed: false,
+            status: "parent", // 👪 d'abord chez les parents : le professeur ne le voit qu'après leur accord
         });
 
-        document.getElementById("rec-status").textContent = bi("📤 تم الإرسال إلى المعلم بنجاح!", "recSent");
+        document.getElementById("rec-status").textContent = bi("📤 أُرسل إلى والديك! سيستمعان إليه ثم يرسلانه إلى المعلم", "recSent");
         btn.classList.add("hidden");
     } catch (err) {
         document.getElementById("rec-status").textContent = bi("❌ فشل الإرسال، حاول مجددًا", "recSendError");
@@ -2816,7 +2835,9 @@ async function loadRecordingsList() {
         const name = id.startsWith(prefix) ? id.slice(prefix.length) : id;
         const snap = await getDocs(collection(db, "eleves", id, "recordings"));
         snap.forEach(docSnap => {
-            items.push({ studentId: id, name, recordingId: docSnap.id, ...docSnap.data() });
+            const r = docSnap.data();
+            if (r.status === "parent") return; // pas encore transmis par les parents
+            items.push({ studentId: id, name, recordingId: docSnap.id, ...r });
         });
     }));
     items.sort((a, b) => b.date.localeCompare(a.date));
@@ -3635,49 +3656,69 @@ Object.assign(DYNAMIC_I18N, {
 const GAME_GOAL = 30;                       // ⭐ à gagner chaque jour pour garder sa série 🔥
 const GAME_LV = [0, 50, 150, 300, 500, 800, 1200, 1700, 2300, 3000];
 const GAME_MASCOT = ["🥚", "🐣", "🐥", "🐤", "🦉", "🦉", "🦅", "🦚", "🕊️", "🦄"];
-const GAME_TITLES = [["مبتدئ","Débutant"],["مستكشف","Explorateur"],["قارئ صغير","Petit lecteur"],["قارئ","Lecteur"],["نجم","Étoile"],
-                     ["بطل","Champion"],["حكيم","Sage"],["عالم","Savant"],["أستاذ","Maître"],["أسطورة","Légende"]];
+// Petit utilitaire : texte arabe + traduction dans la langue de l'école ({fr, nl, en, es})
+const gTr = (ar, tr) => currentUILang && tr && tr[currentUILang] ? `${ar} / ${tr[currentUILang]}` : ar;
+const gOnly = tr => (tr && (tr[currentUILang] || tr.fr)) || "";
+const GAME_TITLES = [
+    ["مبتدئ",     { fr:"Débutant",      nl:"Beginner",        en:"Beginner",     es:"Principiante" }],
+    ["مستكشف",    { fr:"Explorateur",   nl:"Ontdekker",       en:"Explorer",     es:"Explorador" }],
+    ["قارئ صغير", { fr:"Petit lecteur", nl:"Kleine lezer",    en:"Little reader",es:"Pequeño lector" }],
+    ["قارئ",      { fr:"Lecteur",       nl:"Lezer",           en:"Reader",       es:"Lector" }],
+    ["نجم",       { fr:"Étoile",        nl:"Ster",            en:"Star",         es:"Estrella" }],
+    ["بطل",       { fr:"Champion",      nl:"Kampioen",        en:"Champion",     es:"Campeón" }],
+    ["حكيم",      { fr:"Sage",          nl:"Wijze",           en:"Sage",         es:"Sabio" }],
+    ["عالم",      { fr:"Savant",        nl:"Geleerde",        en:"Scholar",      es:"Erudito" }],
+    ["أستاذ",     { fr:"Maître",        nl:"Meester",         en:"Master",       es:"Maestro" }],
+    ["أسطورة",    { fr:"Légende",       nl:"Legende",         en:"Legend",       es:"Leyenda" }]];
 const GAME_XP = { listen: 1, quizRight: 5, quizDone: 5, quizPerfect: 20, series: 5, compare: 3, word: 3, letter: 10, exercise: 10, challenge: 25 };
 const GAME_LISTEN_CAP = 20;                 // pas plus de 20 ⭐ par jour en écoutant (contre les clics à répétition)
-const GAME_HOWTO = [["🔊","Écouter une lettre ou une syllabe","+1"],["✅","Bonne réponse au quiz","+5"],["🏁","Finir un quiz","+5"],
-                    ["💯","Quiz sans faute","+20"],["🎵","Écouter une série jusqu'au bout","+5"],["🎤","S'enregistrer et comparer","+3"],
-                    ["✏️","Composer et lire un mot","+3"],["📖","Apprendre une lettre","+10"],["📝","Envoyer un exercice","+10"],["🎯","Réussir le défi du jour","+25"]];
+const GAME_HOWTO = [
+    ["🔊", "استمع إلى حرف أو مقطع",   { fr:"Écouter une lettre ou une syllabe", nl:"Een letter of lettergreep beluisteren", en:"Listen to a letter or syllable", es:"Escuchar una letra o sílaba" }, "+1"],
+    ["✅", "إجابة صحيحة في اختبار",   { fr:"Bonne réponse au quiz", nl:"Goed antwoord in de quiz", en:"Correct quiz answer", es:"Respuesta correcta" }, "+5"],
+    ["🏁", "أكمل اختبارًا",           { fr:"Finir un quiz", nl:"Een quiz afmaken", en:"Finish a quiz", es:"Terminar un cuestionario" }, "+5"],
+    ["💯", "اختبار بدون خطأ",         { fr:"Quiz sans faute", nl:"Quiz zonder fouten", en:"Perfect quiz", es:"Cuestionario sin errores" }, "+20"],
+    ["🎵", "استمع إلى سلسلة كاملة",   { fr:"Écouter une série jusqu'au bout", nl:"Een reeks helemaal beluisteren", en:"Listen to a whole series", es:"Escuchar una serie completa" }, "+5"],
+    ["🎤", "سجّل صوتك وقارن",         { fr:"S'enregistrer et comparer", nl:"Jezelf opnemen en vergelijken", en:"Record yourself and compare", es:"Grabarte y comparar" }, "+3"],
+    ["✏️", "كوّن كلمة واستمع إليها",   { fr:"Composer et lire un mot", nl:"Een woord samenstellen en lezen", en:"Build and read a word", es:"Formar y leer una palabra" }, "+3"],
+    ["📖", "تعلّم حرفًا",              { fr:"Apprendre une lettre", nl:"Een letter leren", en:"Learn a letter", es:"Aprender una letra" }, "+10"],
+    ["📝", "أرسل تمرينًا",            { fr:"Envoyer un exercice", nl:"Een oefening versturen", en:"Send an exercise", es:"Enviar un ejercicio" }, "+10"],
+    ["🎯", "انجح في تحدّي اليوم",      { fr:"Réussir le défi du jour", nl:"De uitdaging van de dag halen", en:"Complete the daily challenge", es:"Superar el reto del día" }, "+25"]];
 
 const GAME_CHALLENGES = [
-    { id:"quiz8",    emoji:"🏆", ar:"احصل على 8/10 في اختبار",           fr:"Obtiens au moins 8/10 à un quiz",            target:1 },
-    { id:"hq",       emoji:"🔊", ar:"أكمل اختبار المقاطع",              fr:"Termine un quiz « Quelle syllabe entends-tu ? »", target:1 },
-    { id:"series",   emoji:"🎵", ar:"استمع إلى سلسلة حتى النهاية",       fr:"Écoute une série de syllabes jusqu'au bout", target:1 },
-    { id:"compare3", emoji:"🎤", ar:"سجّل صوتك وقارن ٣ مرات",           fr:"Enregistre-toi et compare 3 fois",           target:3 },
-    { id:"word3",    emoji:"✏️", ar:"كوّن كلمة من ٣ مقاطع واستمع إليها", fr:"Compose et écoute un mot de 3 syllabes",     target:1 },
-    { id:"listen15", emoji:"👂", ar:"استمع إلى ١٥ حرفًا أو مقطعًا",      fr:"Écoute 15 lettres ou syllabes",              target:15 },
-    { id:"xp40",     emoji:"⭐", ar:"اجمع ٤٠ نجمة اليوم",                fr:"Gagne 40 ⭐ aujourd'hui",                     target:40 },
+    { id:"quiz8",    emoji:"🏆", ar:"احصل على 8/10 في اختبار",           tr:{ fr:"Obtiens au moins 8/10 à un quiz", nl:"Haal minstens 8/10 in een quiz", en:"Score at least 8/10 in a quiz", es:"Consigue al menos 8/10 en un cuestionario" }, target:1 },
+    { id:"hq",       emoji:"🔊", ar:"أكمل اختبار المقاطع",              tr:{ fr:"Termine un quiz « Quelle syllabe entends-tu ? »", nl:"Maak een quiz « Welke lettergreep hoor je? »", en:"Finish a « Which syllable do you hear? » quiz", es:"Termina un cuestionario « ¿Qué sílaba oyes? »" }, target:1 },
+    { id:"series",   emoji:"🎵", ar:"استمع إلى سلسلة حتى النهاية",       tr:{ fr:"Écoute une série de syllabes jusqu'au bout", nl:"Beluister een reeks lettergrepen helemaal", en:"Listen to a syllable series to the end", es:"Escucha una serie de sílabas hasta el final" }, target:1 },
+    { id:"compare3", emoji:"🎤", ar:"سجّل صوتك وقارن ٣ مرات",           tr:{ fr:"Enregistre-toi et compare 3 fois", nl:"Neem jezelf 3 keer op en vergelijk", en:"Record yourself and compare 3 times", es:"Grábate y compara 3 veces" }, target:3 },
+    { id:"word3",    emoji:"✏️", ar:"كوّن كلمة من ٣ مقاطع واستمع إليها", tr:{ fr:"Compose et écoute un mot de 3 syllabes", nl:"Maak en beluister een woord van 3 lettergrepen", en:"Build and listen to a 3-syllable word", es:"Forma y escucha una palabra de 3 sílabas" }, target:1 },
+    { id:"listen15", emoji:"👂", ar:"استمع إلى ١٥ حرفًا أو مقطعًا",      tr:{ fr:"Écoute 15 lettres ou syllabes", nl:"Beluister 15 letters of lettergrepen", en:"Listen to 15 letters or syllables", es:"Escucha 15 letras o sílabas" }, target:15 },
+    { id:"xp40",     emoji:"⭐", ar:"اجمع ٤٠ نجمة اليوم",                tr:{ fr:"Gagne 40 ⭐ aujourd'hui", nl:"Verdien vandaag 40 ⭐", en:"Earn 40 ⭐ today", es:"Gana 40 ⭐ hoy" }, target:40 },
 ];
 
 const HK_CAT_TOTAL = () => Object.fromEntries(Object.keys(HK_CATS).map(c => [c, hkAllSyllables(HK_CATS[c].keys).length]));
 const GAME_BADGES = [
-    { id:"first_quiz", e:"🎯", ar:"أول اختبار",           fr:"Premier quiz",                       t:g => g.c.quizzes >= 1 },
-    { id:"perfect",    e:"✨", ar:"بدون خطأ",             fr:"Un quiz sans faute",                 t:g => g.c.perfect >= 1 },
-    { id:"perfect10",  e:"💎", ar:"١٠ اختبارات كاملة",    fr:"10 quiz sans faute",                 t:g => g.c.perfect >= 10 },
-    { id:"streak3",    e:"🔥", ar:"٣ أيام متتالية",       fr:"3 jours de suite",                   t:g => g.best >= 3 },
-    { id:"streak7",    e:"☄️", ar:"أسبوع كامل",           fr:"7 jours de suite",                   t:g => g.best >= 7 },
-    { id:"streak30",   e:"🏆", ar:"شهر كامل",             fr:"30 jours de suite",                  t:g => g.best >= 30 },
-    { id:"ear50",      e:"👂", ar:"أذن ذهبية",            fr:"Bonne oreille : 50 syllabes maîtrisées", t:g => (g.hk?.all || 0) >= 50 },
-    { id:"aui",        e:"🔤", ar:"سيّد الحركات القصيرة",  fr:"Maître de a · u · i",                t:g => (g.hk?.short || 0) >= (HK_CAT_TOTAL().short) },
-    { id:"madd",       e:"🌊", ar:"سيّد المدّ",             fr:"Maître des voyelles longues",        t:g => (g.hk?.madd || 0) >= (HK_CAT_TOTAL().madd) },
-    { id:"tanwin",     e:"🎶", ar:"سيّد التنوين",          fr:"Maître du tanwin",                   t:g => (g.hk?.tanwin || 0) >= (HK_CAT_TOTAL().tanwin) },
-    { id:"voice10",    e:"🎤", ar:"صوت جميل",             fr:"10 comparaisons de ma voix",         t:g => g.c.compare >= 10 },
-    { id:"builder10",  e:"🧱", ar:"بنّاء الكلمات",          fr:"10 mots composés",                   t:g => g.c.words >= 10 },
-    { id:"dj10",       e:"🎧", ar:"عازف المقاطع",          fr:"10 séries écoutées",                 t:g => g.c.series >= 10 },
-    { id:"letters28",  e:"🌟", ar:"كلّ الحروف",            fr:"Les 28 lettres apprises",            t:g => (g.learned || 0) >= 28 },
-    { id:"level5",     e:"🦉", ar:"المستوى ٥",             fr:"Niveau 5 atteint",                   t:g => gameLevel(g.xp) >= 5 },
-    { id:"challenger", e:"🎖️", ar:"٥ تحديات",              fr:"5 défis du jour réussis",            t:g => g.c.challenges >= 5 },
+    { id:"first_quiz", e:"🎯", ar:"أول اختبار", tr:{"fr": "Premier quiz", "nl": "Eerste quiz", "en": "First quiz", "es": "Primer cuestionario"}, t:g => g.c.quizzes >= 1 },
+    { id:"perfect", e:"✨", ar:"بدون خطأ", tr:{"fr": "Un quiz sans faute", "nl": "Een foutloze quiz", "en": "A perfect quiz", "es": "Un cuestionario perfecto"}, t:g => g.c.perfect >= 1 },
+    { id:"perfect10", e:"💎", ar:"١٠ اختبارات كاملة", tr:{"fr": "10 quiz sans faute", "nl": "10 foutloze quizzen", "en": "10 perfect quizzes", "es": "10 cuestionarios perfectos"}, t:g => g.c.perfect >= 10 },
+    { id:"streak3", e:"🔥", ar:"٣ أيام متتالية", tr:{"fr": "3 jours de suite", "nl": "3 dagen op rij", "en": "3 days in a row", "es": "3 días seguidos"}, t:g => g.best >= 3 },
+    { id:"streak7", e:"☄️", ar:"أسبوع كامل", tr:{"fr": "7 jours de suite", "nl": "7 dagen op rij", "en": "7 days in a row", "es": "7 días seguidos"}, t:g => g.best >= 7 },
+    { id:"streak30", e:"🏆", ar:"شهر كامل", tr:{"fr": "30 jours de suite", "nl": "30 dagen op rij", "en": "30 days in a row", "es": "30 días seguidos"}, t:g => g.best >= 30 },
+    { id:"ear50", e:"👂", ar:"أذن ذهبية", tr:{"fr": "Bonne oreille : 50 syllabes maîtrisées", "nl": "Goed oor: 50 lettergrepen beheerst", "en": "Good ear: 50 syllables mastered", "es": "Buen oído: 50 sílabas dominadas"}, t:g => (g.hk?.all || 0) >= 50 },
+    { id:"aui", e:"🔤", ar:"سيّد الحركات القصيرة", tr:{"fr": "Maître de a · u · i", "nl": "Meester van a · u · i", "en": "Master of a · u · i", "es": "Maestro de a · u · i"}, t:g => (g.hk?.short || 0) >= (HK_CAT_TOTAL().short) },
+    { id:"madd", e:"🌊", ar:"سيّد المدّ", tr:{"fr": "Maître des voyelles longues", "nl": "Meester van de lange klinkers", "en": "Master of long vowels", "es": "Maestro de las vocales largas"}, t:g => (g.hk?.madd || 0) >= (HK_CAT_TOTAL().madd) },
+    { id:"tanwin", e:"🎶", ar:"سيّد التنوين", tr:{"fr": "Maître du tanwin", "nl": "Meester van de tanwien", "en": "Master of tanwin", "es": "Maestro del tanwín"}, t:g => (g.hk?.tanwin || 0) >= (HK_CAT_TOTAL().tanwin) },
+    { id:"voice10", e:"🎤", ar:"صوت جميل", tr:{"fr": "10 comparaisons de ma voix", "nl": "10 keer mijn stem vergeleken", "en": "Compared my voice 10 times", "es": "10 comparaciones de mi voz"}, t:g => g.c.compare >= 10 },
+    { id:"builder10", e:"🧱", ar:"بنّاء الكلمات", tr:{"fr": "10 mots composés", "nl": "10 woorden samengesteld", "en": "10 words built", "es": "10 palabras formadas"}, t:g => g.c.words >= 10 },
+    { id:"dj10", e:"🎧", ar:"عازف المقاطع", tr:{"fr": "10 séries écoutées", "nl": "10 reeksen beluisterd", "en": "10 series listened to", "es": "10 series escuchadas"}, t:g => g.c.series >= 10 },
+    { id:"letters28", e:"🌟", ar:"كلّ الحروف", tr:{"fr": "Les 28 lettres apprises", "nl": "Alle 28 letters geleerd", "en": "All 28 letters learned", "es": "Las 28 letras aprendidas"}, t:g => (g.learned || 0) >= 28 },
+    { id:"level5", e:"🦉", ar:"المستوى ٥", tr:{"fr": "Niveau 5 atteint", "nl": "Niveau 5 bereikt", "en": "Level 5 reached", "es": "Nivel 5 alcanzado"}, t:g => gameLevel(g.xp) >= 5 },
+    { id:"challenger", e:"🎖️", ar:"٥ تحديات", tr:{"fr": "5 défis du jour réussis", "nl": "5 dagelijkse uitdagingen gehaald", "en": "5 daily challenges completed", "es": "5 retos del día superados"}, t:g => g.c.challenges >= 5 },
 ];
 
 let _game = null, _gameSaveTimer = null, _gameQueue = [], _gameModalOpen = false;
 window._game = null;
 const gameActive = () => currentRole === "student" && !!_game;
 const gameLevel = xp => GAME_LV.filter(t => xp >= t).length;            // 1 à 10
-function gameTitle(lv) { const t = GAME_TITLES[lv - 1]; return bi(t[0], null) + (currentUILang ? ` / ${t[1]}` : ""); }
+function gameTitle(lv) { const t = GAME_TITLES[lv - 1]; return gTr(t[0], t[1]); }
 function gameYesterday() { const d = new Date(); d.setDate(d.getDate() - 1); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`; }
 function gameHash(s) { let h = 0; for (const c of s) h = (h * 31 + c.charCodeAt(0)) >>> 0; return h; }
 function gameCatMastered(data) {
@@ -3777,7 +3818,7 @@ function gameCheckChallenge() {
     const g = _game, def = GAME_CHALLENGES.find(c => c.id === g.ch?.id);
     if (!def || g.ch.done || g.ch.n < def.target) return;
     g.ch.done = true; g.c.challenges++;
-    gameCelebrate(def.emoji, bi("نجحت في تحدّي اليوم! +٢٥ ⭐", "gChallengeDone"), def[currentUILang] || def.fr);
+    gameCelebrate(def.emoji, bi("نجحت في تحدّي اليوم! +٢٥ ⭐", "gChallengeDone"), gTr(def.ar, def.tr));
     gameAddXp(GAME_XP.challenge);
 }
 function gameCheckBadges(silent) {
@@ -3785,13 +3826,13 @@ function gameCheckBadges(silent) {
     GAME_BADGES.forEach(b => {
         if (g.badges.includes(b.id) || !b.t(g)) return;
         g.badges.push(b.id);
-        if (!silent) gameCelebrate(b.e, bi("وسام جديد!", "gNewBadge"), `${b.ar} — ${b.fr}`);
+        if (!silent) gameCelebrate(b.e, bi("وسام جديد!", "gNewBadge"), gTr(b.ar, b.tr));
     });
 }
 const gameChallengeDef = () => GAME_CHALLENGES.find(c => c.id === _game?.ch?.id);
 function gameChallengeText() {
     const d = gameChallengeDef(); if (!d) return "";
-    return `${d.emoji} ${d.ar}${currentUILang ? " / " + d.fr : ""}`;
+    return `${d.emoji} ${gTr(d.ar, d.tr)}`;
 }
 
 // ---------- Affichage : la barre de jeu ----------
@@ -3830,7 +3871,7 @@ function renderGameBar() {
         </button>
         ${def ? `<button class="gb-goal gb-challenge ${g.ch.done ? "done" : ""}" onclick="gameSay('🎯 ' + gameChallengeText())">
             <span class="gb-goal-label">🎯 ${bi("تحدّي اليوم", "gChallenge")}</span>
-            <span class="gb-goal-text">${def.emoji} ${currentUILang ? (def[currentUILang] || def.fr) : def.ar}</span>
+            <span class="gb-goal-text">${def.emoji} ${currentUILang ? gOnly(def.tr) : def.ar}</span>
             <span class="gb-goal-num">${g.ch.done ? "✅" : `${Math.min(g.ch.n, def.target)}/${def.target}`}</span>
         </button>` : ""}
     </div>
@@ -3851,7 +3892,10 @@ window.gameMascotTalk = () => {
     if (g.dayXp < GAME_GOAL) tips.push(`⭐ ${GAME_GOAL - g.dayXp} → 🔥 ${bi("هدف اليوم", "gGoal")}`);
     if (def && !g.ch.done) tips.push(`🎯 ${gameChallengeText()}`);
     if (hi) tips.push(`${GAME_MASCOT[lv]} ⭐ ${hi - g.xp} → ${bi("المستوى", "gLevel")} ${lv + 1}`);
-    tips.push("💪 " + ["أحسنت!", "واصل!", "أنت بطل!", "رائع!"][Math.floor(Math.random() * 4)]);
+    const cheers = [["أحسنت!", { fr:"Bravo !", nl:"Goed zo!", en:"Well done!", es:"¡Bravo!" }], ["واصل!", { fr:"Continue !", nl:"Ga zo door!", en:"Keep going!", es:"¡Sigue así!" }],
+                    ["أنت بطل!", { fr:"Tu es un champion !", nl:"Je bent een kampioen!", en:"You're a champion!", es:"¡Eres un campeón!" }], ["رائع!", { fr:"Super !", nl:"Super!", en:"Great!", es:"¡Genial!" }]];
+    const ch = cheers[Math.floor(Math.random() * cheers.length)];
+    tips.push("💪 " + gTr(ch[0], ch[1]));
     gameSay(tips[Math.floor(Math.random() * tips.length)]);
 };
 
@@ -3921,7 +3965,7 @@ window.openGameBadges = () => {
     gameOpenSheet(`<h2>🏅 ${bi("أوسمتي", "gBadges")} (${_game.badges.length}/${GAME_BADGES.length})</h2>
         <div class="gb-badges">${GAME_BADGES.map(b => {
             const on = _game.badges.includes(b.id);
-            return `<div class="gb-badge ${on ? "on" : ""}"><div class="gb-badge-e">${on ? b.e : "🔒"}</div><div class="gb-badge-ar">${b.ar}</div><div class="gb-badge-fr">${b.fr}</div></div>`;
+            return `<div class="gb-badge ${on ? "on" : ""}"><div class="gb-badge-e">${on ? b.e : "🔒"}</div><div class="gb-badge-ar">${b.ar}</div>${currentUILang ? `<div class="gb-badge-fr">${gOnly(b.tr)}</div>` : ""}</div>`;
         }).join("")}</div>`);
 };
 window.openGameHowTo = () => {
@@ -3930,7 +3974,7 @@ window.openGameHowTo = () => {
     gameOpenSheet(`<h2>🔥 ${g.streak} ${bi("أيام متتالية", "gStreak")}</h2>
         <p class="gb-sheet-sub">⭐ ${GAME_GOAL} / ${bi("هدف اليوم", "gGoal")} → 🔥 +1</p>
         <h3>${bi("كيف تربح النجوم", "gHowTo")}</h3>
-        <div class="gb-howto">${GAME_HOWTO.map(([e, t, x]) => `<div><span>${e}</span><span>${t}</span><strong>${x} ⭐</strong></div>`).join("")}</div>
+        <div class="gb-howto">${GAME_HOWTO.map(([e, ar, tr, x]) => `<div><span>${e}</span><span>${gTr(ar, tr)}</span><strong>${x} ⭐</strong></div>`).join("")}</div>
         <h3>${GAME_MASCOT.map((m, i) => `<span class="gb-evo ${gameLevel(g.xp) > i ? "on" : ""}" title="${bi("المستوى", "gLevel")} ${i + 1}">${m}</span>`).join("")}</h3>`);
 };
 
@@ -3963,18 +4007,27 @@ function renderDemoNews() {
     let box = document.getElementById("demo-news");
     if (!box) { box = document.createElement("div"); box.id = "demo-news"; screen.querySelector(".admin-tabs")?.before(box); }
     if (!isDemoMode) { box.innerHTML = ""; return; }
+    const L = currentUILang || "fr"; // la démo est toujours présentée avec une langue de traduction
     const items = [
-        ["🔤", "الحركات بصوت المعلم", "Harakat avec la voix de l'enseignant", "303 syllabes : voyelles brèves, soukoun, madd, chadda, tanwin"],
-        ["🎵", "سلسلة المقاطع", "Lecture en série (premium)", "بَ بُ بِ ‹ تَ تُ تِ … à la vitesse choisie, mode « répète après moi »"],
-        ["✏️", "أكوّن كلماتي", "Composer des mots", "L'élève assemble des syllabes et entend le mot, lettres liées"],
-        ["🎤", "استمع إلى نفسك", "Écoute-toi et compare", "Enregistrement 100 % local : rien n'est envoyé ni stocké"],
-        ["🔊", "اختبار المقاطع", "Quiz « Quelle syllabe ? »", "3 niveaux, suivi des points faibles par élève et par classe"],
-        ["🎮", "مغامرة حروفي", "Hourouf Aventure", "Étoiles, compagnon qui grandit, série de jours 🔥, défi du jour, 16 badges"],
-    ];
+        ["🔤", "الحركات بصوت المعلم", { fr:"Harakat avec la voix de l'enseignant", nl:"Harakat met de stem van de leerkracht", en:"Harakat in the teacher's voice", es:"Harakat con la voz del profesor" },
+               { fr:"303 syllabes : voyelles brèves, soukoun, madd, chadda, tanwin", nl:"303 lettergrepen: korte klinkers, soekoen, madd, sjadda, tanwien", en:"303 syllables: short vowels, sukun, madd, shadda, tanwin", es:"303 sílabas: vocales breves, sukún, madd, shadda, tanwín" }],
+        ["🎵", "سلسلة المقاطع", { fr:"Lecture en série (premium)", nl:"Reeks afspelen (premium)", en:"Syllable series (premium)", es:"Lectura en serie (premium)" },
+               { fr:"بَ بُ بِ ‹ تَ تُ تِ … à la vitesse choisie, mode « répète après moi »", nl:"بَ بُ بِ ‹ تَ تُ تِ … op het gekozen tempo, modus « zeg het na »", en:"بَ بُ بِ ‹ تَ تُ تِ … at the chosen speed, « repeat after me » mode", es:"بَ بُ بِ ‹ تَ تُ تِ … a la velocidad elegida, modo « repite después de mí »" }],
+        ["✏️", "أكوّن كلماتي", { fr:"Composer des mots", nl:"Woorden samenstellen", en:"Build words", es:"Formar palabras" },
+               { fr:"L'élève assemble des syllabes et entend le mot, lettres liées", nl:"De leerling voegt lettergrepen samen en hoort het woord, met verbonden letters", en:"The pupil joins syllables and hears the word, letters connected", es:"El alumno une sílabas y oye la palabra, con las letras ligadas" }],
+        ["🎤", "استمع إلى نفسك", { fr:"Écoute-toi et compare", nl:"Luister naar jezelf en vergelijk", en:"Listen to yourself and compare", es:"Escúchate y compara" },
+               { fr:"Enregistrement 100 % local : rien n'est envoyé ni stocké", nl:"100 % lokale opname: niets wordt verzonden of bewaard", en:"100% local recording: nothing is sent or stored", es:"Grabación 100 % local: nada se envía ni se guarda" }],
+        ["🔊", "اختبار المقاطع", { fr:"Quiz « Quelle syllabe ? »", nl:"Quiz « Welke lettergreep? »", en:"« Which syllable? » quiz", es:"Cuestionario « ¿Qué sílaba? »" },
+               { fr:"3 niveaux, suivi des points faibles par élève et par classe", nl:"3 niveaus, opvolging van zwakke punten per leerling en per klas", en:"3 levels, weak points tracked per pupil and per class", es:"3 niveles, seguimiento de los puntos débiles por alumno y por clase" }],
+        ["🎮", "مغامرة حروفي", { fr:"Hourouf Aventure", nl:"Hourouf Avontuur", en:"Hourouf Adventure", es:"Aventura Hourouf" },
+               { fr:"Étoiles, compagnon qui grandit, série de jours 🔥, défi du jour, 16 badges", nl:"Sterren, een maatje dat groeit, dagenreeks 🔥, dagelijkse uitdaging, 16 badges", en:"Stars, a growing buddy, day streak 🔥, daily challenge, 16 badges", es:"Estrellas, un compañero que crece, racha de días 🔥, reto del día, 16 insignias" }],
+        ["👪", "التسجيلات عبر الوالدين", { fr:"Enregistrements via les parents", nl:"Opnames via de ouders", en:"Recordings via the parents", es:"Grabaciones a través de los padres" },
+               { fr:"La voix de l'élève va d'abord aux parents, qui la transmettent au professeur", nl:"De stem van de leerling gaat eerst naar de ouders, die ze doorsturen naar de leerkracht", en:"The pupil's voice goes to the parents first, who pass it on to the teacher", es:"La voz del alumno va primero a los padres, que la envían al profesor" }],
+    ].map(([e, ar, t, d]) => [e, ar, t[L] || t.fr, d[L] || d.fr]);
     box.innerHTML = `<div class="demo-news">
-        <div class="demo-news-title">✨ ${"الجديد في حروفي"} / Nouveautés</div>
+        <div class="demo-news-title">✨ الجديد في حروفي / ${({ fr:"Nouveautés", nl:"Nieuw", en:"What's new", es:"Novedades" })[L] || "Nouveautés"}</div>
         <div class="demo-news-grid">${items.map(([e, ar, fr, txt]) => `<div class="demo-news-card"><div class="dn-e">${e}</div><div class="dn-ar">${ar}</div><div class="dn-fr">${fr}</div><div class="dn-txt">${txt}</div></div>`).join("")}</div>
-        <button class="demo-try-btn" onclick="demoTryStudent()">👦 جرّب فضاء التلميذ / Essayer l'espace élève</button>
+        <button class="demo-try-btn" onclick="demoTryStudent()">👦 جرّب فضاء التلميذ / ${({ fr:"Essayer l'espace élève", nl:"Het leerlingenportaal proberen", en:"Try the pupil space", es:"Probar el espacio del alumno" })[L] || "Essayer l'espace élève"}</button>
     </div>`;
 }
 window.demoTryStudent = async () => {
@@ -3989,6 +4042,55 @@ window.demoBackToDirector = () => {
     currentRole = "schooladmin"; currentUser = "demo_admin";
     _game = window._game = null; renderGameBar();
     showScreen("screen-schooladmin");
+};
+
+// ============================================================
+//  👪 ENREGISTREMENTS DE L'ÉLÈVE : d'abord chez les parents
+//  L'élève envoie → les parents écoutent → ils transmettent (ou suppriment).
+//  Le professeur ne reçoit que ce que les parents ont choisi de transmettre.
+// ============================================================
+let parentRecStudent = null;
+async function loadParentRecordings(studentId) {
+    parentRecStudent = studentId;
+    let items = [];
+    try {
+        const snap = await getDocs(collection(db, "eleves", studentId, "recordings"));
+        snap.forEach(s => items.push({ id: s.id, ...s.data() }));
+    } catch (e) { return; }
+    const box = document.getElementById("parent-recordings");
+    if (!box) return;
+    items.sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+    const waiting = items.filter(i => i.status === "parent");
+    const sent = items.filter(i => i.status !== "parent").slice(0, 5);
+    const icons = { quran: "📖", vocab: "🔤", letter: "✏️" };
+    const row = (it, pending) => `
+        <div class="pr-item ${pending ? "pending" : ""}">
+            <div class="pr-head">${icons[it.type] || "🎙️"} <strong>${it.itemLabel || ""}</strong> ${it.refText ? "— " + it.refText : ""}
+                <span class="pr-date">📅 ${new Date(it.date).toLocaleDateString("fr-FR")}</span></div>
+            <audio src="${it.url}" controls preload="none"></audio>
+            ${pending
+                ? `<div class="pr-actions">
+                       <button class="btn-admin-add" onclick="parentForwardRecording('${it.id}')">📤 ${bi("إرسال إلى المعلم", "prForward")}</button>
+                       <button class="btn-delete" onclick="parentDeleteRecording('${it.id}')">🗑️ ${bi("حذف", "delete")}</button>
+                   </div>`
+                : `<div class="pr-done">✅ ${bi("أُرسل إلى المعلم", "prForwarded")}${it.reviewed ? " · 👂 " + bi("تمّت المراجعة", "reviewed") : ""}</div>`}
+        </div>`;
+    box.innerHTML = `
+        <div class="pr-box">
+            <h3>🎙️ ${bi("تسجيلات طفلك", "prTitle")} ${waiting.length ? `<span class="notif-badge">${waiting.length}</span>` : ""}</h3>
+            <p class="pr-intro">🔒 ${bi("استمع إلى التسجيلات ثم اختر ما ترسله إلى المعلم", "prIntro")}</p>
+            ${waiting.length ? waiting.map(it => row(it, true)).join("") : `<p class="pr-none">${bi("لا توجد تسجيلات في الانتظار", "prNone")}</p>`}
+            ${sent.length ? `<details class="pr-sent"><summary>✅ ${bi("أُرسل إلى المعلم", "prForwarded")} (${sent.length})</summary>${sent.map(it => row(it, false)).join("")}</details>` : ""}
+        </div>`;
+}
+window.parentForwardRecording = async (id) => {
+    await updateDoc(doc(db, "eleves", parentRecStudent, "recordings", id), { status: "teacher", forwardedAt: new Date().toISOString() });
+    loadParentRecordings(parentRecStudent);
+};
+window.parentDeleteRecording = async (id) => {
+    if (!confirm(bi("حذف هذا التسجيل نهائيًا؟", "prConfirmDelete"))) return;
+    await deleteDoc(doc(db, "eleves", parentRecStudent, "recordings", id));
+    loadParentRecordings(parentRecStudent);
 };
 
 // ============================================================

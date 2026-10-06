@@ -2070,3 +2070,42 @@ body {
     background: linear-gradient(135deg, #FF6B6B, #f5a623); color: #fff; font-family: 'Tajawal', sans-serif; font-size: 17px; font-weight: 900;
     box-shadow: 0 8px 20px rgba(255,107,107,.35); animation: hqPulse 2s infinite;
 }
+
+/* ===== 💐 Logo de l'école en couronne de fleurs ===== */
+.logo-wreath { position: relative; display: inline-flex; align-items: center; justify-content: center; margin: 6px auto; }
+.logo-wreath-small { width: 190px; height: 190px; --r: 82px; --fs: 26px; --img: 128px; }
+.logo-wreath-big   { width: 290px; height: 290px; --r: 126px; --fs: 38px; --img: 200px; }
+.wreath-img {
+    width: var(--img); height: var(--img); border-radius: 50%; object-fit: cover; position: relative; z-index: 2;
+    border: 5px solid #fff; box-shadow: 0 10px 30px rgba(118, 75, 162, .28);
+}
+.logo-wreath::before {   /* anneau de couleur douce derrière les fleurs */
+    content: ""; position: absolute; inset: 8%; border-radius: 50%;
+    background: radial-gradient(circle, rgba(255,255,255,0) 58%, rgba(255, 214, 230, .55) 60%, rgba(255, 240, 200, .5) 72%, rgba(255,255,255,0) 74%);
+}
+.wreath-flower, .wreath-leaf {
+    position: absolute; left: 50%; top: 50%; z-index: 3; line-height: 1;
+    transform: translate(-50%, -50%) rotate(var(--a)) translateY(calc(-1 * var(--r))) rotate(calc(-1 * var(--a)));
+}
+.wreath-flower { font-size: var(--fs); animation: wreathBloom 3s ease-in-out infinite; animation-delay: var(--d); }
+.wreath-leaf { font-size: calc(var(--fs) * .7); z-index: 1;
+    transform: translate(-50%, -50%) rotate(var(--a)) translateY(calc(-1 * var(--r) - 6px)) rotate(calc(-1 * var(--a))); }
+@keyframes wreathBloom { 50% { filter: brightness(1.15); scale: 1.12; } }
+.wreath-pop { transform: scale(.5) rotate(-20deg); opacity: 0; transition: transform .6s cubic-bezier(.34,1.56,.64,1), opacity .4s; }
+.wreath-pop.in { transform: scale(1) rotate(0); opacity: 1; }
+#login-logo-main:has(.logo-wreath) { font-size: inherit; margin-bottom: 4px; }
+
+/* ===== 👪 Enregistrements chez les parents ===== */
+.pr-box { background: #fff; border-radius: 18px; padding: 14px; margin: 0 0 20px; box-shadow: var(--shadow-sm); border: 2px solid #e8f7f5; }
+.pr-box h3 { margin: 0 0 4px; color: #2ea89a; display: flex; align-items: center; gap: 8px; }
+.pr-intro { font-size: 12px; color: var(--text-light); margin: 0 0 10px; line-height: 1.5; }
+.pr-item { border-top: 1px solid #f0f0f0; padding: 10px 0; }
+.pr-item.pending { background: #f7fffd; border-radius: 12px; padding: 10px; margin-bottom: 6px; border: 1px solid #c9efeb; }
+.pr-head { font-size: 14px; margin-bottom: 6px; }
+.pr-date { font-size: 12px; color: #888; margin-inline-start: 6px; }
+.pr-item audio { width: 100%; margin-bottom: 6px; }
+.pr-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.pr-actions button { padding: 6px 14px; font-size: 13px; }
+.pr-done { font-size: 12px; color: #27ae60; font-weight: 700; }
+.pr-none { font-size: 13px; color: #888; text-align: center; padding: 8px; }
+.pr-sent summary { cursor: pointer; font-size: 13px; color: #27ae60; font-weight: 800; margin-top: 8px; }
