@@ -9,61 +9,85 @@
       "number": 1,
       "arabic": "الْقَارِعَةُ مَا الْقَارِعَةُ",
       "french": "Le Fracas ! Qu'est-ce que le Fracas ?",
-      "dutch": "De Verpletterende Slag! Wat is de Verpletterende Slag?"
+      "dutch": "De Verpletterende Slag! Wat is de Verpletterende Slag?",
+      "english": "The Striking Calamity -",
+      "spanish": "El evento repentino."
     },
     {
       "number": 2,
       "arabic": "وَمَا أَدْرَاكَ مَا الْقَارِعَةُ",
       "french": "Et qui te fera savoir ce qu'est le Fracas ?",
-      "dutch": "En wat doet je weten wat de Verpletterende Slag is?"
+      "dutch": "En wat doet je weten wat de Verpletterende Slag is?",
+      "english": "What is the Striking Calamity?",
+      "spanish": "¿Qué es el evento repentino?"
     },
     {
       "number": 3,
       "arabic": "يَوْمَ يَكُونُ النَّاسُ كَالْفَرَاشِ الْمَبْثُوثِ",
       "french": "Le jour où les gens seront comme des papillons dispersés",
-      "dutch": "Op de Dag waarop de mensen als verspreide vlinders zullen zijn"
+      "dutch": "Op de Dag waarop de mensen als verspreide vlinders zullen zijn",
+      "english": "And what can make you know what is the Striking Calamity?",
+      "spanish": "¿Y qué te hará comprender la magnitud del evento repentino?"
     },
     {
       "number": 4,
       "arabic": "وَتَكُونُ الْجِبَالُ كَالْعِهْنِ الْمَنْفُوشِ",
       "french": "et les montagnes comme de la laine cardée",
-      "dutch": "en de bergen als losgekaarde wol zullen zijn"
+      "dutch": "en de bergen als losgekaarde wol zullen zijn",
+      "english": "It is the Day when people will be like moths, dispersed,",
+      "spanish": "Ese día la gente parecerá mariposas dispersas,"
     },
     {
       "number": 5,
       "arabic": "فَأَمَّا مَنْ ثَقُلَتْ مَوَازِينُهُ",
       "french": "Quant à celui dont la balance sera lourde",
-      "dutch": "Wat betreft degene wiens weegschaal zwaar is"
+      "dutch": "Wat betreft degene wiens weegschaal zwaar is",
+      "english": "And the mountains will be like wool, fluffed up.",
+      "spanish": "y las montañas copos de lana cardada."
     },
     {
       "number": 6,
       "arabic": "فَهُوَ فِي عِيشَةٍ رَاضِيَةٍ",
       "french": "il vivra dans une existence agréable",
-      "dutch": "hij zal in een aangenaam leven verkeren"
+      "dutch": "hij zal in een aangenaam leven verkeren",
+      "english": "Then as for one whose scales are heavy [with good deeds],",
+      "spanish": "Aquel cuyas obras buenas sean más pesadas en la balanza"
     },
     {
       "number": 7,
       "arabic": "وَأَمَّا مَنْ خَفَّتْ مَوَازِينُهُ",
       "french": "Et quant à celui dont la balance sera légère",
-      "dutch": "En wat betreft degene wiens weegschaal licht is"
+      "dutch": "En wat betreft degene wiens weegschaal licht is",
+      "english": "He will be in a pleasant life.",
+      "spanish": "gozará de una vida placentera."
     },
     {
       "number": 8,
       "arabic": "فَأُمُّهُ هَاوِيَةٌ",
       "french": "sa demeure sera l'Abîme",
-      "dutch": "zijn verblijfplaats zal de Afgrond zijn"
+      "dutch": "zijn verblijfplaats zal de Afgrond zijn",
+      "english": "But as for one whose scales are light,",
+      "spanish": "En cambio, aquel cuyas obras buenas sean más livianas en la balanza,"
     },
     {
       "number": 9,
       "arabic": "وَمَا أَدْرَاكَ مَا هِيَهْ",
       "french": "Et qui te fera savoir ce qu'il en est ?",
-      "dutch": "En wat doet je weten wat dat is?"
+      "dutch": "En wat doet je weten wat dat is?",
+      "english": "His refuge will be an abyss.",
+      "spanish": "su morada estará en el abismo."
     },
     {
       "number": 10,
       "arabic": "نَارٌ حَامِيَةٌ",
       "french": "C'est un Feu ardent",
-      "dutch": "Het is een brandend Vuur"
+      "dutch": "Het is een brandend Vuur",
+      "english": "And what can make you know what that is?",
+      "spanish": "¿Y qué te hará comprender qué es el abismo?"
     }
-  ]
+  ],
+  "translation_credits": {
+    "english": "Saheeh International (en.sahih)",
+    "spanish": "Garcia (es.garcia)"
+  }
 }

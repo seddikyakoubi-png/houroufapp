@@ -9,31 +9,45 @@
       "number": 1,
       "arabic": "أَلَمْ تَرَ كَيْفَ فَعَلَ رَبُّكَ بِأَصْحَابِ الْفِيلِ",
       "french": "N'as-tu pas vu comment ton Seigneur a agi envers les gens de l'éléphant ?",
-      "dutch": "Heb je niet gezien hoe je Heer heeft gehandeld met de mensen van de olifant?"
+      "dutch": "Heb je niet gezien hoe je Heer heeft gehandeld met de mensen van de olifant?",
+      "english": "Have you not considered, [O Muhammad], how your Lord dealt with the companions of the elephant?",
+      "spanish": "¿No has observado lo que hizo tu Señor con el ejército del elefante?"
     },
     {
       "number": 2,
       "arabic": "أَلَمْ يَجْعَلْ كَيْدَهُمْ فِي تَضْلِيلٍ",
       "french": "N'a-t-Il pas réduit à néant leur ruse ?",
-      "dutch": "Heeft Hij hun list niet doen mislukken?"
+      "dutch": "Heeft Hij hun list niet doen mislukken?",
+      "english": "Did He not make their plan into misguidance?",
+      "spanish": "¿No has visto cómo desbarató sus planes [de destruir la Ka‘bah]?"
     },
     {
       "number": 3,
       "arabic": "وَأَرْسَلَ عَلَيْهِمْ طَيْرًا أَبَابِيلَ",
       "french": "Il envoya sur eux des oiseaux par volées",
-      "dutch": "Hij zond over hen vogels in zwermen"
+      "dutch": "Hij zond over hen vogels in zwermen",
+      "english": "And He sent against them birds in flocks,",
+      "spanish": "Y envió sobre ellos bandadas de aves"
     },
     {
       "number": 4,
       "arabic": "تَرْمِيهِمْ بِحِجَارَةٍ مِنْ سِجِّيلٍ",
       "french": "qui leur lançaient des pierres d'argile durcie",
-      "dutch": "die stenen van gebakken klei op hen wierpen"
+      "dutch": "die stenen van gebakken klei op hen wierpen",
+      "english": "Striking them with stones of hard clay,",
+      "spanish": "que les arrojaron piedras de arcilla dura,"
     },
     {
       "number": 5,
       "arabic": "فَجَعَلَهُمْ كَعَصْفٍ مَأْكُولٍ",
       "french": "Il les rendit ainsi semblables à une paille mâchée et dévorée",
-      "dutch": "Zo maakte Hij hen als afgekloven kaf"
+      "dutch": "Zo maakte Hij hen als afgekloven kaf",
+      "english": "And He made them like eaten straw.",
+      "spanish": "y los dejó como heno carcomido."
     }
-  ]
+  ],
+  "translation_credits": {
+    "english": "Saheeh International (en.sahih)",
+    "spanish": "Garcia (es.garcia)"
+  }
 }

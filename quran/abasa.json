@@ -5,47 +5,345 @@
   "name_nl": "Hij Fronste",
   "total_ayahs": 42,
   "ayahs": [
-    { "number": 1, "arabic": "عَبَسَ وَتَوَلَّىٰ", "french": "Il s'est renfrogné et a tourné le dos", "dutch": "Hij fronste en wendde zich af" },
-    { "number": 2, "arabic": "أَن جَاءَهُ الْأَعْمَىٰ", "french": "parce que l'aveugle vint à lui", "dutch": "omdat de blinde man tot hem kwam" },
-    { "number": 3, "arabic": "وَمَا يُدْرِيكَ لَعَلَّهُ يَزَّكَّىٰ", "french": "Qu'en sais-tu ? Peut-être allait-il se purifier", "dutch": "Wat weet jij? Misschien zou hij zich zuiveren" },
-    { "number": 4, "arabic": "أَوْ يَذَّكَّرُ فَتَنفَعَهُ الذِّكْرَىٰ", "french": "ou se rappeler, et le rappel lui aurait été utile", "dutch": "of zich laten vermanen, en de vermaning zou hem baten" },
-    { "number": 5, "arabic": "أَمَّا مَنِ اسْتَغْنَىٰ", "french": "Quant à celui qui se croit riche [de lui-même]", "dutch": "Wat betreft hem die zich onafhankelijk waant" },
-    { "number": 6, "arabic": "فَأَنتَ لَهُ تَصَدَّىٰ", "french": "tu t'empresses vers lui", "dutch": "richt jij je tot hem" },
-    { "number": 7, "arabic": "وَمَا عَلَيْكَ أَلَّا يَزَّكَّىٰ", "french": "alors que peu t'importe qu'il ne se purifie pas", "dutch": "terwijl het jou niet aangaat of hij zich niet zuivert" },
-    { "number": 8, "arabic": "وَأَمَّا مَن جَاءَكَ يَسْعَىٰ", "french": "Mais quant à celui qui vient à toi avec empressement", "dutch": "Maar wat betreft hem die vol ijver tot jou komt" },
-    { "number": 9, "arabic": "وَهُوَ يَخْشَىٰ", "french": "tout en craignant [Allah]", "dutch": "en die ontzag heeft" },
-    { "number": 10, "arabic": "فَأَنتَ عَنْهُ تَلَهَّىٰ", "french": "tu ne t'en soucies pas", "dutch": "daar besteed jij geen aandacht aan" },
-    { "number": 11, "arabic": "كَلَّا إِنَّهَا تَذْكِرَةٌ", "french": "Non ! Ceci est un rappel", "dutch": "Nee! Dit is een vermaning" },
-    { "number": 12, "arabic": "فَمَن شَاءَ ذَكَرَهُ", "french": "quiconque veut s'en souvienne", "dutch": "laat wie wil, zich erdoor laten vermanen" },
-    { "number": 13, "arabic": "فِي صُحُفٍ مُّكَرَّمَةٍ", "french": "consigné dans des feuillets honorés", "dutch": "opgetekend in geëerde geschriften" },
-    { "number": 14, "arabic": "مَّرْفُوعَةٍ مُّطَهَّرَةٍ", "french": "élevés, purifiés", "dutch": "verheven, gezuiverd" },
-    { "number": 15, "arabic": "بِأَيْدِي سَفَرَةٍ", "french": "entre les mains de scribes", "dutch": "in de handen van schrijvers" },
-    { "number": 16, "arabic": "كِرَامٍ بَرَرَةٍ", "french": "nobles et vertueux", "dutch": "edel en deugdzaam" },
-    { "number": 17, "arabic": "قُتِلَ الْإِنسَانُ مَا أَكْفَرَهُ", "french": "Que périsse l'homme ! Comme il est ingrat !", "dutch": "Vervloekt zij de mens! Hoe ondankbaar is hij!" },
-    { "number": 18, "arabic": "مِنْ أَيِّ شَيْءٍ خَلَقَهُ", "french": "De quoi [Allah] l'a-t-Il créé ?", "dutch": "Waaruit heeft Hij hem geschapen?" },
-    { "number": 19, "arabic": "مِن نُّطْفَةٍ خَلَقَهُ فَقَدَّرَهُ", "french": "D'une goutte de sperme, Il l'a créé et déterminé", "dutch": "Uit een druppel zaad heeft Hij hem geschapen en bepaald" },
-    { "number": 20, "arabic": "ثُمَّ السَّبِيلَ يَسَّرَهُ", "french": "puis Il lui a facilité le chemin", "dutch": "vervolgens heeft Hij hem de weg vergemakkelijkt" },
-    { "number": 21, "arabic": "ثُمَّ أَمَاتَهُ فَأَقْبَرَهُ", "french": "puis Il le fait mourir et l'ensevelit", "dutch": "daarna doet Hij hem sterven en begraaft hem" },
-    { "number": 22, "arabic": "ثُمَّ إِذَا شَاءَ أَنشَرَهُ", "french": "puis, quand Il voudra, Il le ressuscitera", "dutch": "vervolgens, wanneer Hij wil, wekt Hij hem weer op" },
-    { "number": 23, "arabic": "كَلَّا لَمَّا يَقْضِ مَا أَمَرَهُ", "french": "Non ! Il n'a pas encore accompli ce qu'Il lui a ordonné", "dutch": "Nee! Hij heeft nog niet volbracht wat Hij hem opdroeg" },
-    { "number": 24, "arabic": "فَلْيَنظُرِ الْإِنسَانُ إِلَىٰ طَعَامِهِ", "french": "Que l'homme considère donc sa nourriture", "dutch": "Laat de mens dan naar zijn voedsel kijken" },
-    { "number": 25, "arabic": "أَنَّا صَبَبْنَا الْمَاءَ صَبًّا", "french": "Nous avons versé l'eau abondamment", "dutch": "Wij hebben het water rijkelijk doen neerdalen" },
-    { "number": 26, "arabic": "ثُمَّ شَقَقْنَا الْأَرْضَ شَقًّا", "french": "puis Nous avons fendu la terre par fissures", "dutch": "vervolgens hebben Wij de aarde volledig gespleten" },
-    { "number": 27, "arabic": "فَأَنبَتْنَا فِيهَا حَبًّا", "french": "et y avons fait pousser des grains", "dutch": "en Wij hebben er graan in doen groeien" },
-    { "number": 28, "arabic": "وَعِنَبًا وَقَضْبًا", "french": "et des vignes et des légumes", "dutch": "en druiven en groenten" },
-    { "number": 29, "arabic": "وَزَيْتُونًا وَنَخْلًا", "french": "et des oliviers et des palmiers", "dutch": "en olijfbomen en palmen" },
-    { "number": 30, "arabic": "وَحَدَائِقَ غُلْبًا", "french": "et des jardins touffus", "dutch": "en dichtbegroeide tuinen" },
-    { "number": 31, "arabic": "وَفَاكِهَةً وَأَبًّا", "french": "et des fruits et des herbages", "dutch": "en vruchten en gewassen" },
-    { "number": 32, "arabic": "مَّتَاعًا لَّكُمْ وَلِأَنْعَامِكُمْ", "french": "en jouissance pour vous et pour vos bestiaux", "dutch": "als genot voor jullie en jullie vee" },
-    { "number": 33, "arabic": "فَإِذَا جَاءَتِ الصَّاخَّةُ", "french": "Puis quand viendra le Fracas assourdissant", "dutch": "Wanneer dan het oorverdovende geluid komt" },
-    { "number": 34, "arabic": "يَوْمَ يَفِرُّ الْمَرْءُ مِنْ أَخِيهِ", "french": "le jour où l'homme fuira son frère", "dutch": "de dag waarop de mens zal vluchten van zijn broer" },
-    { "number": 35, "arabic": "وَأُمِّهِ وَأَبِيهِ", "french": "sa mère et son père", "dutch": "en zijn moeder en zijn vader" },
-    { "number": 36, "arabic": "وَصَاحِبَتِهِ وَبَنِيهِ", "french": "son épouse et ses enfants", "dutch": "en zijn echtgenote en zijn kinderen" },
-    { "number": 37, "arabic": "لِكُلِّ امْرِئٍ مِّنْهُمْ يَوْمَئِذٍ شَأْنٌ يُغْنِيهِ", "french": "chacun d'eux, ce jour-là, aura son propre souci qui lui suffira", "dutch": "ieder van hen zal op die Dag een eigen zorg hebben die hem genoeg is" },
-    { "number": 38, "arabic": "وُجُوهٌ يَوْمَئِذٍ مُّسْفِرَةٌ", "french": "Ce jour-là, des visages seront rayonnants", "dutch": "Op die Dag zullen gezichten stralend zijn" },
-    { "number": 39, "arabic": "ضَاحِكَةٌ مُّسْتَبْشِرَةٌ", "french": "riants, réjouis", "dutch": "lachend, verheugd" },
-    { "number": 40, "arabic": "وَوُجُوهٌ يَوْمَئِذٍ عَلَيْهَا غَبَرَةٌ", "french": "et d'autres visages, ce jour-là, seront couverts de poussière", "dutch": "en andere gezichten zullen op die Dag met stof bedekt zijn" },
-    { "number": 41, "arabic": "تَرْهَقُهَا قَتَرَةٌ", "french": "recouverts d'obscurité", "dutch": "overdekt met duisternis" },
-    { "number": 42, "arabic": "أُولَٰئِكَ هُمُ الْكَفَرَةُ الْفَجَرَةُ", "french": "ce sont eux les mécréants, les libertins", "dutch": "zij zijn de ongelovigen, de losbandigen" }
-  ]
+    {
+      "number": 1,
+      "arabic": "عَبَسَ وَتَوَلَّىٰ",
+      "french": "Il s'est renfrogné et a tourné le dos",
+      "dutch": "Hij fronste en wendde zich af",
+      "english": "The Prophet frowned and turned away",
+      "spanish": "[¡Oh, Mujámmad!] Frunciste el ceño y le diste la espalda"
+    },
+    {
+      "number": 2,
+      "arabic": "أَن جَاءَهُ الْأَعْمَىٰ",
+      "french": "parce que l'aveugle vint à lui",
+      "dutch": "omdat de blinde man tot hem kwam",
+      "english": "Because there came to him the blind man, [interrupting].",
+      "spanish": "al ciego cuando se presentó ante ti."
+    },
+    {
+      "number": 3,
+      "arabic": "وَمَا يُدْرِيكَ لَعَلَّهُ يَزَّكَّىٰ",
+      "french": "Qu'en sais-tu ? Peut-être allait-il se purifier",
+      "dutch": "Wat weet jij? Misschien zou hij zich zuiveren",
+      "english": "But what would make you perceive, [O Muhammad], that perhaps he might be purified",
+      "spanish": "¿Cómo sabes que no quería purificarse [aprendiendo de ti el conocimiento],"
+    },
+    {
+      "number": 4,
+      "arabic": "أَوْ يَذَّكَّرُ فَتَنفَعَهُ الذِّكْرَىٰ",
+      "french": "ou se rappeler, et le rappel lui aurait été utile",
+      "dutch": "of zich laten vermanen, en de vermaning zou hem baten",
+      "english": "Or be reminded and the remembrance would benefit him?",
+      "spanish": "o beneficiarse con tus enseñanzas?"
+    },
+    {
+      "number": 5,
+      "arabic": "أَمَّا مَنِ اسْتَغْنَىٰ",
+      "french": "Quant à celui qui se croit riche [de lui-même]",
+      "dutch": "Wat betreft hem die zich onafhankelijk waant",
+      "english": "As for he who thinks himself without need,",
+      "spanish": "En cambio, al soberbio"
+    },
+    {
+      "number": 6,
+      "arabic": "فَأَنتَ لَهُ تَصَدَّىٰ",
+      "french": "tu t'empresses vers lui",
+      "dutch": "richt jij je tot hem",
+      "english": "To him you give attention.",
+      "spanish": "le dedicaste toda tu atención."
+    },
+    {
+      "number": 7,
+      "arabic": "وَمَا عَلَيْكَ أَلَّا يَزَّكَّىٰ",
+      "french": "alors que peu t'importe qu'il ne se purifie pas",
+      "dutch": "terwijl het jou niet aangaat of hij zich niet zuivert",
+      "english": "And not upon you [is any blame] if he will not be purified.",
+      "spanish": "Pero tú no eres responsable si él rechaza purificarse [de la idolatría, ya que tu obligación solo es transmitir el Mensaje]."
+    },
+    {
+      "number": 8,
+      "arabic": "وَأَمَّا مَن جَاءَكَ يَسْعَىٰ",
+      "french": "Mais quant à celui qui vient à toi avec empressement",
+      "dutch": "Maar wat betreft hem die vol ijver tot jou komt",
+      "english": "But as for he who came to you striving [for knowledge]",
+      "spanish": "En cambio, aquel que se presentó ante ti con deseos [de aprender],"
+    },
+    {
+      "number": 9,
+      "arabic": "وَهُوَ يَخْشَىٰ",
+      "french": "tout en craignant [Allah]",
+      "dutch": "en die ontzag heeft",
+      "english": "While he fears [Allah],",
+      "spanish": "teniendo temor de Dios,"
+    },
+    {
+      "number": 10,
+      "arabic": "فَأَنتَ عَنْهُ تَلَهَّىٰ",
+      "french": "tu ne t'en soucies pas",
+      "dutch": "daar besteed jij geen aandacht aan",
+      "english": "From him you are distracted.",
+      "spanish": "te apartaste de él."
+    },
+    {
+      "number": 11,
+      "arabic": "كَلَّا إِنَّهَا تَذْكِرَةٌ",
+      "french": "Non ! Ceci est un rappel",
+      "dutch": "Nee! Dit is een vermaning",
+      "english": "No! Indeed, these verses are a reminder;",
+      "spanish": "No lo vuelvas a hacer, porque este Mensaje es para toda la humanidad."
+    },
+    {
+      "number": 12,
+      "arabic": "فَمَن شَاءَ ذَكَرَهُ",
+      "french": "quiconque veut s'en souvienne",
+      "dutch": "laat wie wil, zich erdoor laten vermanen",
+      "english": "So whoever wills may remember it.",
+      "spanish": "Quien quiera, que reflexione y obre acorde a él."
+    },
+    {
+      "number": 13,
+      "arabic": "فِي صُحُفٍ مُّكَرَّمَةٍ",
+      "french": "consigné dans des feuillets honorés",
+      "dutch": "opgetekend in geëerde geschriften",
+      "english": "[It is recorded] in honored sheets,",
+      "spanish": "Pues el Mensaje está registrado en páginas honorables,"
+    },
+    {
+      "number": 14,
+      "arabic": "مَّرْفُوعَةٍ مُّطَهَّرَةٍ",
+      "french": "élevés, purifiés",
+      "dutch": "verheven, gezuiverd",
+      "english": "Exalted and purified,",
+      "spanish": "distinguidas y purificadas,"
+    },
+    {
+      "number": 15,
+      "arabic": "بِأَيْدِي سَفَرَةٍ",
+      "french": "entre les mains de scribes",
+      "dutch": "in de handen van schrijvers",
+      "english": "[Carried] by the hands of messenger-angels,",
+      "spanish": "en manos de [ángeles] encargados de ejecutar las órdenes de Dios,"
+    },
+    {
+      "number": 16,
+      "arabic": "كِرَامٍ بَرَرَةٍ",
+      "french": "nobles et vertueux",
+      "dutch": "edel en deugdzaam",
+      "english": "Noble and dutiful.",
+      "spanish": "nobles y obedientes."
+    },
+    {
+      "number": 17,
+      "arabic": "قُتِلَ الْإِنسَانُ مَا أَكْفَرَهُ",
+      "french": "Que périsse l'homme ! Comme il est ingrat !",
+      "dutch": "Vervloekt zij de mens! Hoe ondankbaar is hij!",
+      "english": "Cursed is man; how disbelieving is he.",
+      "spanish": "El ser humano se destruye a sí mismo con su ingratitud."
+    },
+    {
+      "number": 18,
+      "arabic": "مِنْ أَيِّ شَيْءٍ خَلَقَهُ",
+      "french": "De quoi [Allah] l'a-t-Il créé ?",
+      "dutch": "Waaruit heeft Hij hem geschapen?",
+      "english": "From what substance did He create him?",
+      "spanish": "¿Acaso no sabe de qué ha sido creado?"
+    },
+    {
+      "number": 19,
+      "arabic": "مِن نُّطْفَةٍ خَلَقَهُ فَقَدَّرَهُ",
+      "french": "D'une goutte de sperme, Il l'a créé et déterminé",
+      "dutch": "Uit een druppel zaad heeft Hij hem geschapen en bepaald",
+      "english": "From a sperm-drop He created him and destined for him;",
+      "spanish": "De un óvulo fecundado, que crece en etapas según lo [que Él ha] establecido."
+    },
+    {
+      "number": 20,
+      "arabic": "ثُمَّ السَّبِيلَ يَسَّرَهُ",
+      "french": "puis Il lui a facilité le chemin",
+      "dutch": "vervolgens heeft Hij hem de weg vergemakkelijkt",
+      "english": "Then He eased the way for him;",
+      "spanish": "Luego le facilita el camino."
+    },
+    {
+      "number": 21,
+      "arabic": "ثُمَّ أَمَاتَهُ فَأَقْبَرَهُ",
+      "french": "puis Il le fait mourir et l'ensevelit",
+      "dutch": "daarna doet Hij hem sterven en begraaft hem",
+      "english": "Then He causes his death and provides a grave for him.",
+      "spanish": "Luego lo hace morir y ser enterrado."
+    },
+    {
+      "number": 22,
+      "arabic": "ثُمَّ إِذَا شَاءَ أَنشَرَهُ",
+      "french": "puis, quand Il voudra, Il le ressuscitera",
+      "dutch": "vervolgens, wanneer Hij wil, wekt Hij hem weer op",
+      "english": "Then when He wills, He will resurrect him.",
+      "spanish": "Finalmente lo resucita cuando Él quiere."
+    },
+    {
+      "number": 23,
+      "arabic": "كَلَّا لَمَّا يَقْضِ مَا أَمَرَهُ",
+      "french": "Non ! Il n'a pas encore accompli ce qu'Il lui a ordonné",
+      "dutch": "Nee! Hij heeft nog niet volbracht wat Hij hem opdroeg",
+      "english": "No! Man has not yet accomplished what He commanded him.",
+      "spanish": "Pero a pesar de esto no cumple con los preceptos que se le ordenan."
+    },
+    {
+      "number": 24,
+      "arabic": "فَلْيَنظُرِ الْإِنسَانُ إِلَىٰ طَعَامِهِ",
+      "french": "Que l'homme considère donc sa nourriture",
+      "dutch": "Laat de mens dan naar zijn voedsel kijken",
+      "english": "Then let mankind look at his food -",
+      "spanish": "El ser humano debería reflexionar sobre su alimento:"
+    },
+    {
+      "number": 25,
+      "arabic": "أَنَّا صَبَبْنَا الْمَاءَ صَبًّا",
+      "french": "Nous avons versé l'eau abondamment",
+      "dutch": "Wij hebben het water rijkelijk doen neerdalen",
+      "english": "How We poured down water in torrents,",
+      "spanish": "Hice descender el agua en abundancia,"
+    },
+    {
+      "number": 26,
+      "arabic": "ثُمَّ شَقَقْنَا الْأَرْضَ شَقًّا",
+      "french": "puis Nous avons fendu la terre par fissures",
+      "dutch": "vervolgens hebben Wij de aarde volledig gespleten",
+      "english": "Then We broke open the earth, splitting [it with sprouts],",
+      "spanish": "luego hice que la tierra brotara."
+    },
+    {
+      "number": 27,
+      "arabic": "فَأَنبَتْنَا فِيهَا حَبًّا",
+      "french": "et y avons fait pousser des grains",
+      "dutch": "en Wij hebben er graan in doen groeien",
+      "english": "And caused to grow within it grain",
+      "spanish": "Hice surgir de ella granos,"
+    },
+    {
+      "number": 28,
+      "arabic": "وَعِنَبًا وَقَضْبًا",
+      "french": "et des vignes et des légumes",
+      "dutch": "en druiven en groenten",
+      "english": "And grapes and herbage",
+      "spanish": "vides, hierbas,"
+    },
+    {
+      "number": 29,
+      "arabic": "وَزَيْتُونًا وَنَخْلًا",
+      "french": "et des oliviers et des palmiers",
+      "dutch": "en olijfbomen en palmen",
+      "english": "And olive and palm trees",
+      "spanish": "olivos, palmeras,"
+    },
+    {
+      "number": 30,
+      "arabic": "وَحَدَائِقَ غُلْبًا",
+      "french": "et des jardins touffus",
+      "dutch": "en dichtbegroeide tuinen",
+      "english": "And gardens of dense shrubbery",
+      "spanish": "huertos frondosos,"
+    },
+    {
+      "number": 31,
+      "arabic": "وَفَاكِهَةً وَأَبًّا",
+      "french": "et des fruits et des herbages",
+      "dutch": "en vruchten en gewassen",
+      "english": "And fruit and grass -",
+      "spanish": "frutos y forraje"
+    },
+    {
+      "number": 32,
+      "arabic": "مَّتَاعًا لَّكُمْ وَلِأَنْعَامِكُمْ",
+      "french": "en jouissance pour vous et pour vos bestiaux",
+      "dutch": "als genot voor jullie en jullie vee",
+      "english": "[As] enjoyment for you and your grazing livestock.",
+      "spanish": "para beneficio de ustedes y de sus rebaños."
+    },
+    {
+      "number": 33,
+      "arabic": "فَإِذَا جَاءَتِ الصَّاخَّةُ",
+      "french": "Puis quand viendra le Fracas assourdissant",
+      "dutch": "Wanneer dan het oorverdovende geluid komt",
+      "english": "But when there comes the Deafening Blast",
+      "spanish": "El día que llegue el estruendo terrible [comenzando el fin del mundo],"
+    },
+    {
+      "number": 34,
+      "arabic": "يَوْمَ يَفِرُّ الْمَرْءُ مِنْ أَخِيهِ",
+      "french": "le jour où l'homme fuira son frère",
+      "dutch": "de dag waarop de mens zal vluchten van zijn broer",
+      "english": "On the Day a man will flee from his brother",
+      "spanish": "el ser humano huirá de su hermano,"
+    },
+    {
+      "number": 35,
+      "arabic": "وَأُمِّهِ وَأَبِيهِ",
+      "french": "sa mère et son père",
+      "dutch": "en zijn moeder en zijn vader",
+      "english": "And his mother and his father",
+      "spanish": "de su madre y de su padre,"
+    },
+    {
+      "number": 36,
+      "arabic": "وَصَاحِبَتِهِ وَبَنِيهِ",
+      "french": "son épouse et ses enfants",
+      "dutch": "en zijn echtgenote en zijn kinderen",
+      "english": "And his wife and his children,",
+      "spanish": "de su esposa y de sus hijos."
+    },
+    {
+      "number": 37,
+      "arabic": "لِكُلِّ امْرِئٍ مِّنْهُمْ يَوْمَئِذٍ شَأْنٌ يُغْنِيهِ",
+      "french": "chacun d'eux, ce jour-là, aura son propre souci qui lui suffira",
+      "dutch": "ieder van hen zal op die Dag een eigen zorg hebben die hem genoeg is",
+      "english": "For every man, that Day, will be a matter adequate for him.",
+      "spanish": "Ese día cada uno estará preocupado por sí mismo."
+    },
+    {
+      "number": 38,
+      "arabic": "وُجُوهٌ يَوْمَئِذٍ مُّسْفِرَةٌ",
+      "french": "Ce jour-là, des visages seront rayonnants",
+      "dutch": "Op die Dag zullen gezichten stralend zijn",
+      "english": "[Some] faces, that Day, will be bright -",
+      "spanish": "Ese día habrá rostros radiantes,"
+    },
+    {
+      "number": 39,
+      "arabic": "ضَاحِكَةٌ مُّسْتَبْشِرَةٌ",
+      "french": "riants, réjouis",
+      "dutch": "lachend, verheugd",
+      "english": "Laughing, rejoicing at good news.",
+      "spanish": "risueños y felices [por haber alcanzado la salvación]."
+    },
+    {
+      "number": 40,
+      "arabic": "وَوُجُوهٌ يَوْمَئِذٍ عَلَيْهَا غَبَرَةٌ",
+      "french": "et d'autres visages, ce jour-là, seront couverts de poussière",
+      "dutch": "en andere gezichten zullen op die Dag met stof bedekt zijn",
+      "english": "And [other] faces, that Day, will have upon them dust.",
+      "spanish": "Pero habrá otros rostros ensombrecidos,"
+    },
+    {
+      "number": 41,
+      "arabic": "تَرْهَقُهَا قَتَرَةٌ",
+      "french": "recouverts d'obscurité",
+      "dutch": "overdekt met duisternis",
+      "english": "Blackness will cover them.",
+      "spanish": "apesadumbrados [por haber merecido la condena al Infierno]."
+    },
+    {
+      "number": 42,
+      "arabic": "أُولَٰئِكَ هُمُ الْكَفَرَةُ الْفَجَرَةُ",
+      "french": "ce sont eux les mécréants, les libertins",
+      "dutch": "zij zijn de ongelovigen, de losbandigen",
+      "english": "Those are the disbelievers, the wicked ones.",
+      "spanish": "Esos serán los que rechazaron el Mensaje y los transgresores [de la ley]."
+    }
+  ],
+  "translation_credits": {
+    "english": "Saheeh International (en.sahih)",
+    "spanish": "Garcia (es.garcia)"
+  }
 }

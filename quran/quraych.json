@@ -9,25 +9,33 @@
       "number": 1,
       "arabic": "لِإِيلَافِ قُرَيْشٍ",
       "french": "Pour l'habitude prise par les Quraych",
-      "dutch": "Vanwege de gewoonte van de Qoeraisj"
+      "dutch": "Vanwege de gewoonte van de Qoeraisj",
+      "english": "For the accustomed security of the Quraysh -",
+      "spanish": "Le proporcioné seguridad a [la tribu de] Quraish,"
     },
     {
       "number": 2,
       "arabic": "إِيلَافِهِمْ رِحْلَةَ الشِّتَاءِ وَالصَّيْفِ",
       "french": "leur habitude des voyages d'hiver et d'été",
-      "dutch": "hun gewoonte van de winter- en zomerreis"
+      "dutch": "hun gewoonte van de winter- en zomerreis",
+      "english": "Their accustomed security [in] the caravan of winter and summer -",
+      "spanish": "e hice que sus caravanas en invierno [al Yemen] y en verano [a Siria] fueran respetadas."
     },
     {
       "number": 3,
       "arabic": "فَلْيَعْبُدُوا رَبَّ هَٰذَا الْبَيْتِ",
       "french": "qu'ils adorent donc le Seigneur de cette Maison",
-      "dutch": "laten zij dan de Heer van dit Huis aanbidden"
+      "dutch": "laten zij dan de Heer van dit Huis aanbidden",
+      "english": "Let them worship the Lord of this House,",
+      "spanish": "Que adoren y agradezcan, en consecuencia, al Señor de esta Casa [la Ka‘bah],"
     },
     {
       "number": 4,
       "arabic": "الَّذِي أَطْعَمَهُمْ مِنْ جُوعٍ",
       "french": "qui les a nourris contre la faim",
-      "dutch": "Die hen tegen honger heeft gevoed"
+      "dutch": "Die hen tegen honger heeft gevoed",
+      "english": "Who has fed them, [saving them] from hunger and made them safe, [saving them] from fear.",
+      "spanish": "Quien les concedió el sustento para que no sufrieran hambre y les dio seguridad para protegerlos del peligro."
     },
     {
       "number": 5,
@@ -35,5 +43,9 @@
       "french": "et les a protégés de la peur",
       "dutch": "en hen tegen angst heeft beveiligd"
     }
-  ]
+  ],
+  "translation_credits": {
+    "english": "Saheeh International (en.sahih)",
+    "spanish": "Garcia (es.garcia)"
+  }
 }

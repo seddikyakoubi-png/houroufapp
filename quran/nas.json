@@ -9,37 +9,53 @@
       "number": 1,
       "arabic": "قُلْ أَعُوذُ بِرَبِّ النَّاسِ",
       "french": "Dis : Je cherche protection auprès du Seigneur des hommes",
-      "dutch": "Zeg: Ik zoek toevlucht bij de Heer van de mensen"
+      "dutch": "Zeg: Ik zoek toevlucht bij de Heer van de mensen",
+      "english": "Say, \"I seek refuge in the Lord of mankind,",
+      "spanish": "Di: \"Me refugio en el Señor de los seres humanos,"
     },
     {
       "number": 2,
       "arabic": "مَلِكِ النَّاسِ",
       "french": "du Roi des hommes",
-      "dutch": "De Koning van de mensen"
+      "dutch": "De Koning van de mensen",
+      "english": "The Sovereign of mankind.",
+      "spanish": "en el Rey Soberano de los seres humanos,"
     },
     {
       "number": 3,
       "arabic": "إِلَٰهِ النَّاسِ",
       "french": "du Dieu des hommes",
-      "dutch": "De God van de mensen"
+      "dutch": "De God van de mensen",
+      "english": "The God of mankind,",
+      "spanish": "en el [único] Dios de los seres humanos,"
     },
     {
       "number": 4,
       "arabic": "مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ",
       "french": "contre le mal du mauvais conseiller qui se dérobe",
-      "dutch": "Tegen het kwaad van de fluisteraar die zich terugtrekt"
+      "dutch": "Tegen het kwaad van de fluisteraar die zich terugtrekt",
+      "english": "From the evil of the retreating whisperer -",
+      "spanish": "de la maldad del [demonio] susurrador que huye [cuando el nombre de Dios es mencionado],"
     },
     {
       "number": 5,
       "arabic": "الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ",
       "french": "qui souffle le mal dans les poitrines des hommes",
-      "dutch": "Die influistert in de borsten van de mensen"
+      "dutch": "Die influistert in de borsten van de mensen",
+      "english": "Who whispers [evil] into the breasts of mankind -",
+      "spanish": "que susurra en los corazones de los seres humanos,"
     },
     {
       "number": 6,
       "arabic": "مِنَ الْجِنَّةِ وَالنَّاسِ",
       "french": "qu'il soit djinn ou être humain",
-      "dutch": "Van de djinn en de mensen"
+      "dutch": "Van de djinn en de mensen",
+      "english": "From among the jinn and mankind.\"",
+      "spanish": "y existe entre los yinnes y entre los seres humanos\"."
     }
-  ]
+  ],
+  "translation_credits": {
+    "english": "Saheeh International (en.sahih)",
+    "spanish": "Garcia (es.garcia)"
+  }
 }

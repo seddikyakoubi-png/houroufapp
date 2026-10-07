@@ -9,19 +9,29 @@
       "number": 1,
       "arabic": "وَالْعَصْرِ إِنَّ الْإِنْسَانَ لَفِي خُسْرٍ",
       "french": "Par le temps ! L'homme est certainement en perte",
-      "dutch": "Bij de tijd! Waarlijk, de mens is in verlies"
+      "dutch": "Bij de tijd! Waarlijk, de mens is in verlies",
+      "english": "By time,",
+      "spanish": "Juro por el tiempo"
     },
     {
       "number": 2,
       "arabic": "إِلَّا الَّذِينَ آمَنُوا وَعَمِلُوا الصَّالِحَاتِ وَتَوَاصَوْا بِالْحَقِّ",
       "french": "sauf ceux qui croient, accomplissent de bonnes œuvres et se recommandent mutuellement la vérité",
-      "dutch": "behalve zij die geloven, goede daden verrichten en elkaar aansporen tot de waarheid"
+      "dutch": "behalve zij die geloven, goede daden verrichten en elkaar aansporen tot de waarheid",
+      "english": "Indeed, mankind is in loss,",
+      "spanish": "que los seres humanos están en la perdición,"
     },
     {
       "number": 3,
       "arabic": "وَتَوَاصَوْا بِالصَّبْرِ",
       "french": "et se recommandent mutuellement la patience",
-      "dutch": "en elkaar aansporen tot geduld"
+      "dutch": "en elkaar aansporen tot geduld",
+      "english": "Except for those who have believed and done righteous deeds and advised each other to truth and advised each other to patience.",
+      "spanish": "excepto aquellos que crean, obren rectamente, y se aconsejen mutuamente con la verdad y con la paciencia [ante las adversidades]."
     }
-  ]
+  ],
+  "translation_credits": {
+    "english": "Saheeh International (en.sahih)",
+    "spanish": "Garcia (es.garcia)"
+  }
 }

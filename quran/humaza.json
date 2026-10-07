@@ -9,55 +9,77 @@
       "number": 1,
       "arabic": "وَيْلٌ لِكُلِّ هُمَزَةٍ لُمَزَةٍ",
       "french": "Malheur à tout calomniateur, médisant",
-      "dutch": "Wee elke lasteraar en spotter"
+      "dutch": "Wee elke lasteraar en spotter",
+      "english": "Woe to every scorner and mocker",
+      "spanish": "¡Ay del castigo que les aguarda al difamador y al calumniador,"
     },
     {
       "number": 2,
       "arabic": "الَّذِي جَمَعَ مَالًا وَعَدَّدَهُ",
       "french": "qui amasse une fortune et la compte sans cesse",
-      "dutch": "die rijkdom vergaart en het telkens telt"
+      "dutch": "die rijkdom vergaart en het telkens telt",
+      "english": "Who collects wealth and [continuously] counts it.",
+      "spanish": "al que acumula bienes materiales y los cuenta una y otra vez,"
     },
     {
       "number": 3,
       "arabic": "يَحْسَبُ أَنَّ مَالَهُ أَخْلَدَهُ",
       "french": "pensant que sa richesse le rendra éternel",
-      "dutch": "denkend dat zijn rijkdom hem eeuwig leven geeft"
+      "dutch": "denkend dat zijn rijkdom hem eeuwig leven geeft",
+      "english": "He thinks that his wealth will make him immortal.",
+      "spanish": "creyendo que su riqueza lo hará vivir eternamente!"
     },
     {
       "number": 4,
       "arabic": "كَلَّا لَيُنْبَذَنَّ فِي الْحُطَمَةِ",
       "french": "Non ! Il sera certainement jeté dans le Brasier",
-      "dutch": "Nee! Hij zal zeker in de Verpletterende geworpen worden"
+      "dutch": "Nee! Hij zal zeker in de Verpletterende geworpen worden",
+      "english": "No! He will surely be thrown into the Crusher.",
+      "spanish": "Por el contrario, serán arrojados en un fuego demoledor."
     },
     {
       "number": 5,
       "arabic": "وَمَا أَدْرَاكَ مَا الْحُطَمَةُ",
       "french": "Et qui te fera savoir ce qu'est le Brasier ?",
-      "dutch": "En wat doet je weten wat de Verpletterende is?"
+      "dutch": "En wat doet je weten wat de Verpletterende is?",
+      "english": "And what can make you know what is the Crusher?",
+      "spanish": "¿Y qué te hará comprender lo que es un fuego demoledor?"
     },
     {
       "number": 6,
       "arabic": "نَارُ اللَّهِ الْمُوقَدَةُ",
       "french": "C'est le Feu attisé d'Allah",
-      "dutch": "Het is het aangestoken Vuur van Allah"
+      "dutch": "Het is het aangestoken Vuur van Allah",
+      "english": "It is the fire of Allah, [eternally] fueled,",
+      "spanish": "Es un fuego encendido por Dios"
     },
     {
       "number": 7,
       "arabic": "الَّتِي تَطَّلِعُ عَلَى الْأَفْئِدَةِ",
       "french": "qui s'élève jusqu'aux cœurs",
-      "dutch": "dat opstijgt tot in de harten"
+      "dutch": "dat opstijgt tot in de harten",
+      "english": "Which mounts directed at the hearts.",
+      "spanish": "cuyo dolor alcanza los corazones."
     },
     {
       "number": 8,
       "arabic": "إِنَّهَا عَلَيْهِمْ مُؤْصَدَةٌ",
       "french": "Il se refermera sur eux",
-      "dutch": "Het zal zich boven hen sluiten"
+      "dutch": "Het zal zich boven hen sluiten",
+      "english": "Indeed, Hellfire will be closed down upon them",
+      "spanish": "El Infierno se cerrará en torno a ellos"
     },
     {
       "number": 9,
       "arabic": "فِي عَمَدٍ مُمَدَّدَةٍ",
       "french": "en colonnes étirées",
-      "dutch": "in uitgestrekte zuilen"
+      "dutch": "in uitgestrekte zuilen",
+      "english": "In extended columns.",
+      "spanish": "con columnas inmensas."
     }
-  ]
+  ],
+  "translation_credits": {
+    "english": "Saheeh International (en.sahih)",
+    "spanish": "Garcia (es.garcia)"
+  }
 }

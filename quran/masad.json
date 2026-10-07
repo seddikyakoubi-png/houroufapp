@@ -9,31 +9,45 @@
       "number": 1,
       "arabic": "تَبَّتْ يَدَا أَبِي لَهَبٍ وَتَبَّ",
       "french": "Que périssent les deux mains d'Abou Lahab et que lui-même périsse",
-      "dutch": "Mogen de twee handen van Abu Lahab vergaan en moge hij zelf vergaan"
+      "dutch": "Mogen de twee handen van Abu Lahab vergaan en moge hij zelf vergaan",
+      "english": "May the hands of Abu Lahab be ruined, and ruined is he.",
+      "spanish": "¡Maldito sea Abu Lahab y que perezca!"
     },
     {
       "number": 2,
       "arabic": "مَا أَغْنَىٰ عَنْهُ مَالُهُ وَمَا كَسَبَ",
       "french": "Sa richesse ne lui a servi à rien, ni ce qu'il a acquis",
-      "dutch": "Zijn bezit heeft hem niet gebaat, noch wat hij heeft verdiend"
+      "dutch": "Zijn bezit heeft hem niet gebaat, noch wat hij heeft verdiend",
+      "english": "His wealth will not avail him or that which he gained.",
+      "spanish": "No le servirán de nada su poder ni sus bienes materiales."
     },
     {
       "number": 3,
       "arabic": "سَيَصْلَىٰ نَارًا ذَاتَ لَهَبٍ",
       "french": "Il sera brûlé dans un feu plein de flammes",
-      "dutch": "Hij zal branden in een vuur vol vlammen"
+      "dutch": "Hij zal branden in een vuur vol vlammen",
+      "english": "He will [enter to] burn in a Fire of [blazing] flame",
+      "spanish": "Será arrojado en el fuego llameante"
     },
     {
       "number": 4,
       "arabic": "وَامْرَأَتُهُ حَمَّالَةَ الْحَطَبِ",
       "french": "Et sa femme, la porteuse de bois",
-      "dutch": "En zijn vrouw, de houtdraagster"
+      "dutch": "En zijn vrouw, de houtdraagster",
+      "english": "And his wife [as well] - the carrier of firewood.",
+      "spanish": "junto con su mujer, la que acarreaba espinas,"
     },
     {
       "number": 5,
       "arabic": "فِي جِيدِهَا حَبْلٌ مِّن مَّسَدٍ",
       "french": "À son cou, une corde de fibres de palmier",
-      "dutch": "Om haar hals een touw van palmvezels"
+      "dutch": "Om haar hals een touw van palmvezels",
+      "english": "Around her neck is a rope of [twisted] fiber.",
+      "spanish": "que llevará en su cuello una cuerda de fibras de palmera."
     }
-  ]
+  ],
+  "translation_credits": {
+    "english": "Saheeh International (en.sahih)",
+    "spanish": "Garcia (es.garcia)"
+  }
 }

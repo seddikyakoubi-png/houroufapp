@@ -5,31 +5,217 @@
   "name_nl": "De Overweldigende Gebeurtenis",
   "total_ayahs": 26,
   "ayahs": [
-    { "number": 1, "arabic": "هَلْ أَتَاكَ حَدِيثُ الْغَاشِيَةِ", "french": "Le récit de l'Enveloppante t'est-il parvenu ?", "dutch": "Heeft het verhaal van de Overweldigende Gebeurtenis jou bereikt?" },
-    { "number": 2, "arabic": "وُجُوهٌ يَوْمَئِذٍ خَاشِعَةٌ", "french": "Ce jour-là, des visages seront humiliés", "dutch": "Op die Dag zullen gezichten vernederd zijn" },
-    { "number": 3, "arabic": "عَامِلَةٌ نَّاصِبَةٌ", "french": "peinant, épuisés", "dutch": "zwoegend, uitgeput" },
-    { "number": 4, "arabic": "تَصْلَىٰ نَارًا حَامِيَةً", "french": "brûlant dans un Feu ardent", "dutch": "brandend in een verzengend Vuur" },
-    { "number": 5, "arabic": "تُسْقَىٰ مِنْ عَيْنٍ آنِيَةٍ", "french": "abreuvés à une source bouillonnante", "dutch": "gedrenkt uit een kokende bron" },
-    { "number": 6, "arabic": "لَّيْسَ لَهُمْ طَعَامٌ إِلَّا مِن ضَرِيعٍ", "french": "Ils n'auront d'autre nourriture qu'une plante épineuse", "dutch": "Zij zullen geen ander voedsel hebben dan een doornige plant" },
-    { "number": 7, "arabic": "لَّا يُسْمِنُ وَلَا يُغْنِي مِن جُوعٍ", "french": "qui n'engraisse ni n'apaise la faim", "dutch": "die niet voedt en de honger niet stilt" },
-    { "number": 8, "arabic": "وُجُوهٌ يَوْمَئِذٍ نَّاعِمَةٌ", "french": "Ce jour-là, d'autres visages seront radieux", "dutch": "Op die Dag zullen andere gezichten stralend zijn" },
-    { "number": 9, "arabic": "لِسَعْيِهَا رَاضِيَةٌ", "french": "satisfaits de leurs efforts passés", "dutch": "tevreden over hun vroegere inspanning" },
-    { "number": 10, "arabic": "فِي جَنَّةٍ عَالِيَةٍ", "french": "dans un Jardin élevé", "dutch": "in een verheven Tuin" },
-    { "number": 11, "arabic": "لَّا تَسْمَعُ فِيهَا لَاغِيَةً", "french": "où ils n'entendront aucune parole vaine", "dutch": "waarin zij geen ijdele woorden zullen horen" },
-    { "number": 12, "arabic": "فِيهَا عَيْنٌ جَارِيَةٌ", "french": "où coule une source", "dutch": "waarin een bron stroomt" },
-    { "number": 13, "arabic": "فِيهَا سُرُرٌ مَّرْفُوعَةٌ", "french": "avec des divans élevés", "dutch": "met verheven rustbanken" },
-    { "number": 14, "arabic": "وَأَكْوَابٌ مَّوْضُوعَةٌ", "french": "et des coupes posées", "dutch": "en neergezette bekers" },
-    { "number": 15, "arabic": "وَنَمَارِقُ مَصْفُوفَةٌ", "french": "et des coussins alignés", "dutch": "en op een rij geplaatste kussens" },
-    { "number": 16, "arabic": "وَزَرَابِيُّ مَبْثُوثَةٌ", "french": "et des tapis étalés", "dutch": "en uitgespreide tapijten" },
-    { "number": 17, "arabic": "أَفَلَا يَنظُرُونَ إِلَى الْإِبِلِ كَيْفَ خُلِقَتْ", "french": "Ne regardent-ils donc pas les chameaux, comment ils ont été créés", "dutch": "Kijken zij dan niet naar de kamelen, hoe zij geschapen zijn" },
-    { "number": 18, "arabic": "وَإِلَى السَّمَاءِ كَيْفَ رُفِعَتْ", "french": "et le ciel, comment il a été élevé", "dutch": "en naar de hemel, hoe hij verheven is" },
-    { "number": 19, "arabic": "وَإِلَى الْجِبَالِ كَيْفَ نُصِبَتْ", "french": "et les montagnes, comment elles ont été dressées", "dutch": "en naar de bergen, hoe zij opgericht zijn" },
-    { "number": 20, "arabic": "وَإِلَى الْأَرْضِ كَيْفَ سُطِحَتْ", "french": "et la terre, comment elle a été étalée", "dutch": "en naar de aarde, hoe zij uitgespreid is" },
-    { "number": 21, "arabic": "فَذَكِّرْ إِنَّمَا أَنتَ مُذَكِّرٌ", "french": "Rappelle donc, tu n'es qu'un rappeleur", "dutch": "Vermaan dus, jij bent slechts een vermaner" },
-    { "number": 22, "arabic": "لَّسْتَ عَلَيْهِم بِمُصَيْطِرٍ", "french": "tu n'as pas autorité sur eux", "dutch": "jij hebt geen macht over hen" },
-    { "number": 23, "arabic": "إِلَّا مَن تَوَلَّىٰ وَكَفَرَ", "french": "sauf sur celui qui se détourne et mécroit", "dutch": "behalve over wie zich afwendt en ongelovig is" },
-    { "number": 24, "arabic": "فَيُعَذِّبُهُ اللَّهُ الْعَذَابَ الْأَكْبَرَ", "french": "Allah le châtiera du plus grand châtiment", "dutch": "Allah zal hem straffen met de grootste bestraffing" },
-    { "number": 25, "arabic": "إِنَّ إِلَيْنَا إِيَابَهُمْ", "french": "C'est vers Nous qu'est leur retour", "dutch": "Tot Ons is hun terugkeer" },
-    { "number": 26, "arabic": "ثُمَّ إِنَّ عَلَيْنَا حِسَابَهُمْ", "french": "puis c'est à Nous qu'incombe leur jugement", "dutch": "daarna rust op Ons hun afrekening" }
-  ]
+    {
+      "number": 1,
+      "arabic": "هَلْ أَتَاكَ حَدِيثُ الْغَاشِيَةِ",
+      "french": "Le récit de l'Enveloppante t'est-il parvenu ?",
+      "dutch": "Heeft het verhaal van de Overweldigende Gebeurtenis jou bereikt?",
+      "english": "Has there reached you the report of the Overwhelming [event]?",
+      "spanish": "¿Te ha llegado la historia sobre el día que todo lo alcanza?"
+    },
+    {
+      "number": 2,
+      "arabic": "وُجُوهٌ يَوْمَئِذٍ خَاشِعَةٌ",
+      "french": "Ce jour-là, des visages seront humiliés",
+      "dutch": "Op die Dag zullen gezichten vernederd zijn",
+      "english": "[Some] faces, that Day, will be humbled,",
+      "spanish": "Ese día los rostros [de los condenados al Fuego] se verán humillados,"
+    },
+    {
+      "number": 3,
+      "arabic": "عَامِلَةٌ نَّاصِبَةٌ",
+      "french": "peinant, épuisés",
+      "dutch": "zwoegend, uitgeput",
+      "english": "Working [hard] and exhausted.",
+      "spanish": "abatidos y asfixiados."
+    },
+    {
+      "number": 4,
+      "arabic": "تَصْلَىٰ نَارًا حَامِيَةً",
+      "french": "brûlant dans un Feu ardent",
+      "dutch": "brandend in een verzengend Vuur",
+      "english": "They will [enter to] burn in an intensely hot Fire.",
+      "spanish": "Serán llevados a un fuego intenso"
+    },
+    {
+      "number": 5,
+      "arabic": "تُسْقَىٰ مِنْ عَيْنٍ آنِيَةٍ",
+      "french": "abreuvés à une source bouillonnante",
+      "dutch": "gedrenkt uit een kokende bron",
+      "english": "They will be given drink from a boiling spring.",
+      "spanish": "donde les será dado a beber de una fuente de agua hirviente."
+    },
+    {
+      "number": 6,
+      "arabic": "لَّيْسَ لَهُمْ طَعَامٌ إِلَّا مِن ضَرِيعٍ",
+      "french": "Ils n'auront d'autre nourriture qu'une plante épineuse",
+      "dutch": "Zij zullen geen ander voedsel hebben dan een doornige plant",
+      "english": "For them there will be no food except from a poisonous, thorny plant",
+      "spanish": "No tendrán otra comida más que espinas"
+    },
+    {
+      "number": 7,
+      "arabic": "لَّا يُسْمِنُ وَلَا يُغْنِي مِن جُوعٍ",
+      "french": "qui n'engraisse ni n'apaise la faim",
+      "dutch": "die niet voedt en de honger niet stilt",
+      "english": "Which neither nourishes nor avails against hunger.",
+      "spanish": "que no alimentan ni sacian."
+    },
+    {
+      "number": 8,
+      "arabic": "وُجُوهٌ يَوْمَئِذٍ نَّاعِمَةٌ",
+      "french": "Ce jour-là, d'autres visages seront radieux",
+      "dutch": "Op die Dag zullen andere gezichten stralend zijn",
+      "english": "[Other] faces, that Day, will show pleasure.",
+      "spanish": "Pero ese día los rostros [de los bienaventurados] estarán radiantes de felicidad."
+    },
+    {
+      "number": 9,
+      "arabic": "لِسَعْيِهَا رَاضِيَةٌ",
+      "french": "satisfaits de leurs efforts passés",
+      "dutch": "tevreden over hun vroegere inspanning",
+      "english": "With their effort [they are] satisfied",
+      "spanish": "Estarán complacidos de sus obras."
+    },
+    {
+      "number": 10,
+      "arabic": "فِي جَنَّةٍ عَالِيَةٍ",
+      "french": "dans un Jardin élevé",
+      "dutch": "in een verheven Tuin",
+      "english": "In an elevated garden,",
+      "spanish": "Morarán en un jardín sublime,"
+    },
+    {
+      "number": 11,
+      "arabic": "لَّا تَسْمَعُ فِيهَا لَاغِيَةً",
+      "french": "où ils n'entendront aucune parole vaine",
+      "dutch": "waarin zij geen ijdele woorden zullen horen",
+      "english": "Wherein they will hear no unsuitable speech.",
+      "spanish": "en el que no oirán palabras vanas."
+    },
+    {
+      "number": 12,
+      "arabic": "فِيهَا عَيْنٌ جَارِيَةٌ",
+      "french": "où coule une source",
+      "dutch": "waarin een bron stroomt",
+      "english": "Within it is a flowing spring.",
+      "spanish": "En él habrá manantiales,"
+    },
+    {
+      "number": 13,
+      "arabic": "فِيهَا سُرُرٌ مَّرْفُوعَةٌ",
+      "french": "avec des divans élevés",
+      "dutch": "met verheven rustbanken",
+      "english": "Within it are couches raised high",
+      "spanish": "lechos elevados,"
+    },
+    {
+      "number": 14,
+      "arabic": "وَأَكْوَابٌ مَّوْضُوعَةٌ",
+      "french": "et des coupes posées",
+      "dutch": "en neergezette bekers",
+      "english": "And cups put in place",
+      "spanish": "copas al alcance de su mano,"
+    },
+    {
+      "number": 15,
+      "arabic": "وَنَمَارِقُ مَصْفُوفَةٌ",
+      "french": "et des coussins alignés",
+      "dutch": "en op een rij geplaatste kussens",
+      "english": "And cushions lined up",
+      "spanish": "cojines alineados"
+    },
+    {
+      "number": 16,
+      "arabic": "وَزَرَابِيُّ مَبْثُوثَةٌ",
+      "french": "et des tapis étalés",
+      "dutch": "en uitgespreide tapijten",
+      "english": "And carpets spread around.",
+      "spanish": "y alfombras extendidas."
+    },
+    {
+      "number": 17,
+      "arabic": "أَفَلَا يَنظُرُونَ إِلَى الْإِبِلِ كَيْفَ خُلِقَتْ",
+      "french": "Ne regardent-ils donc pas les chameaux, comment ils ont été créés",
+      "dutch": "Kijken zij dan niet naar de kamelen, hoe zij geschapen zijn",
+      "english": "Then do they not look at the camels - how they are created?",
+      "spanish": "¿Acaso no reflexionan [los que niegan la verdad] en la maravillosa creación del camello?"
+    },
+    {
+      "number": 18,
+      "arabic": "وَإِلَى السَّمَاءِ كَيْفَ رُفِعَتْ",
+      "french": "et le ciel, comment il a été élevé",
+      "dutch": "en naar de hemel, hoe hij verheven is",
+      "english": "And at the sky - how it is raised?",
+      "spanish": "En el cielo, cómo ha sido elevado."
+    },
+    {
+      "number": 19,
+      "arabic": "وَإِلَى الْجِبَالِ كَيْفَ نُصِبَتْ",
+      "french": "et les montagnes, comment elles ont été dressées",
+      "dutch": "en naar de bergen, hoe zij opgericht zijn",
+      "english": "And at the mountains - how they are erected?",
+      "spanish": "En las montañas, cómo han sido afirmadas."
+    },
+    {
+      "number": 20,
+      "arabic": "وَإِلَى الْأَرْضِ كَيْفَ سُطِحَتْ",
+      "french": "et la terre, comment elle a été étalée",
+      "dutch": "en naar de aarde, hoe zij uitgespreid is",
+      "english": "And at the earth - how it is spread out?",
+      "spanish": "Y en la Tierra, cómo ha sido extendida."
+    },
+    {
+      "number": 21,
+      "arabic": "فَذَكِّرْ إِنَّمَا أَنتَ مُذَكِّرٌ",
+      "french": "Rappelle donc, tu n'es qu'un rappeleur",
+      "dutch": "Vermaan dus, jij bent slechts een vermaner",
+      "english": "So remind, [O Muhammad]; you are only a reminder.",
+      "spanish": "Exhorta a la gente porque esa es tu misión."
+    },
+    {
+      "number": 22,
+      "arabic": "لَّسْتَ عَلَيْهِم بِمُصَيْطِرٍ",
+      "french": "tu n'as pas autorité sur eux",
+      "dutch": "jij hebt geen macht over hen",
+      "english": "You are not over them a controller.",
+      "spanish": "No puedes obligarlos a creer."
+    },
+    {
+      "number": 23,
+      "arabic": "إِلَّا مَن تَوَلَّىٰ وَكَفَرَ",
+      "french": "sauf sur celui qui se détourne et mécroit",
+      "dutch": "behalve over wie zich afwendt en ongelovig is",
+      "english": "However, he who turns away and disbelieves -",
+      "spanish": "Pero sabe que a quien dé la espalda y rechace la verdad"
+    },
+    {
+      "number": 24,
+      "arabic": "فَيُعَذِّبُهُ اللَّهُ الْعَذَابَ الْأَكْبَرَ",
+      "french": "Allah le châtiera du plus grand châtiment",
+      "dutch": "Allah zal hem straffen met de grootste bestraffing",
+      "english": "Then Allah will punish him with the greatest punishment.",
+      "spanish": "Dios lo someterá al peor de los castigos."
+    },
+    {
+      "number": 25,
+      "arabic": "إِنَّ إِلَيْنَا إِيَابَهُمْ",
+      "french": "C'est vers Nous qu'est leur retour",
+      "dutch": "Tot Ons is hun terugkeer",
+      "english": "Indeed, to Us is their return.",
+      "spanish": "Porque todos comparecerán ante Mí,"
+    },
+    {
+      "number": 26,
+      "arabic": "ثُمَّ إِنَّ عَلَيْنَا حِسَابَهُمْ",
+      "french": "puis c'est à Nous qu'incombe leur jugement",
+      "dutch": "daarna rust op Ons hun afrekening",
+      "english": "Then indeed, upon Us is their account.",
+      "spanish": "y seré Yo Quien los juzgue."
+    }
+  ],
+  "translation_credits": {
+    "english": "Saheeh International (en.sahih)",
+    "spanish": "Garcia (es.garcia)"
+  }
 }

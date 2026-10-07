@@ -9,37 +9,53 @@
       "number": 1,
       "arabic": "أَرَأَيْتَ الَّذِي يُكَذِّبُ بِالدِّينِ",
       "french": "As-tu vu celui qui traite la rétribution de mensonge ?",
-      "dutch": "Heb je hem gezien die het Oordeel loochent?"
+      "dutch": "Heb je hem gezien die het Oordeel loochent?",
+      "english": "Have you seen the one who denies the Recompense?",
+      "spanish": "¿Acaso has observado a quien desmiente el Día del Juicio?"
     },
     {
       "number": 2,
       "arabic": "فَذَٰلِكَ الَّذِي يَدُعُّ الْيَتِيمَ",
       "french": "C'est celui qui repousse rudement l'orphelin",
-      "dutch": "Dat is degene die de wees ruw wegduwt"
+      "dutch": "Dat is degene die de wees ruw wegduwt",
+      "english": "For that is the one who drives away the orphan",
+      "spanish": "Es quien rechaza al huérfano"
     },
     {
       "number": 3,
       "arabic": "وَلَا يَحُضُّ عَلَىٰ طَعَامِ الْمِسْكِينِ",
       "french": "et qui n'incite pas à nourrir le pauvre",
-      "dutch": "en die niet aanspoort tot het voeden van de arme"
+      "dutch": "en die niet aanspoort tot het voeden van de arme",
+      "english": "And does not encourage the feeding of the poor.",
+      "spanish": "y no exhorta a alimentar al pobre."
     },
     {
       "number": 4,
       "arabic": "فَوَيْلٌ لِلْمُصَلِّينَ",
       "french": "Malheur donc à ceux qui prient",
-      "dutch": "Wee dan degenen die bidden"
+      "dutch": "Wee dan degenen die bidden",
+      "english": "So woe to those who pray",
+      "spanish": "¡Ay de los orantes"
     },
     {
       "number": 5,
       "arabic": "الَّذِينَ هُمْ عَنْ صَلَاتِهِمْ سَاهُونَ",
       "french": "tout en étant distraits de leur prière",
-      "dutch": "terwijl zij achteloos zijn tegenover hun gebed"
+      "dutch": "terwijl zij achteloos zijn tegenover hun gebed",
+      "english": "[But] who are heedless of their prayer -",
+      "spanish": "que son negligentes en sus oraciones [realizándolas fuera de su horario],"
     },
     {
       "number": 6,
       "arabic": "الَّذِينَ هُمْ يُرَاءُونَ وَيَمْنَعُونَ الْمَاعُونَ",
       "french": "ceux qui font semblant [de bien agir] et refusent l'entraide",
-      "dutch": "die zich alleen voordoen en de gewone hulp weigeren"
+      "dutch": "die zich alleen voordoen en de gewone hulp weigeren",
+      "english": "Those who make show [of their deeds]",
+      "spanish": "y solo las realizan para hacerse ver,"
     }
-  ]
+  ],
+  "translation_credits": {
+    "english": "Saheeh International (en.sahih)",
+    "spanish": "Garcia (es.garcia)"
+  }
 }

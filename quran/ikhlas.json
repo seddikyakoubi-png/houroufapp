@@ -9,25 +9,37 @@
       "number": 1,
       "arabic": "قُلْ هُوَ اللَّهُ أَحَدٌ",
       "french": "Dis : Il est Allah, [l'Unique]",
-      "dutch": "Zeg: Hij is Allah, de Enige"
+      "dutch": "Zeg: Hij is Allah, de Enige",
+      "english": "Say, \"He is Allah, [who is] One,",
+      "spanish": "Di: \"Él es Al-lah, Uno."
     },
     {
       "number": 2,
       "arabic": "اللَّهُ الصَّمَدُ",
       "french": "Allah, le Seul à être imploré pour ce que nous désirons",
-      "dutch": "Allah, de Eeuwige, de Absolute"
+      "dutch": "Allah, de Eeuwige, de Absolute",
+      "english": "Allah, the Eternal Refuge.",
+      "spanish": "Al-lah es el Absoluto."
     },
     {
       "number": 3,
       "arabic": "لَمْ يَلِدْ وَلَمْ يُولَدْ",
       "french": "Il n'a jamais engendré, n'a pas été engendré non plus",
-      "dutch": "Hij heeft niet verwekt en is niet verwekt"
+      "dutch": "Hij heeft niet verwekt en is niet verwekt",
+      "english": "He neither begets nor is born,",
+      "spanish": "No engendró ni fue engendrado."
     },
     {
       "number": 4,
       "arabic": "وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ",
       "french": "Et nul n'est égal à Lui",
-      "dutch": "En niemand is aan Hem gelijkwaardig"
+      "dutch": "En niemand is aan Hem gelijkwaardig",
+      "english": "Nor is there to Him any equivalent.\"",
+      "spanish": "Y no hay nada ni nadie que sea semejante a Él\"."
     }
-  ]
+  ],
+  "translation_credits": {
+    "english": "Saheeh International (en.sahih)",
+    "spanish": "Garcia (es.garcia)"
+  }
 }

@@ -9,49 +9,65 @@
       "number": 1,
       "arabic": "إِذَا زُلْزِلَتِ الْأَرْضُ زِلْزَالَهَا",
       "french": "Quand la terre tremblera de son tremblement",
-      "dutch": "Wanneer de aarde beeft met haar beving"
+      "dutch": "Wanneer de aarde beeft met haar beving",
+      "english": "When the earth is shaken with its [final] earthquake",
+      "spanish": "Cuando la Tierra sea sacudida por el gran terremoto,"
     },
     {
       "number": 2,
       "arabic": "وَأَخْرَجَتِ الْأَرْضُ أَثْقَالَهَا",
       "french": "et que la terre expulsera ses fardeaux",
-      "dutch": "en de aarde haar lasten naar buiten brengt"
+      "dutch": "en de aarde haar lasten naar buiten brengt",
+      "english": "And the earth discharges its burdens",
+      "spanish": "y expulse su carga [haciendo surgir a los muertos de sus tumbas],"
     },
     {
       "number": 3,
       "arabic": "وَقَالَ الْإِنْسَانُ مَا لَهَا",
       "french": "et que l'homme dira : \"Qu'a-t-elle ?\"",
-      "dutch": "en de mens zegt: \"Wat is er met haar?\""
+      "dutch": "en de mens zegt: \"Wat is er met haar?\"",
+      "english": "And man says, \"What is [wrong] with it?\" -",
+      "spanish": "y el hombre diga: \"¿Qué le sucede a la Tierra?\""
     },
     {
       "number": 4,
       "arabic": "يَوْمَئِذٍ تُحَدِّثُ أَخْبَارَهَا",
       "french": "ce jour-là, elle racontera ce qu'elle sait",
-      "dutch": "op die Dag zal zij haar berichten vertellen"
+      "dutch": "op die Dag zal zij haar berichten vertellen",
+      "english": "That Day, it will report its news",
+      "spanish": "Ese día, la Tierra dará testimonio de todo cuanto sucedió sobre ella,"
     },
     {
       "number": 5,
       "arabic": "بِأَنَّ رَبَّكَ أَوْحَىٰ لَهَا",
       "french": "car ton Seigneur lui aura inspiré cela",
-      "dutch": "omdat jouw Heer het haar heeft ingegeven"
+      "dutch": "omdat jouw Heer het haar heeft ingegeven",
+      "english": "Because your Lord has commanded it.",
+      "spanish": "por orden de su Señor."
     },
     {
       "number": 6,
       "arabic": "يَوْمَئِذٍ يَصْدُرُ النَّاسُ أَشْتَاتًا",
       "french": "Ce jour-là, les gens sortiront séparément",
-      "dutch": "Op die Dag zullen de mensen uiteenlopend naar voren komen"
+      "dutch": "Op die Dag zullen de mensen uiteenlopend naar voren komen",
+      "english": "That Day, the people will depart separated [into categories] to be shown [the result of] their deeds.",
+      "spanish": "Entonces, los seres humanos acudirán al Día del Juicio en grupos para conocer el resultado de sus obras."
     },
     {
       "number": 7,
       "arabic": "لِيُرَوْا أَعْمَالَهُمْ",
       "french": "pour que leur soient montrées leurs œuvres",
-      "dutch": "om hun daden te laten zien"
+      "dutch": "om hun daden te laten zien",
+      "english": "So whoever does an atom's weight of good will see it,",
+      "spanish": "Quien haya realizado una obra de bien, tan pequeña como un átomo, la encontrará registrada."
     },
     {
       "number": 8,
       "arabic": "فَمَنْ يَعْمَلْ مِثْقَالَ ذَرَّةٍ خَيْرًا يَرَهُ",
       "french": "Quiconque fait un bien, fût-ce du poids d'un atome, le verra",
-      "dutch": "Wie het gewicht van een atoom aan goeds doet, zal het zien"
+      "dutch": "Wie het gewicht van een atoom aan goeds doet, zal het zien",
+      "english": "And whoever does an atom's weight of evil will see it.",
+      "spanish": "Y quien haya realizado una mala obra, tan pequeña como un átomo, la encontrará registrada."
     },
     {
       "number": 9,
@@ -59,5 +75,9 @@
       "french": "et quiconque fait un mal, fût-ce du poids d'un atome, le verra",
       "dutch": "en wie het gewicht van een atoom aan kwaad doet, zal het zien"
     }
-  ]
+  ],
+  "translation_credits": {
+    "english": "Saheeh International (en.sahih)",
+    "spanish": "Garcia (es.garcia)"
+  }
 }

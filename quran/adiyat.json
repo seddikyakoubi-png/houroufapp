@@ -9,67 +9,93 @@
       "number": 1,
       "arabic": "وَالْعَادِيَاتِ ضَبْحًا",
       "french": "Par les coursiers haletants",
-      "dutch": "Bij de snuivende renners"
+      "dutch": "Bij de snuivende renners",
+      "english": "By the racers, panting,",
+      "spanish": "Juro por los corceles que se lanzan relinchando"
     },
     {
       "number": 2,
       "arabic": "فَالْمُورِيَاتِ قَدْحًا",
       "french": "qui font jaillir des étincelles",
-      "dutch": "die vonken doen opspatten"
+      "dutch": "die vonken doen opspatten",
+      "english": "And the producers of sparks [when] striking",
+      "spanish": "y arrancan chispas con sus cascos"
     },
     {
       "number": 3,
       "arabic": "فَالْمُغِيرَاتِ صُبْحًا",
       "french": "qui attaquent au matin",
-      "dutch": "die 's ochtends aanvallen"
+      "dutch": "die 's ochtends aanvallen",
+      "english": "And the chargers at dawn,",
+      "spanish": "y sorprenden al amanecer"
     },
     {
       "number": 4,
       "arabic": "فَأَثَرْنَ بِهِ نَقْعًا",
       "french": "soulevant un nuage de poussière",
-      "dutch": "en zo een stofwolk doen opstijgen"
+      "dutch": "en zo een stofwolk doen opstijgen",
+      "english": "Stirring up thereby [clouds of] dust,",
+      "spanish": "levantando una nube de polvo,"
     },
     {
       "number": 5,
       "arabic": "فَوَسَطْنَ بِهِ جَمْعًا",
       "french": "et pénétrant au cœur de la troupe ennemie",
-      "dutch": "en midden in de vijandelijke troep doordringen"
+      "dutch": "en midden in de vijandelijke troep doordringen",
+      "english": "Arriving thereby in the center collectively,",
+      "spanish": "e irrumpiendo en las filas del enemigo,"
     },
     {
       "number": 6,
       "arabic": "إِنَّ الْإِنْسَانَ لِرَبِّهِ لَكَنُودٌ",
       "french": "En vérité, l'homme est ingrat envers son Seigneur",
-      "dutch": "Waarlijk, de mens is ondankbaar tegenover zijn Heer"
+      "dutch": "Waarlijk, de mens is ondankbaar tegenover zijn Heer",
+      "english": "Indeed mankind, to his Lord, is ungrateful.",
+      "spanish": "que el ser humano es ingrato con su Señor."
     },
     {
       "number": 7,
       "arabic": "وَإِنَّهُ عَلَى ذَلِكَ لَشَهِيدٌ",
       "french": "et lui-même en est témoin",
-      "dutch": "en hij is daar zelf getuige van"
+      "dutch": "en hij is daar zelf getuige van",
+      "english": "And indeed, he is to that a witness.",
+      "spanish": "Y él mismo es testigo de ello,"
     },
     {
       "number": 8,
       "arabic": "وَإِنَّهُ لِحُبِّ الْخَيْرِ لَشَدِيدٌ",
       "french": "Il est vraiment ardent dans son amour des biens",
-      "dutch": "Hij is werkelijk hevig gehecht aan bezit"
+      "dutch": "Hij is werkelijk hevig gehecht aan bezit",
+      "english": "And indeed he is, in love of wealth, intense.",
+      "spanish": "porque tiene una codicia apasionada por los bienes materiales."
     },
     {
       "number": 9,
       "arabic": "أَفَلَا يَعْلَمُ إِذَا بُعْثِرَ مَا فِي الْقُبُورِ",
       "french": "Ne sait-il donc pas que, lorsque le contenu des tombes sera exhumé",
-      "dutch": "Weet hij dan niet dat wanneer wat in de graven is, wordt opgegraven"
+      "dutch": "Weet hij dan niet dat wanneer wat in de graven is, wordt opgegraven",
+      "english": "But does he not know that when the contents of the graves are scattered",
+      "spanish": "¿Acaso no sabe que cuando se haga surgir a quienes están en las sepulturas"
     },
     {
       "number": 10,
       "arabic": "وَحُصِّلَ مَا فِي الصُّدُورِ",
       "french": "et que ce qui est dans les poitrines sera dévoilé",
-      "dutch": "en wat in de harten is, wordt onthuld"
+      "dutch": "en wat in de harten is, wordt onthuld",
+      "english": "And that within the breasts is obtained,",
+      "spanish": "y se evidencie lo que hay en los corazones,"
     },
     {
       "number": 11,
       "arabic": "إِنَّ رَبَّهُمْ بِهِمْ يَوْمَئِذٍ لَخَبِيرٌ",
       "french": "ce jour-là, leur Seigneur sera parfaitement informé d'eux",
-      "dutch": "dat hun Heer op die Dag zeker goed van hen op de hoogte is"
+      "dutch": "dat hun Heer op die Dag zeker goed van hen op de hoogte is",
+      "english": "Indeed, their Lord with them, that Day, is [fully] Acquainted.",
+      "spanish": "ese día su Señor estará bien informado de lo que hicieron?"
     }
-  ]
+  ],
+  "translation_credits": {
+    "english": "Saheeh International (en.sahih)",
+    "spanish": "Garcia (es.garcia)"
+  }
 }

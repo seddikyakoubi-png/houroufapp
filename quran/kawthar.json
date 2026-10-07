@@ -5,8 +5,33 @@
   "name_nl": "De Overvloed",
   "total_ayahs": 3,
   "ayahs": [
-    { "number": 1, "arabic": "إِنَّا أَعْطَيْنَاكَ الْكَوْثَرَ", "french": "Nous t'avons certes accordé l'Abondance", "dutch": "Voorwaar, Wij hebben jou de overvloed gegeven" },
-    { "number": 2, "arabic": "فَصَلِّ لِرَبِّكَ وَانْحَرْ", "french": "Accomplis donc la prière pour ton Seigneur et sacrifie", "dutch": "Verricht daarom het gebed voor jouw Heer en offer" },
-    { "number": 3, "arabic": "إِنَّ شَانِئَكَ هُوَ الْأَبْتَرُ", "french": "Certes, celui qui te hait sera lui-même sans postérité", "dutch": "Voorwaar, hij die jou haat, is degene zonder nakomelingschap" }
-  ]
+    {
+      "number": 1,
+      "arabic": "إِنَّا أَعْطَيْنَاكَ الْكَوْثَرَ",
+      "french": "Nous t'avons certes accordé l'Abondance",
+      "dutch": "Voorwaar, Wij hebben jou de overvloed gegeven",
+      "english": "Indeed, We have granted you, [O Muhammad], al-Kawthar.",
+      "spanish": "[¡Oh, Mujámmad!] te he agraciado con la abundancia."
+    },
+    {
+      "number": 2,
+      "arabic": "فَصَلِّ لِرَبِّكَ وَانْحَرْ",
+      "french": "Accomplis donc la prière pour ton Seigneur et sacrifie",
+      "dutch": "Verricht daarom het gebed voor jouw Heer en offer",
+      "english": "So pray to your Lord and sacrifice [to Him alone].",
+      "spanish": "Reza a tu Señor y sacrifica [los animales en Su nombre]."
+    },
+    {
+      "number": 3,
+      "arabic": "إِنَّ شَانِئَكَ هُوَ الْأَبْتَرُ",
+      "french": "Certes, celui qui te hait sera lui-même sans postérité",
+      "dutch": "Voorwaar, hij die jou haat, is degene zonder nakomelingschap",
+      "english": "Indeed, your enemy is the one cut off.",
+      "spanish": "Porque a quien te desdeñe y odie le privaré de todo bien."
+    }
+  ],
+  "translation_credits": {
+    "english": "Saheeh International (en.sahih)",
+    "spanish": "Garcia (es.garcia)"
+  }
 }

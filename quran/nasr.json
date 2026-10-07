@@ -9,19 +9,29 @@
       "number": 1,
       "arabic": "إِذَا جَاءَ نَصْرُ اللَّهِ وَالْفَتْحُ",
       "french": "Quand vient le secours d'Allah et la victoire",
-      "dutch": "Wanneer de hulp van Allah en de overwinning komen"
+      "dutch": "Wanneer de hulp van Allah en de overwinning komen",
+      "english": "When the victory of Allah has come and the conquest,",
+      "spanish": "[¡Oh, Mujámmad!] Cuando llegue el socorro de Dios y la victoria,"
     },
     {
       "number": 2,
       "arabic": "وَرَأَيْتَ النَّاسَ يَدْخُلُونَ فِي دِينِ اللَّهِ أَفْوَاجًا",
       "french": "Et que tu vois les gens entrer en foule dans la religion d'Allah",
-      "dutch": "En je de mensen in groepen de godsdienst van Allah ziet binnengaan"
+      "dutch": "En je de mensen in groepen de godsdienst van Allah ziet binnengaan",
+      "english": "And you see the people entering into the religion of Allah in multitudes,",
+      "spanish": "y veas a la gente ingresar en masa a la religión de Dios,"
     },
     {
       "number": 3,
       "arabic": "فَسَبِّحْ بِحَمْدِ رَبِّكَ وَاسْتَغْفِرْهُ إِنَّهُ كَانَ تَوَّابًا",
       "french": "Alors célèbre la gloire de ton Seigneur par Sa louange et implore Son pardon, car Il est certes Grand Repentant",
-      "dutch": "Verheerlijk dan de lof van jouw Heer en vraag Hem om vergiffenis, want Hij is zeker Vergever"
+      "dutch": "Verheerlijk dan de lof van jouw Heer en vraag Hem om vergiffenis, want Hij is zeker Vergever",
+      "english": "Then exalt [Him] with praise of your Lord and ask forgiveness of Him. Indeed, He is ever Accepting of repentance.",
+      "spanish": "glorifica alabando a tu Señor y pide Su perdón; Él es Indulgente."
     }
-  ]
+  ],
+  "translation_credits": {
+    "english": "Saheeh International (en.sahih)",
+    "spanish": "Garcia (es.garcia)"
+  }
 }

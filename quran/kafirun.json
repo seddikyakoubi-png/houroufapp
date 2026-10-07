@@ -9,37 +9,53 @@
       "number": 1,
       "arabic": "قُلْ يَا أَيُّهَا الْكَافِرُونَ",
       "french": "Dis : Ô vous les infidèles",
-      "dutch": "Zeg: O ongelovigen"
+      "dutch": "Zeg: O ongelovigen",
+      "english": "Say, \"O disbelievers,",
+      "spanish": "Di: \"¡Oh, incrédulos!"
     },
     {
       "number": 2,
       "arabic": "لَا أَعْبُدُ مَا تَعْبُدُونَ",
       "french": "Je n'adore pas ce que vous adorez",
-      "dutch": "Ik aanbid niet wat jullie aanbidden"
+      "dutch": "Ik aanbid niet wat jullie aanbidden",
+      "english": "I do not worship what you worship.",
+      "spanish": "No adoro lo que adoran."
     },
     {
       "number": 3,
       "arabic": "وَلَا أَنتُمْ عَابِدُونَ مَا أَعْبُدُ",
       "french": "Et vous n'êtes pas adorateurs de ce que j'adore",
-      "dutch": "En jullie zijn geen aanbidders van wat ik aanbid"
+      "dutch": "En jullie zijn geen aanbidders van wat ik aanbid",
+      "english": "Nor are you worshippers of what I worship.",
+      "spanish": "Ni adoran ustedes a Quien yo adoro."
     },
     {
       "number": 4,
       "arabic": "وَلَا أَنَا عَابِدٌ مَّا عَبَدتُّمْ",
       "french": "Et je ne suis pas adorateur de ce que vous adorez",
-      "dutch": "En ik ben geen aanbidder van wat jullie aanbidden"
+      "dutch": "En ik ben geen aanbidder van wat jullie aanbidden",
+      "english": "Nor will I be a worshipper of what you worship.",
+      "spanish": "Y jamás adoraré lo que adoran."
     },
     {
       "number": 5,
       "arabic": "وَلَا أَنتُمْ عَابِدُونَ مَا أَعْبُدُ",
       "french": "Et vous n'êtes pas adorateurs de ce que j'adore",
-      "dutch": "En jullie zijn geen aanbidders van wat ik aanbid"
+      "dutch": "En jullie zijn geen aanbidders van wat ik aanbid",
+      "english": "Nor will you be worshippers of what I worship.",
+      "spanish": "Ni adorarán ustedes a Quien yo adoro."
     },
     {
       "number": 6,
       "arabic": "لَكُمْ دِينُكُمْ وَلِيَ دِينِ",
       "french": "À vous votre religion, et à moi ma religion",
-      "dutch": "Voor jullie is jullie godsdienst en voor mij is mijn godsdienst"
+      "dutch": "Voor jullie is jullie godsdienst en voor mij is mijn godsdienst",
+      "english": "For you is your religion, and for me is my religion.\"",
+      "spanish": "Ustedes tienen su religión y yo la mía\"."
     }
-  ]
+  ],
+  "translation_credits": {
+    "english": "Saheeh International (en.sahih)",
+    "spanish": "Garcia (es.garcia)"
+  }
 }

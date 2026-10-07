@@ -9,43 +9,61 @@
       "number": 1,
       "arabic": "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
       "french": "Au nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux",
-      "dutch": "In de naam van Allah, de Meest Barmhartige, de Meest Genadevolle"
+      "dutch": "In de naam van Allah, de Meest Barmhartige, de Meest Genadevolle",
+      "english": "In the name of Allah, the Entirely Merciful, the Especially Merciful.",
+      "spanish": "En el nombre de Dios, el Compasivo con toda la creación, el Misericordioso con los creyentes."
     },
     {
       "number": 2,
       "arabic": "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ",
       "french": "Louange à Allah, Seigneur de l'univers",
-      "dutch": "Alle lof zij Allah, de Heer van de werelden"
+      "dutch": "Alle lof zij Allah, de Heer van de werelden",
+      "english": "[All] praise is [due] to Allah, Lord of the worlds -",
+      "spanish": "Todas las alabanzas son para Dios, Señor de todo cuanto existe,"
     },
     {
       "number": 3,
       "arabic": "الرَّحْمَٰنِ الرَّحِيمِ",
       "french": "Le Tout Miséricordieux, le Très Miséricordieux",
-      "dutch": "De Meest Barmhartige, de Meest Genadevolle"
+      "dutch": "De Meest Barmhartige, de Meest Genadevolle",
+      "english": "The Entirely Merciful, the Especially Merciful,",
+      "spanish": "el Compasivo, el Misericordioso."
     },
     {
       "number": 4,
       "arabic": "مَالِكِ يَوْمِ الدِّينِ",
       "french": "Maître du Jour de la rétribution",
-      "dutch": "Meester van de Dag des Oordeels"
+      "dutch": "Meester van de Dag des Oordeels",
+      "english": "Sovereign of the Day of Recompense.",
+      "spanish": "Soberano absoluto del Día del Juicio Final,"
     },
     {
       "number": 5,
       "arabic": "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ",
       "french": "C'est Toi [Seul] que nous adorons, et c'est Toi [Seul] dont nous implorons le secours",
-      "dutch": "U alleen aanbidden wij en U alleen vragen wij om hulp"
+      "dutch": "U alleen aanbidden wij en U alleen vragen wij om hulp",
+      "english": "It is You we worship and You we ask for help.",
+      "spanish": "solo a Ti te adoramos y solo de Ti imploramos ayuda."
     },
     {
       "number": 6,
       "arabic": "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ",
       "french": "Guide-nous dans le droit chemin",
-      "dutch": "Leid ons op het rechte pad"
+      "dutch": "Leid ons op het rechte pad",
+      "english": "Guide us to the straight path -",
+      "spanish": "¡Guíanos por el camino recto!"
     },
     {
       "number": 7,
       "arabic": "صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ",
       "french": "Le chemin de ceux que Tu as comblés de faveurs, non pas de ceux qui ont encouru Ta colère, ni des égarés",
-      "dutch": "Het pad van degenen die U heeft begunstigd, niet van degenen op wie toorn rust en niet van de dwalenden"
+      "dutch": "Het pad van degenen die U heeft begunstigd, niet van degenen op wie toorn rust en niet van de dwalenden",
+      "english": "The path of those upon whom You have bestowed favor, not of those who have evoked [Your] anger or of those who are astray.",
+      "spanish": "El camino de los que has colmado con Tus favores, no el de los que cayeron en Tu ira, ni el de los que se extraviaron."
     }
-  ]
+  ],
+  "translation_credits": {
+    "english": "Saheeh International (en.sahih)",
+    "spanish": "Garcia (es.garcia)"
+  }
 }

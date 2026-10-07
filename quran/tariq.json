@@ -5,22 +5,145 @@
   "name_nl": "De Nachtelijke Ster",
   "total_ayahs": 17,
   "ayahs": [
-    { "number": 1, "arabic": "وَالسَّمَاءِ وَالطَّارِقِ", "french": "Par le ciel et l'astre nocturne", "dutch": "Bij de hemel en de nachtelijke ster" },
-    { "number": 2, "arabic": "وَمَا أَدْرَاكَ مَا الطَّارِقُ", "french": "Et qui te fera savoir ce qu'est l'astre nocturne ?", "dutch": "En wat doet je weten wat de nachtelijke ster is?" },
-    { "number": 3, "arabic": "النَّجْمُ الثَّاقِبُ", "french": "C'est l'étoile perçante", "dutch": "Het is de doorborende ster" },
-    { "number": 4, "arabic": "إِن كُلُّ نَفْسٍ لَّمَّا عَلَيْهَا حَافِظٌ", "french": "Il n'est point d'âme sans un gardien sur elle", "dutch": "Er is geen ziel zonder een bewaker over haar" },
-    { "number": 5, "arabic": "فَلْيَنظُرِ الْإِنسَانُ مِمَّ خُلِقَ", "french": "Que l'homme considère donc de quoi il a été créé", "dutch": "Laat de mens dan overwegen waaruit hij geschapen is" },
-    { "number": 6, "arabic": "خُلِقَ مِن مَّاءٍ دَافِقٍ", "french": "Il a été créé d'une eau jaillissante", "dutch": "Hij is geschapen uit een voortstuwend water" },
-    { "number": 7, "arabic": "يَخْرُجُ مِن بَيْنِ الصُّلْبِ وَالتَّرَائِبِ", "french": "sortant d'entre les lombes et les côtes", "dutch": "voortkomend van tussen de lendenen en de ribben" },
-    { "number": 8, "arabic": "إِنَّهُ عَلَىٰ رَجْعِهِ لَقَادِرٌ", "french": "Allah est certes capable de le faire revenir", "dutch": "Hij is zeker in staat hem te doen terugkeren" },
-    { "number": 9, "arabic": "يَوْمَ تُبْلَى السَّرَائِرُ", "french": "Le jour où les secrets seront mis à l'épreuve", "dutch": "Op de Dag waarop de geheimen op de proef worden gesteld" },
-    { "number": 10, "arabic": "فَمَا لَهُ مِن قُوَّةٍ وَلَا نَاصِرٍ", "french": "il n'aura alors ni force ni secoureur", "dutch": "zal hij geen kracht noch helper hebben" },
-    { "number": 11, "arabic": "وَالسَّمَاءِ ذَاتِ الرَّجْعِ", "french": "Par le ciel qui fait revenir la pluie", "dutch": "Bij de hemel die de regen doet terugkeren" },
-    { "number": 12, "arabic": "وَالْأَرْضِ ذَاتِ الصَّدْعِ", "french": "et par la terre qui se fend", "dutch": "en bij de aarde die openbarst" },
-    { "number": 13, "arabic": "إِنَّهُ لَقَوْلٌ فَصْلٌ", "french": "ceci est certes une parole décisive", "dutch": "dit is zeker een beslissend woord" },
-    { "number": 14, "arabic": "وَمَا هُوَ بِالْهَزْلِ", "french": "et ce n'est pas un badinage", "dutch": "en het is geen scherts" },
-    { "number": 15, "arabic": "إِنَّهُمْ يَكِيدُونَ كَيْدًا", "french": "Ils trament certes une ruse", "dutch": "Zij smeden zeker een list" },
-    { "number": 16, "arabic": "وَأَكِيدُ كَيْدًا", "french": "et Moi aussi Je trame [Ma stratégie]", "dutch": "en Ik smeed ook Mijn plan" },
-    { "number": 17, "arabic": "فَمَهِّلِ الْكَافِرِينَ أَمْهِلْهُمْ رُوَيْدًا", "french": "Accorde donc un répit aux mécréants, un léger répit", "dutch": "Geef de ongelovigen dus uitstel, een kort uitstel" }
-  ]
+    {
+      "number": 1,
+      "arabic": "وَالسَّمَاءِ وَالطَّارِقِ",
+      "french": "Par le ciel et l'astre nocturne",
+      "dutch": "Bij de hemel en de nachtelijke ster",
+      "english": "By the sky and the night comer -",
+      "spanish": "Juro por el cosmos y el astro nocturno."
+    },
+    {
+      "number": 2,
+      "arabic": "وَمَا أَدْرَاكَ مَا الطَّارِقُ",
+      "french": "Et qui te fera savoir ce qu'est l'astre nocturne ?",
+      "dutch": "En wat doet je weten wat de nachtelijke ster is?",
+      "english": "And what can make you know what is the night comer?",
+      "spanish": "¿Y qué puede hacerte comprender lo que es el astro nocturno?"
+    },
+    {
+      "number": 3,
+      "arabic": "النَّجْمُ الثَّاقِبُ",
+      "french": "C'est l'étoile perçante",
+      "dutch": "Het is de doorborende ster",
+      "english": "It is the piercing star -",
+      "spanish": "Es una estrella fulgurante."
+    },
+    {
+      "number": 4,
+      "arabic": "إِن كُلُّ نَفْسٍ لَّمَّا عَلَيْهَا حَافِظٌ",
+      "french": "Il n'est point d'âme sans un gardien sur elle",
+      "dutch": "Er is geen ziel zonder een bewaker over haar",
+      "english": "There is no soul but that it has over it a protector.",
+      "spanish": "Todo ser humano tiene designado un ángel protector que registra sus obras."
+    },
+    {
+      "number": 5,
+      "arabic": "فَلْيَنظُرِ الْإِنسَانُ مِمَّ خُلِقَ",
+      "french": "Que l'homme considère donc de quoi il a été créé",
+      "dutch": "Laat de mens dan overwegen waaruit hij geschapen is",
+      "english": "So let man observe from what he was created.",
+      "spanish": "Que medite el hombre de qué fue creado:"
+    },
+    {
+      "number": 6,
+      "arabic": "خُلِقَ مِن مَّاءٍ دَافِقٍ",
+      "french": "Il a été créé d'une eau jaillissante",
+      "dutch": "Hij is geschapen uit een voortstuwend water",
+      "english": "He was created from a fluid, ejected,",
+      "spanish": "Fue creado de un líquido seminal"
+    },
+    {
+      "number": 7,
+      "arabic": "يَخْرُجُ مِن بَيْنِ الصُّلْبِ وَالتَّرَائِبِ",
+      "french": "sortant d'entre les lombes et les côtes",
+      "dutch": "voortkomend van tussen de lendenen en de ribben",
+      "english": "Emerging from between the backbone and the ribs.",
+      "spanish": "que proviene de entre las entrañas [del hombre] y el arco pélvico [de la mujer]."
+    },
+    {
+      "number": 8,
+      "arabic": "إِنَّهُ عَلَىٰ رَجْعِهِ لَقَادِرٌ",
+      "french": "Allah est certes capable de le faire revenir",
+      "dutch": "Hij is zeker in staat hem te doen terugkeren",
+      "english": "Indeed, Allah, to return him [to life], is Able.",
+      "spanish": "[Así como lo ha creado la primera vez] Él tiene el poder para resucitarlo."
+    },
+    {
+      "number": 9,
+      "arabic": "يَوْمَ تُبْلَى السَّرَائِرُ",
+      "french": "Le jour où les secrets seront mis à l'épreuve",
+      "dutch": "Op de Dag waarop de geheimen op de proef worden gesteld",
+      "english": "The Day when secrets will be put on trial,",
+      "spanish": "El día que sean revelados todos los secretos,"
+    },
+    {
+      "number": 10,
+      "arabic": "فَمَا لَهُ مِن قُوَّةٍ وَلَا نَاصِرٍ",
+      "french": "il n'aura alors ni force ni secoureur",
+      "dutch": "zal hij geen kracht noch helper hebben",
+      "english": "Then man will have no power or any helper.",
+      "spanish": "y [el ser humano] no tenga fuerzas [para defenderse] a sí mismo ni auxiliador alguno."
+    },
+    {
+      "number": 11,
+      "arabic": "وَالسَّمَاءِ ذَاتِ الرَّجْعِ",
+      "french": "Par le ciel qui fait revenir la pluie",
+      "dutch": "Bij de hemel die de regen doet terugkeren",
+      "english": "By the sky which returns [rain]",
+      "spanish": "Juro por el cielo que devuelve [el agua que sube en forma de lluvias],"
+    },
+    {
+      "number": 12,
+      "arabic": "وَالْأَرْضِ ذَاتِ الصَّدْعِ",
+      "french": "et par la terre qui se fend",
+      "dutch": "en bij de aarde die openbarst",
+      "english": "And [by] the earth which cracks open,",
+      "spanish": "y por la tierra que se abre para que broten los cultivos,"
+    },
+    {
+      "number": 13,
+      "arabic": "إِنَّهُ لَقَوْلٌ فَصْلٌ",
+      "french": "ceci est certes une parole décisive",
+      "dutch": "dit is zeker een beslissend woord",
+      "english": "Indeed, the Qur'an is a decisive statement,",
+      "spanish": "que el Corán es la Verdad que discrimina [la verdad de la falsedad],"
+    },
+    {
+      "number": 14,
+      "arabic": "وَمَا هُوَ بِالْهَزْلِ",
+      "french": "et ce n'est pas un badinage",
+      "dutch": "en het is geen scherts",
+      "english": "And it is not amusement.",
+      "spanish": "y no es algo trivial."
+    },
+    {
+      "number": 15,
+      "arabic": "إِنَّهُمْ يَكِيدُونَ كَيْدًا",
+      "french": "Ils trament certes une ruse",
+      "dutch": "Zij smeden zeker een list",
+      "english": "Indeed, they are planning a plan,",
+      "spanish": "[Los que niegan la verdad] traman [cizañas],"
+    },
+    {
+      "number": 16,
+      "arabic": "وَأَكِيدُ كَيْدًا",
+      "french": "et Moi aussi Je trame [Ma stratégie]",
+      "dutch": "en Ik smeed ook Mijn plan",
+      "english": "But I am planning a plan.",
+      "spanish": "pero Yo desbarato sus planes."
+    },
+    {
+      "number": 17,
+      "arabic": "فَمَهِّلِ الْكَافِرِينَ أَمْهِلْهُمْ رُوَيْدًا",
+      "french": "Accorde donc un répit aux mécréants, un léger répit",
+      "dutch": "Geef de ongelovigen dus uitstel, een kort uitstel",
+      "english": "So allow time for the disbelievers. Leave them awhile.",
+      "spanish": "Sé tolerante con los que niegan la verdad, y dales un tiempo."
+    }
+  ],
+  "translation_credits": {
+    "english": "Saheeh International (en.sahih)",
+    "spanish": "Garcia (es.garcia)"
+  }
 }

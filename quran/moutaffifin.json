@@ -5,41 +5,297 @@
   "name_nl": "De Bedriegers",
   "total_ayahs": 36,
   "ayahs": [
-    { "number": 1, "arabic": "وَيْلٌ لِّلْمُطَفِّفِينَ", "french": "Malheur aux fraudeurs", "dutch": "Wee de fraudeurs" },
-    { "number": 2, "arabic": "الَّذِينَ إِذَا اكْتَالُوا عَلَى النَّاسِ يَسْتَوْفُونَ", "french": "qui exigent la pleine mesure quand ils achètent aux gens", "dutch": "die de volle maat eisen wanneer zij van de mensen kopen" },
-    { "number": 3, "arabic": "وَإِذَا كَالُوهُمْ أَو وَّزَنُوهُمْ يُخْسِرُونَ", "french": "mais qui, lorsqu'ils mesurent ou pèsent pour eux, réduisent la mesure", "dutch": "maar die, wanneer zij voor hen meten of wegen, tekortdoen" },
-    { "number": 4, "arabic": "أَلَا يَظُنُّ أُولَٰئِكَ أَنَّهُم مَّبْعُوثُونَ", "french": "Ne pensent-ils pas qu'ils seront ressuscités", "dutch": "Denken zij niet dat zij zullen worden opgewekt" },
-    { "number": 5, "arabic": "لِيَوْمٍ عَظِيمٍ", "french": "pour un jour immense", "dutch": "voor een geweldige dag" },
-    { "number": 6, "arabic": "يَوْمَ يَقُومُ النَّاسُ لِرَبِّ الْعَالَمِينَ", "french": "le jour où les hommes se tiendront devant le Seigneur des mondes", "dutch": "de dag waarop de mensen zullen opstaan voor de Heer der werelden" },
-    { "number": 7, "arabic": "كَلَّا إِنَّ كِتَابَ الفُجَّارِ لَفِي سِجِّينٍ", "french": "Non ! Le registre des libertins est certes dans le Sijjîn", "dutch": "Nee! Het register van de losbandigen is zeker in Sidjien" },
-    { "number": 8, "arabic": "وَمَا أَدْرَاكَ مَا سِجِّينٌ", "french": "Et qui te fera savoir ce qu'est le Sijjîn ?", "dutch": "En wat doet je weten wat Sidjien is?" },
-    { "number": 9, "arabic": "كِتَابٌ مَّرْقُومٌ", "french": "Un registre inscrit", "dutch": "Een beschreven register" },
-    { "number": 10, "arabic": "وَيْلٌ يَوْمَئِذٍ لِّلْمُكَذِّبِينَ", "french": "Malheur ce jour-là aux négateurs", "dutch": "Wee op die Dag de loochenaars" },
-    { "number": 11, "arabic": "الَّذِينَ يُكَذِّبُونَ بِيَوْمِ الدِّينِ", "french": "qui traitent de mensonge le Jour de la Rétribution", "dutch": "die de Dag van het Oordeel loochenen" },
-    { "number": 12, "arabic": "وَمَا يُكَذِّبُ بِهِ إِلَّا كُلُّ مُعْتَدٍ أَثِيمٍ", "french": "Or seul le transgresseur pécheur le traite de mensonge", "dutch": "En slechts elke overtreder, zondaar, loochent het" },
-    { "number": 13, "arabic": "إِذَا تُتْلَىٰ عَلَيْهِ آيَاتُنَا قَالَ أَسَاطِيرُ الْأَوَّلِينَ", "french": "Quand nos versets lui sont récités, il dit : « Des légendes des anciens ! »", "dutch": "Wanneer onze verzen hem worden voorgelezen, zegt hij: 'Fabels van de ouden!'" },
-    { "number": 14, "arabic": "كَلَّا ۖ بَلْ رَانَ عَلَىٰ قُلُوبِهِم مَّا كَانُوا يَكْسِبُونَ", "french": "Non ! Ce qu'ils ont accompli a plutôt recouvert leurs cœurs de rouille", "dutch": "Nee! Wat zij verworven hebben, heeft hun harten veeleer doen verroesten" },
-    { "number": 15, "arabic": "كَلَّا إِنَّهُمْ عَن رَّبِّهِمْ يَوْمَئِذٍ لَّمَحْجُوبُونَ", "french": "Non, ce jour-là ils seront certes voilés de leur Seigneur", "dutch": "Nee, op die Dag zullen zij zeker afgesloten zijn van hun Heer" },
-    { "number": 16, "arabic": "ثُمَّ إِنَّهُمْ لَصَالُو الْجَحِيمِ", "french": "puis ils brûleront certes dans la Fournaise", "dutch": "daarna zullen zij zeker de Hel binnengaan" },
-    { "number": 17, "arabic": "ثُمَّ يُقَالُ هَٰذَا الَّذِي كُنتُم بِهِ تُكَذِّبُونَ", "french": "puis on leur dira : « Voici ce que vous traitiez de mensonge »", "dutch": "dan zal gezegd worden: 'Dit is wat jullie loochenden'" },
-    { "number": 18, "arabic": "كَلَّا إِنَّ كِتَابَ الْأَبْرَارِ لَفِي عِلِّيِّينَ", "french": "Non ! Le registre des vertueux est certes dans l'Illiyyîn", "dutch": "Nee! Het register van de vromen is zeker in 'Illiyyien" },
-    { "number": 19, "arabic": "وَمَا أَدْرَاكَ مَا عِلِّيُّونَ", "french": "Et qui te fera savoir ce qu'est l'Illiyyîn ?", "dutch": "En wat doet je weten wat 'Illiyyien is?" },
-    { "number": 20, "arabic": "كِتَابٌ مَّرْقُومٌ", "french": "Un registre inscrit", "dutch": "Een beschreven register" },
-    { "number": 21, "arabic": "يَشْهَدُهُ الْمُقَرَّبُونَ", "french": "dont témoignent les rapprochés [d'Allah]", "dutch": "waarvan de nabijgebrachten getuigen" },
-    { "number": 22, "arabic": "إِنَّ الْأَبْرَارَ لَفِي نَعِيمٍ", "french": "Les vertueux seront certes dans un délice", "dutch": "De vromen zullen zeker in gelukzaligheid zijn" },
-    { "number": 23, "arabic": "عَلَى الْأَرَائِكِ يَنظُرُونَ", "french": "sur des divans, ils regarderont", "dutch": "op rustbanken zullen zij toekijken" },
-    { "number": 24, "arabic": "تَعْرِفُ فِي وُجُوهِهِمْ نَضْرَةَ النَّعِيمِ", "french": "Tu reconnaîtras sur leurs visages l'éclat du bonheur", "dutch": "Je zult op hun gezichten de glans van gelukzaligheid herkennen" },
-    { "number": 25, "arabic": "يُسْقَوْنَ مِن رَّحِيقٍ مَّخْتُومٍ", "french": "Ils seront abreuvés d'un nectar scellé", "dutch": "Hun zal een verzegelde nectar te drinken gegeven worden" },
-    { "number": 26, "arabic": "خِتَامُهُ مِسْكٌ ۚ وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ", "french": "scellé de musc — que ceux qui rivalisent rivalisent donc pour cela", "dutch": "verzegeld met muskus — laat daarom de rivalen ernaar wedijveren" },
-    { "number": 27, "arabic": "وَمِزَاجُهُ مِن تَسْنِيمٍ", "french": "et mêlé de Tasnîm", "dutch": "vermengd met Tasniem" },
-    { "number": 28, "arabic": "عَيْنًا يَشْرَبُ بِهَا الْمُقَرَّبُونَ", "french": "une source à laquelle boivent les rapprochés [d'Allah]", "dutch": "een bron waaruit de nabijgebrachten drinken" },
-    { "number": 29, "arabic": "إِنَّ الَّذِينَ أَجْرَمُوا كَانُوا مِنَ الَّذِينَ آمَنُوا يَضْحَكُونَ", "french": "Les criminels riaient certes de ceux qui croyaient", "dutch": "De misdadigers plachten te lachen om hen die geloofden" },
-    { "number": 30, "arabic": "وَإِذَا مَرُّوا بِهِمْ يَتَغَامَزُونَ", "french": "et quand ceux-ci passaient près d'eux, ils se faisaient des clins d'œil", "dutch": "en wanneer dezen langs hen kwamen, knipoogden zij naar elkaar" },
-    { "number": 31, "arabic": "وَإِذَا انقَلَبُوا إِلَىٰ أَهْلِهِمُ انقَلَبُوا فَكِهِينَ", "french": "et quand ils retournaient auprès des leurs, ils s'en amusaient", "dutch": "en wanneer zij terugkeerden naar de hunnen, keerden zij vermaakt terug" },
-    { "number": 32, "arabic": "وَإِذَا رَأَوْهُمْ قَالُوا إِنَّ هَٰؤُلَاءِ لَضَالُّونَ", "french": "et quand ils les voyaient, ils disaient : « Ceux-là sont certes égarés »", "dutch": "en wanneer zij hen zagen, zeiden zij: 'Dezen zijn zeker dwalenden'" },
-    { "number": 33, "arabic": "وَمَا أُرْسِلُوا عَلَيْهِمْ حَافِظِينَ", "french": "alors qu'ils n'ont pas été envoyés pour les surveiller", "dutch": "terwijl zij niet als bewakers over hen gezonden waren" },
-    { "number": 34, "arabic": "فَالْيَوْمَ الَّذِينَ آمَنُوا مِنَ الْكُفَّارِ يَضْحَكُونَ", "french": "Ce jour-là, ceux qui croyaient riront des mécréants", "dutch": "Op die Dag zullen zij die geloofden, lachen om de ongelovigen" },
-    { "number": 35, "arabic": "عَلَى الْأَرَائِكِ يَنظُرُونَ", "french": "sur des divans, ils regarderont", "dutch": "op rustbanken zullen zij toekijken" },
-    { "number": 36, "arabic": "هَلْ ثُوِّبَ الْكُفَّارُ مَا كَانُوا يَفْعَلُونَ", "french": "Les mécréants ont-ils été rétribués pour ce qu'ils faisaient ?", "dutch": "Zijn de ongelovigen beloond voor wat zij plachten te doen?" }
-  ]
+    {
+      "number": 1,
+      "arabic": "وَيْلٌ لِّلْمُطَفِّفِينَ",
+      "french": "Malheur aux fraudeurs",
+      "dutch": "Wee de fraudeurs",
+      "english": "Woe to those who give less [than due],",
+      "spanish": "¡Ay de los tramposos!"
+    },
+    {
+      "number": 2,
+      "arabic": "الَّذِينَ إِذَا اكْتَالُوا عَلَى النَّاسِ يَسْتَوْفُونَ",
+      "french": "qui exigent la pleine mesure quand ils achètent aux gens",
+      "dutch": "die de volle maat eisen wanneer zij van de mensen kopen",
+      "english": "Who, when they take a measure from people, take in full.",
+      "spanish": "Que cuando compran exigen el peso exacto,"
+    },
+    {
+      "number": 3,
+      "arabic": "وَإِذَا كَالُوهُمْ أَو وَّزَنُوهُمْ يُخْسِرُونَ",
+      "french": "mais qui, lorsqu'ils mesurent ou pèsent pour eux, réduisent la mesure",
+      "dutch": "maar die, wanneer zij voor hen meten of wegen, tekortdoen",
+      "english": "But if they give by measure or by weight to them, they cause loss.",
+      "spanish": "pero cuando venden hacen trampa [dando menos] en el peso y la medida."
+    },
+    {
+      "number": 4,
+      "arabic": "أَلَا يَظُنُّ أُولَٰئِكَ أَنَّهُم مَّبْعُوثُونَ",
+      "french": "Ne pensent-ils pas qu'ils seront ressuscités",
+      "dutch": "Denken zij niet dat zij zullen worden opgewekt",
+      "english": "Do they not think that they will be resurrected",
+      "spanish": "¿Acaso no saben que serán resucitados?"
+    },
+    {
+      "number": 5,
+      "arabic": "لِيَوْمٍ عَظِيمٍ",
+      "french": "pour un jour immense",
+      "dutch": "voor een geweldige dag",
+      "english": "For a tremendous Day -",
+      "spanish": "En un día terrible,"
+    },
+    {
+      "number": 6,
+      "arabic": "يَوْمَ يَقُومُ النَّاسُ لِرَبِّ الْعَالَمِينَ",
+      "french": "le jour où les hommes se tiendront devant le Seigneur des mondes",
+      "dutch": "de dag waarop de mensen zullen opstaan voor de Heer der werelden",
+      "english": "The Day when mankind will stand before the Lord of the worlds?",
+      "spanish": "un día en el que comparecerán los seres humanos ante el Señor del universo."
+    },
+    {
+      "number": 7,
+      "arabic": "كَلَّا إِنَّ كِتَابَ الفُجَّارِ لَفِي سِجِّينٍ",
+      "french": "Non ! Le registre des libertins est certes dans le Sijjîn",
+      "dutch": "Nee! Het register van de losbandigen is zeker in Sidjien",
+      "english": "No! Indeed, the record of the wicked is in sijjeen.",
+      "spanish": "No quedarán impunes como piensan, porque el registro de los pecadores está en un libro ineludible."
+    },
+    {
+      "number": 8,
+      "arabic": "وَمَا أَدْرَاكَ مَا سِجِّينٌ",
+      "french": "Et qui te fera savoir ce qu'est le Sijjîn ?",
+      "dutch": "En wat doet je weten wat Sidjien is?",
+      "english": "And what can make you know what is sijjeen?",
+      "spanish": "¿Y qué te hará saber lo que es un libro ineludible?"
+    },
+    {
+      "number": 9,
+      "arabic": "كِتَابٌ مَّرْقُومٌ",
+      "french": "Un registre inscrit",
+      "dutch": "Een beschreven register",
+      "english": "It is [their destination recorded in] a register inscribed.",
+      "spanish": "Es un libro donde se registran las obras de los pecadores."
+    },
+    {
+      "number": 10,
+      "arabic": "وَيْلٌ يَوْمَئِذٍ لِّلْمُكَذِّبِينَ",
+      "french": "Malheur ce jour-là aux négateurs",
+      "dutch": "Wee op die Dag de loochenaars",
+      "english": "Woe, that Day, to the deniers,",
+      "spanish": "¡Cuán desdichados serán ese día los que negaron la verdad!"
+    },
+    {
+      "number": 11,
+      "arabic": "الَّذِينَ يُكَذِّبُونَ بِيَوْمِ الدِّينِ",
+      "french": "qui traitent de mensonge le Jour de la Rétribution",
+      "dutch": "die de Dag van het Oordeel loochenen",
+      "english": "Who deny the Day of Recompense.",
+      "spanish": "Los que desmintieron el Día del Juicio,"
+    },
+    {
+      "number": 12,
+      "arabic": "وَمَا يُكَذِّبُ بِهِ إِلَّا كُلُّ مُعْتَدٍ أَثِيمٍ",
+      "french": "Or seul le transgresseur pécheur le traite de mensonge",
+      "dutch": "En slechts elke overtreder, zondaar, loochent het",
+      "english": "And none deny it except every sinful transgressor.",
+      "spanish": "pues solo lo desmienten los transgresores y los pecadores."
+    },
+    {
+      "number": 13,
+      "arabic": "إِذَا تُتْلَىٰ عَلَيْهِ آيَاتُنَا قَالَ أَسَاطِيرُ الْأَوَّلِينَ",
+      "french": "Quand nos versets lui sont récités, il dit : « Des légendes des anciens ! »",
+      "dutch": "Wanneer onze verzen hem worden voorgelezen, zegt hij: 'Fabels van de ouden!'",
+      "english": "When Our verses are recited to him, he says, \"Legends of the former peoples.\"",
+      "spanish": "Quienes, cuando les es recitada Mi palabra, dicen: \"Son fábulas de los pueblos antiguos\"."
+    },
+    {
+      "number": 14,
+      "arabic": "كَلَّا ۖ بَلْ رَانَ عَلَىٰ قُلُوبِهِم مَّا كَانُوا يَكْسِبُونَ",
+      "french": "Non ! Ce qu'ils ont accompli a plutôt recouvert leurs cœurs de rouille",
+      "dutch": "Nee! Wat zij verworven hebben, heeft hun harten veeleer doen verroesten",
+      "english": "No! Rather, the stain has covered their hearts of that which they were earning.",
+      "spanish": "Pero no es así, sino que sus corazones están duros, llenos de herrumbre, debido a los pecados que cometieron."
+    },
+    {
+      "number": 15,
+      "arabic": "كَلَّا إِنَّهُمْ عَن رَّبِّهِمْ يَوْمَئِذٍ لَّمَحْجُوبُونَ",
+      "french": "Non, ce jour-là ils seront certes voilés de leur Seigneur",
+      "dutch": "Nee, op die Dag zullen zij zeker afgesloten zijn van hun Heer",
+      "english": "No! Indeed, from their Lord, that Day, they will be partitioned.",
+      "spanish": "No es así, sino que ese día no podrán ver a su Señor."
+    },
+    {
+      "number": 16,
+      "arabic": "ثُمَّ إِنَّهُمْ لَصَالُو الْجَحِيمِ",
+      "french": "puis ils brûleront certes dans la Fournaise",
+      "dutch": "daarna zullen zij zeker de Hel binnengaan",
+      "english": "Then indeed, they will [enter and] burn in Hellfire.",
+      "spanish": "Luego serán llevados al Infierno,"
+    },
+    {
+      "number": 17,
+      "arabic": "ثُمَّ يُقَالُ هَٰذَا الَّذِي كُنتُم بِهِ تُكَذِّبُونَ",
+      "french": "puis on leur dira : « Voici ce que vous traitiez de mensonge »",
+      "dutch": "dan zal gezegd worden: 'Dit is wat jullie loochenden'",
+      "english": "Then it will be said [to them], \"This is what you used to deny.\"",
+      "spanish": "donde se les dirá: \"Esto es lo que desmentían y rechazaban\"."
+    },
+    {
+      "number": 18,
+      "arabic": "كَلَّا إِنَّ كِتَابَ الْأَبْرَارِ لَفِي عِلِّيِّينَ",
+      "french": "Non ! Le registre des vertueux est certes dans l'Illiyyîn",
+      "dutch": "Nee! Het register van de vromen is zeker in 'Illiyyien",
+      "english": "No! Indeed, the record of the righteous is in 'illiyyun.",
+      "spanish": "En cambio, el registro de los bienaventurados será un libro noble."
+    },
+    {
+      "number": 19,
+      "arabic": "وَمَا أَدْرَاكَ مَا عِلِّيُّونَ",
+      "french": "Et qui te fera savoir ce qu'est l'Illiyyîn ?",
+      "dutch": "En wat doet je weten wat 'Illiyyien is?",
+      "english": "And what can make you know what is 'illiyyun?",
+      "spanish": "¿Y qué te hará saber lo que es un libro noble?"
+    },
+    {
+      "number": 20,
+      "arabic": "كِتَابٌ مَّرْقُومٌ",
+      "french": "Un registre inscrit",
+      "dutch": "Een beschreven register",
+      "english": "It is [their destination recorded in] a register inscribed",
+      "spanish": "Es el libro donde se registran las obras de los que hacen el bien,"
+    },
+    {
+      "number": 21,
+      "arabic": "يَشْهَدُهُ الْمُقَرَّبُونَ",
+      "french": "dont témoignent les rapprochés [d'Allah]",
+      "dutch": "waarvan de nabijgebrachten getuigen",
+      "english": "Which is witnessed by those brought near [to Allah].",
+      "spanish": "que puede ser visto por los [ángeles] cercanos [a Dios]."
+    },
+    {
+      "number": 22,
+      "arabic": "إِنَّ الْأَبْرَارَ لَفِي نَعِيمٍ",
+      "french": "Les vertueux seront certes dans un délice",
+      "dutch": "De vromen zullen zeker in gelukzaligheid zijn",
+      "english": "Indeed, the righteous will be in pleasure",
+      "spanish": "Los bienaventurados gozarán las delicias del Paraíso,"
+    },
+    {
+      "number": 23,
+      "arabic": "عَلَى الْأَرَائِكِ يَنظُرُونَ",
+      "french": "sur des divans, ils regarderont",
+      "dutch": "op rustbanken zullen zij toekijken",
+      "english": "On adorned couches, observing.",
+      "spanish": "recostados en sofás, contemplando."
+    },
+    {
+      "number": 24,
+      "arabic": "تَعْرِفُ فِي وُجُوهِهِمْ نَضْرَةَ النَّعِيمِ",
+      "french": "Tu reconnaîtras sur leurs visages l'éclat du bonheur",
+      "dutch": "Je zult op hun gezichten de glans van gelukzaligheid herkennen",
+      "english": "You will recognize in their faces the radiance of pleasure.",
+      "spanish": "Reconocerás en sus rostros el resplandor de la dicha."
+    },
+    {
+      "number": 25,
+      "arabic": "يُسْقَوْنَ مِن رَّحِيقٍ مَّخْتُومٍ",
+      "french": "Ils seront abreuvés d'un nectar scellé",
+      "dutch": "Hun zal een verzegelde nectar te drinken gegeven worden",
+      "english": "They will be given to drink [pure] wine [which was] sealed.",
+      "spanish": "Se les dará de beber un néctar sellado,"
+    },
+    {
+      "number": 26,
+      "arabic": "خِتَامُهُ مِسْكٌ ۚ وَفِي ذَٰلِكَ فَلْيَتَنَافَسِ الْمُتَنَافِسُونَ",
+      "french": "scellé de musc — que ceux qui rivalisent rivalisent donc pour cela",
+      "dutch": "verzegeld met muskus — laat daarom de rivalen ernaar wedijveren",
+      "english": "The last of it is musk. So for this let the competitors compete.",
+      "spanish": "cuyo último sorbo deja un sabor a almizcle. ¡Que se esfuercen por alcanzarla los aspirantes!"
+    },
+    {
+      "number": 27,
+      "arabic": "وَمِزَاجُهُ مِن تَسْنِيمٍ",
+      "french": "et mêlé de Tasnîm",
+      "dutch": "vermengd met Tasniem",
+      "english": "And its mixture is of Tasneem,",
+      "spanish": "[El néctar] estará mezclado con agua de Tasnim,"
+    },
+    {
+      "number": 28,
+      "arabic": "عَيْنًا يَشْرَبُ بِهَا الْمُقَرَّبُونَ",
+      "french": "une source à laquelle boivent les rapprochés [d'Allah]",
+      "dutch": "een bron waaruit de nabijgebrachten drinken",
+      "english": "A spring from which those near [to Allah] drink.",
+      "spanish": "un manantial del que solo beberán los más cercanos a Dios."
+    },
+    {
+      "number": 29,
+      "arabic": "إِنَّ الَّذِينَ أَجْرَمُوا كَانُوا مِنَ الَّذِينَ آمَنُوا يَضْحَكُونَ",
+      "french": "Les criminels riaient certes de ceux qui croyaient",
+      "dutch": "De misdadigers plachten te lachen om hen die geloofden",
+      "english": "Indeed, those who committed crimes used to laugh at those who believed.",
+      "spanish": "Los que se abandonan al pecado se ríen [en esta vida] de los creyentes."
+    },
+    {
+      "number": 30,
+      "arabic": "وَإِذَا مَرُّوا بِهِمْ يَتَغَامَزُونَ",
+      "french": "et quand ceux-ci passaient près d'eux, ils se faisaient des clins d'œil",
+      "dutch": "en wanneer dezen langs hen kwamen, knipoogden zij naar elkaar",
+      "english": "And when they passed by them, they would exchange derisive glances.",
+      "spanish": "Cuando pasan junto a ellos se hacen gestos [despectivos],"
+    },
+    {
+      "number": 31,
+      "arabic": "وَإِذَا انقَلَبُوا إِلَىٰ أَهْلِهِمُ انقَلَبُوا فَكِهِينَ",
+      "french": "et quand ils retournaient auprès des leurs, ils s'en amusaient",
+      "dutch": "en wanneer zij terugkeerden naar de hunnen, keerden zij vermaakt terug",
+      "english": "And when they returned to their people, they would return jesting.",
+      "spanish": "y cuando regresan a sus hogares se jactan [de ello]."
+    },
+    {
+      "number": 32,
+      "arabic": "وَإِذَا رَأَوْهُمْ قَالُوا إِنَّ هَٰؤُلَاءِ لَضَالُّونَ",
+      "french": "et quand ils les voyaient, ils disaient : « Ceux-là sont certes égarés »",
+      "dutch": "en wanneer zij hen zagen, zeiden zij: 'Dezen zijn zeker dwalenden'",
+      "english": "And when they saw them, they would say, \"Indeed, those are truly lost.\"",
+      "spanish": "Cuando ven a los suyos dicen: \"Ellos son unos desviados\","
+    },
+    {
+      "number": 33,
+      "arabic": "وَمَا أُرْسِلُوا عَلَيْهِمْ حَافِظِينَ",
+      "french": "alors qu'ils n'ont pas été envoyés pour les surveiller",
+      "dutch": "terwijl zij niet als bewakers over hen gezonden waren",
+      "english": "But they had not been sent as guardians over them.",
+      "spanish": "aunque no les fue encargado velar por ellos."
+    },
+    {
+      "number": 34,
+      "arabic": "فَالْيَوْمَ الَّذِينَ آمَنُوا مِنَ الْكُفَّارِ يَضْحَكُونَ",
+      "french": "Ce jour-là, ceux qui croyaient riront des mécréants",
+      "dutch": "Op die Dag zullen zij die geloofden, lachen om de ongelovigen",
+      "english": "So Today those who believed are laughing at the disbelievers,",
+      "spanish": "Pero este día los creyentes serán quienes se rían de los que rechazaron la verdad."
+    },
+    {
+      "number": 35,
+      "arabic": "عَلَى الْأَرَائِكِ يَنظُرُونَ",
+      "french": "sur des divans, ils regarderont",
+      "dutch": "op rustbanken zullen zij toekijken",
+      "english": "On adorned couches, observing.",
+      "spanish": "[Los creyentes] estarán reclinados sobre sofás, contemplando [el Rostro de Dios]."
+    },
+    {
+      "number": 36,
+      "arabic": "هَلْ ثُوِّبَ الْكُفَّارُ مَا كَانُوا يَفْعَلُونَ",
+      "french": "Les mécréants ont-ils été rétribués pour ce qu'ils faisaient ?",
+      "dutch": "Zijn de ongelovigen beloond voor wat zij plachten te doen?",
+      "english": "Have the disbelievers [not] been rewarded [this Day] for what they used to do?",
+      "spanish": "¿Acaso los que rechazaron la verdad no han recibido una retribución justa por sus propias obras?"
+    }
+  ],
+  "translation_credits": {
+    "english": "Saheeh International (en.sahih)",
+    "spanish": "Garcia (es.garcia)"
+  }
 }
