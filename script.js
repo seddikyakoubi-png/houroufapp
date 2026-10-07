@@ -6782,16 +6782,15 @@ function updateQuranProgress() {
   if (el) el.textContent = memorized + " / " + currentSurah.ayahs;
 }
 
-// Retourne la traduction correspondant à la langue de l'école (une seule, pas les deux),
-// avec repli sur le français si la langue choisie n'a pas encore de traduction disponible (anglais/espagnol).
+// Retourne la traduction correspondant à la langue de l'école (une seule, pas toutes),
+// avec repli sur le français si la langue choisie n'a pas encore de traduction dans le fichier de la sourate.
 function getAyahTranslation(ayah) {
+  const credits = currentSurahData?.translation_credits || {};
   if (currentUILang === "nl") return { flag: "🇧🇪", text: ayah.dutch };
   if (currentUILang === "fr") return { flag: "🇫🇷", text: ayah.french };
-  if (currentUILang === "en" || currentUILang === "es") {
-    // Pas encore de traduction anglaise/espagnole du Coran : on utilise le français en repli,
-    // en le signalant, plutôt que d'afficher une langue non choisie sans explication.
-    return { flag: "🇫🇷", text: ayah.french, fallbackNote: true };
-  }
+  if (currentUILang === "en" && ayah.english) return { flag: "🇬🇧", text: ayah.english, credit: credits.english };
+  if (currentUILang === "es" && ayah.spanish) return { flag: "🇪🇸", text: ayah.spanish, credit: credits.spanish };
+  if (currentUILang === "en" || currentUILang === "es") return { flag: "🇫🇷", text: ayah.french, fallbackNote: true };
   return { flag: "🇫🇷", text: ayah.french }; // par défaut si aucune langue d'école choisie
 }
 
@@ -6810,6 +6809,7 @@ function renderListenMode() {
       <div class="quran-ayah-translation hidden" id="q-translation">
         <div class="q-trans-single" style="font-size:1.4em;line-height:1.7">${trans.flag} ${trans.text}</div>
         ${trans.fallbackNote ? `<div style="font-size:12px;color:#666;margin-top:6px">(Traduction en ${currentUILang==="en"?"anglais":"espagnol"} pas encore disponible — français affiché)</div>` : ""}
+        ${trans.credit ? `<div style="font-size:11px;color:#999;margin-top:6px">${currentUILang==="es"?"Traducción":"Translation"} : ${trans.credit}</div>` : ""}
       </div>
       <button onclick="toggleQTranslation()" class="q-trans-btn">💡 ماذا تعني؟</button>
     </div>
