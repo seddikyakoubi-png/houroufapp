@@ -2,7 +2,7 @@
 //  حروفي - Multi-École avec Admin par École
 // ============================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs, addDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs, addDoc, updateDoc, deleteField } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -444,6 +444,26 @@ const DYNAMIC_I18N = {
     recMicError:      { fr:"Impossible d'accéder au microphone", nl:"Kan geen toegang krijgen tot de microfoon", en:"Cannot access the microphone", es:"No se puede acceder al micrófono" },
     recSending:       { fr:"Envoi en cours...", nl:"Bezig met verzenden...", en:"Sending...", es:"Enviando..." },
     recSent:          { fr:"Envoyé à tes parents ! Ils l'écouteront puis le transmettront au professeur.", nl:"Naar je ouders gestuurd! Zij beluisteren het en sturen het door naar de leerkracht.", en:"Sent to your parents! They will listen and pass it on to the teacher.", es:"¡Enviado a tus padres! Lo escucharán y se lo pasarán al profesor." },
+    parentSpace:      { fr:"Suivi parent", nl:"Opvolging ouder", en:"Parent tracking", es:"Seguimiento de padres" },
+    pLetters:         { fr:"Lettres", nl:"Letters", en:"Letters", es:"Letras" },
+    pQuran:           { fr:"Coran (versets)", nl:"Koran (verzen)", en:"Quran (verses)", es:"Corán (versículos)" },
+    pSourahs:         { fr:"Sourates complètes", nl:"Volledige soera's", en:"Complete surahs", es:"Suras completas" },
+    pQuiz:            { fr:"Quiz", nl:"Quiz", en:"Quiz", es:"Cuestionarios" },
+    pLastActivity:    { fr:"Dernière activité", nl:"Laatste activiteit", en:"Last activity", es:"Última actividad" },
+    pNoActivity:      { fr:"Pas encore d'activité", nl:"Nog geen activiteit", en:"No activity yet", es:"Aún no hay actividad" },
+    pNoAnn:           { fr:"Aucune annonce pour l'instant", nl:"Momenteel geen aankondigingen", en:"No announcements yet", es:"No hay anuncios por ahora" },
+    pCatGeneral:      { fr:"Général", nl:"Algemeen", en:"General", es:"General" },
+    pCatAbsence:      { fr:"Absence", nl:"Afwezigheid", en:"Absence", es:"Ausencia" },
+    pCatConduct:      { fr:"Comportement", nl:"Gedrag", en:"Behaviour", es:"Comportamiento" },
+    pCatCongrats:     { fr:"Félicitation", nl:"Felicitatie", en:"Congratulations", es:"Felicitación" },
+    pGameTitle:       { fr:"Hourouf Aventure", nl:"Hourouf Avontuur", en:"Hourouf Adventure", es:"Aventura Hourouf" },
+    pGameStreak:      { fr:"jours de suite", nl:"dagen op rij", en:"days in a row", es:"días seguidos" },
+    pPhotoTitle:      { fr:"Photo de mon enfant", nl:"Foto van mijn kind", en:"My child's photo", es:"Foto de mi hijo/a" },
+    pPhotoHint:       { fr:"Elle s'affiche dans l'espace de votre enfant, entourée de fleurs. Elle reste privée, visible uniquement dans votre famille.", nl:"Ze verschijnt in de ruimte van uw kind, omringd door bloemen. Ze blijft privé, alleen zichtbaar binnen uw gezin.", en:"It appears in your child's space, surrounded by flowers. It stays private, visible only within your family.", es:"Aparece en el espacio de su hijo/a, rodeada de flores. Es privada y solo visible en su familia." },
+    pPhotoChoose:     { fr:"Choisir une photo", nl:"Een foto kiezen", en:"Choose a photo", es:"Elegir una foto" },
+    pPhotoRemove:     { fr:"Retirer la photo", nl:"Foto verwijderen", en:"Remove photo", es:"Quitar la foto" },
+    pPhotoSaved:      { fr:"Photo enregistrée !", nl:"Foto opgeslagen!", en:"Photo saved!", es:"¡Foto guardada!" },
+    welcomeChild:     { fr:"Bienvenue", nl:"Welkom", en:"Welcome", es:"Bienvenido/a" },
     prTitle:          { fr:"Enregistrements de votre enfant", nl:"Opnames van uw kind", en:"Your child's recordings", es:"Grabaciones de su hijo/a" },
     prIntro:          { fr:"Écoutez les enregistrements, puis choisissez ceux à transmettre au professeur. Rien n'est envoyé au professeur sans votre accord.", nl:"Beluister de opnames en kies welke u naar de leerkracht doorstuurt. Niets gaat naar de leerkracht zonder uw akkoord.", en:"Listen to the recordings, then choose which ones to pass on to the teacher. Nothing reaches the teacher without your consent.", es:"Escuche las grabaciones y elija cuáles enviar al profesor. Nada llega al profesor sin su consentimiento." },
     prForward:        { fr:"Transmettre au professeur", nl:"Doorsturen naar de leerkracht", en:"Send to the teacher", es:"Enviar al profesor" },
@@ -817,6 +837,7 @@ window.loginStudent = async () => {
     currentUser=studentId; currentRole="student"; currentSchoolId=sid; currentClassId=cid;
     document.getElementById("header-name").textContent=selectedName;
     applySchoolBranding(schoolData);
+    currentOrgType = schoolData?.orgType || "school";
     applyFeatureTranslations(schoolData?.uiLang);
     showScreen("screen-menu");
     document.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
@@ -853,7 +874,9 @@ window.loginParent = async () => {
     if(!personalPin){showError("أدخل رمز ولي الأمر 🔐");return;}
     if(studentData.parentPin!==personalPin){showError("رمز ولي الأمر غير صحيح ❌");return;}
     currentUser=studentId; currentRole="parent"; currentSchoolId=sid; currentClassId=cid;
+    currentOrgType = schoolData?.orgType || "school";
     document.getElementById("parent-student-name").textContent = selectedName;
+    const pht = document.getElementById("parent-header-title"); if (pht) pht.textContent = bi("متابعة ولي الأمر","parentSpace");
     // Logo de l'école dans l'en-tête parent
     const parentImg = document.getElementById("parent-logo-img");
     if (parentImg) { if (schoolData?.logoUrl) { parentImg.src = schoolData.logoUrl; parentImg.classList.remove("hidden"); } else parentImg.classList.add("hidden"); }
@@ -874,34 +897,40 @@ async function loadParentDashboard(studentId, studentName) {
     const sourahsTotal = typeof SURAHS !== "undefined" ? SURAHS.length : 0;
     const hks = harakatStats(data);
     loadParentRecordings(studentId); // se remplit juste après l'affichage du tableau de bord
+    setTimeout(() => renderParentPhoto(studentId, data.photo || ""), 0);
     const sc = data.quizScores || [];
     const avgQuiz = sc.length > 0 ? Math.round(sc.reduce((a,s)=>a+(s.score/s.total*100),0)/sc.length) : null;
-    const lastActivity = data.lastActivity ? new Date(data.lastActivity).toLocaleDateString("fr-FR") : "لا يوجد نشاط بعد";
+    const lastActivity = data.lastActivity ? new Date(data.lastActivity).toLocaleDateString("fr-FR") : bi("لا يوجد نشاط بعد","pNoActivity");
     const messages = (data.parentMessages || []).slice().sort((a,b)=>b.date.localeCompare(a.date));
     const anns = (school.announcements || []).filter(a => a.target === "parents").slice().reverse();
 
     const catInfo = {
-        general:     { icon: "📋", label: "عام / Général",         color: "#667eea" },
-        absence:     { icon: "📅", label: "غياب / Absence",         color: "#e67e22" },
-        conduite:    { icon: "⚠️", label: "سلوك / Comportement",    color: "#e74c3c" },
-        felicitation:{ icon: "🌟", label: "تهنئة / Félicitation",   color: "#27ae60" },
+        general:     { icon: "📋", label: bi("عام","pCatGeneral"),     color: "#667eea" },
+        absence:     { icon: "📅", label: bi("غياب","pCatAbsence"),    color: "#e67e22" },
+        conduite:    { icon: "⚠️", label: bi("سلوك","pCatConduct"),    color: "#e74c3c" },
+        felicitation:{ icon: "🌟", label: bi("تهنئة","pCatCongrats"),  color: "#27ae60" },
     };
 
     document.getElementById("parent-dashboard-content").innerHTML = `
         <h2 style="text-align:center;color:var(--primary);margin-bottom:20px">👦 ${studentName}</h2>
 
         <div class="teacher-summary" style="margin-bottom:20px">
-            <div class="summary-card"><div class="s-num">${pct}%</div><div class="s-label">🔤 الحروف / Lettres</div></div>
-            <div class="summary-card"><div class="s-num">${quranPct}%</div><div class="s-label">📖 القرآن / Coran (versets)</div></div>
-            <div class="summary-card"><div class="s-num">${sourahsDone}/${sourahsTotal}</div><div class="s-label">✅ سور كاملة / Sourates complètes</div></div>
-            <div class="summary-card"><div class="s-num">${avgQuiz !== null ? avgQuiz+"%" : "—"}</div><div class="s-label">🏆 الاختبارات / Quiz (${sc.length})</div></div>
+            <div class="summary-card"><div class="s-num">${pct}%</div><div class="s-label">🔤 ${bi("الحروف","pLetters")}</div></div>
+            <div class="summary-card"><div class="s-num">${quranPct}%</div><div class="s-label">📖 ${bi("القرآن (الآيات)","pQuran")}</div></div>
+            <div class="summary-card"><div class="s-num">${sourahsDone}/${sourahsTotal}</div><div class="s-label">✅ ${bi("سور كاملة","pSourahs")}</div></div>
+            <div class="summary-card"><div class="s-num">${avgQuiz !== null ? avgQuiz+"%" : "—"}</div><div class="s-label">🏆 ${bi("الاختبارات","pQuiz")} (${sc.length})</div></div>
             <div class="summary-card"><div class="s-num">${hks.pct}%</div><div class="s-label">🔤 ${bi("الحركات المتقنة","hkMastered")} (${hks.mastered}/${hks.total})</div></div>
         </div>
         ${hks.weak ? `<div class="hk-class-weak" style="margin-bottom:20px">💡 ${bi("للمراجعة","hkWeak")} : <strong>${hkCatLabel(hks.weak)}</strong></div>` : ""}
+        ${(() => { const g = data.game; if (!g || !g.xp) return "";
+            const lv = gameLevel(g.xp), alive = g.lastGoalDay === todayLocalIso() || g.lastGoalDay === gameYesterday();
+            return `<div class="p-game"><span class="p-game-m">${GAME_MASCOT[lv - 1]}</span><div><strong>🎮 ${bi("مغامرة حروفي","pGameTitle")}</strong><br>
+                ${bi("المستوى","gLevel")} ${lv} · ${gameTitle(lv)} · ⭐ ${g.xp} · 🔥 ${alive ? g.streak : 0} ${bi("أيام متتالية","pGameStreak")} · 🏅 ${(g.badges || []).length}</div></div>`; })()}
+        ${currentOrgType === "family" ? `<div id="parent-photo"></div>` : ""}
         <div id="parent-recordings"></div>
 
         <div class="admin-section" style="margin-bottom:20px">
-            <h3 style="margin-bottom:10px">📅 آخر نشاط / Dernière activité</h3>
+            <h3 style="margin-bottom:10px">📅 ${bi("آخر نشاط","pLastActivity")}</h3>
             <p style="color:#555">${lastActivity}</p>
         </div>
 
@@ -926,7 +955,7 @@ async function loadParentDashboard(studentId, studentName) {
         <div class="admin-section" style="margin-bottom:20px">
             <h3 style="margin-bottom:10px">📢 ${bi("إعلانات الإدارة","dirAnnouncements")}</h3>
             ${anns.length === 0
-                ? `<p style="color:#777;text-align:center;padding:14px 0">لا توجد إعلانات حالياً</p>`
+                ? `<p style="color:#777;text-align:center;padding:14px 0">${bi("لا توجد إعلانات حالياً","pNoAnn")}</p>`
                 : anns.map(a => `<div style="border-bottom:1px solid #f0f0f0;padding:10px 0">
                         <p style="font-size:12px;color:#888;margin:0 0 4px">${a.authorName || ""} · ${new Date(a.date).toLocaleDateString("fr-FR")}</p>
                         <p style="margin:0;white-space:pre-wrap">${a.text}</p>
@@ -1074,7 +1103,8 @@ window.logout = ()=>{
     // Arrêter toute synthèse vocale en cours
     if(window.speechSynthesis) window.speechSynthesis.cancel();
     currentUser=null;currentRole=null;currentSchoolId=null;currentClassId=null;selectedRole="student";isDemoMode=false;
-    _game = window._game = null; try { renderGameBar(); renderDemoNews(); } catch (e) {}
+    _game = window._game = null; childWelcomeShown = false; try { renderGameBar(); renderDemoNews(); } catch (e) {}
+    document.getElementById("header-logo-img")?.classList.remove("child-photo-header");
     applyFeatureTranslations(""); // reset : évite qu'une langue d'école reste affichée pour le prochain utilisateur
     const mainLogo = document.getElementById("login-logo-main");
     if (mainLogo) mainLogo.innerHTML = "🌙"; // revient à l'icône par défaut pour le prochain utilisateur (appareil partagé)
@@ -1124,6 +1154,7 @@ async function buildMenu(){
     const data=await getStudentData(currentUser); grid.innerHTML="";
     lettres.forEach((item,i)=>{const div=document.createElement("div");div.className="circle";div.textContent=item.l;if(data.learned.includes(i))div.classList.add("learned");div.onclick=()=>openLetter(i);grid.appendChild(div);});
     initGame(data);
+    applyChildPhoto(data);
     if(currentRole==="student" && !isDemoMode) await checkExerciseBadge();
 
     // Première fonctionnalité à la carte : message de bienvenue personnalisé (activé par école/famille)
@@ -4092,6 +4123,73 @@ window.parentDeleteRecording = async (id) => {
     await deleteDoc(doc(db, "eleves", parentRecStudent, "recordings", id));
     loadParentRecordings(parentRecStudent);
 };
+
+// ============================================================
+//  📷 VERSION FAMILLE : une photo pour chaque enfant
+//  Le parent choisit la photo ; elle est réduite (≈ 30 Ko) et rangée dans la fiche de l'enfant.
+//  L'enfant la voit en grand, entourée d'une couronne de fleurs, à son arrivée dans l'appli.
+// ============================================================
+function renderParentPhoto(studentId, photo) {
+    const box = document.getElementById("parent-photo");
+    if (!box) return;
+    box.innerHTML = `<div class="pr-box p-photo">
+        <h3>📷 ${bi("صورة طفلي", "pPhotoTitle")}</h3>
+        <div class="p-photo-view">${photo ? logoWreathHtml(photo, "small") : `<div class="p-photo-empty">👦👧</div>`}</div>
+        <p class="pr-intro">🔒 ${bi("تظهر في فضاء طفلك محاطة بالأزهار", "pPhotoHint")}</p>
+        <div class="pr-actions" style="justify-content:center">
+            <label class="btn-admin-add p-photo-btn">🖼️ ${bi("اختر صورة", "pPhotoChoose")}
+                <input type="file" accept="image/*" onchange="parentPickPhoto(this, '${studentId}')" hidden></label>
+            ${photo ? `<button class="btn-delete" onclick="parentRemovePhoto('${studentId}')">🗑️ ${bi("إزالة الصورة", "pPhotoRemove")}</button>` : ""}
+        </div>
+    </div>`;
+}
+// Recadre au centre en carré et réduit à 320 × 320 px (JPEG) : léger pour Firestore et rapide à afficher
+function resizePhotoToDataUrl(file, size = 320) {
+    return new Promise((resolve, reject) => {
+        const img = new Image(), url = URL.createObjectURL(file);
+        img.onload = () => {
+            const s = Math.min(img.width, img.height), c = document.createElement("canvas");
+            c.width = c.height = size;
+            c.getContext("2d").drawImage(img, (img.width - s) / 2, (img.height - s) / 2, s, s, 0, 0, size, size);
+            URL.revokeObjectURL(url);
+            resolve(c.toDataURL("image/jpeg", 0.82));
+        };
+        img.onerror = reject;
+        img.src = url;
+    });
+}
+window.parentPickPhoto = async (input, studentId) => {
+    const file = input.files?.[0]; if (!file) return;
+    try {
+        const dataUrl = await resizePhotoToDataUrl(file);
+        await updateDoc(doc(db, "eleves", studentId), { photo: dataUrl });
+        renderParentPhoto(studentId, dataUrl);
+        gameToast("✅ " + bi("تم حفظ الصورة!", "pPhotoSaved"));
+    } catch (e) { alert("❌ " + e.message); }
+};
+window.parentRemovePhoto = async (studentId) => {
+    await updateDoc(doc(db, "eleves", studentId), { photo: deleteField() });
+    renderParentPhoto(studentId, "");
+};
+// Côté enfant : sa photo remplace le logo dans l'en-tête, et l'accueille en grand une fois par séance
+let childWelcomeShown = false;
+function applyChildPhoto(data) {
+    if (currentRole !== "student" || currentOrgType !== "family" || !data?.photo) return;
+    const img = document.getElementById("header-logo-img"), emoji = document.getElementById("header-logo-emoji");
+    if (img) { img.src = data.photo; img.classList.remove("hidden"); img.classList.add("child-photo-header"); }
+    if (emoji) emoji.classList.add("hidden");
+    if (childWelcomeShown) return;
+    childWelcomeShown = true;
+    const first = (document.getElementById("header-name")?.textContent || "").split(" ")[0];
+    const overlay = document.createElement("div");
+    overlay.className = "child-welcome";
+    overlay.innerHTML = `<div class="wreath-pop">${logoWreathHtml(data.photo, "big")}</div>
+        <p class="child-welcome-name">🌸 ${bi("مرحبًا", "welcomeChild")} ${first} 🌸</p>`;
+    overlay.onclick = () => overlay.remove();
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => { overlay.classList.add("in"); overlay.querySelector(".wreath-pop").classList.add("in"); });
+    setTimeout(() => { overlay.classList.remove("in"); setTimeout(() => overlay.remove(), 450); }, 2600);
+}
 
 // ============================================================
 //  🎤 ÉCOUTE-TOI ET COMPARE — enregistrement 100 % LOCAL

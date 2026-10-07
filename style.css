@@ -2109,3 +2109,17 @@ body {
 .pr-done { font-size: 12px; color: #27ae60; font-weight: 700; }
 .pr-none { font-size: 13px; color: #888; text-align: center; padding: 8px; }
 .pr-sent summary { cursor: pointer; font-size: 13px; color: #27ae60; font-weight: 800; margin-top: 8px; }
+
+/* ===== 📷 Photo de l'enfant (version famille) ===== */
+.p-photo { text-align: center; }
+.p-photo-view { display: flex; justify-content: center; }
+.p-photo-empty { width: 128px; height: 128px; border-radius: 50%; background: #fff6fa; border: 3px dashed #ffc6dc; display: flex; align-items: center; justify-content: center; font-size: 44px; margin: 10px auto; }
+.p-photo-btn { cursor: pointer; display: inline-block; padding: 8px 16px; }
+.child-photo-header { height: 52px !important; width: 52px !important; border: 3px solid #ffd6e8 !important; }
+.child-welcome { position: fixed; inset: 0; z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: rgba(255, 248, 252, .85); backdrop-filter: blur(4px); opacity: 0; transition: opacity .4s; }
+.child-welcome.in { opacity: 1; }
+.child-welcome-name { margin-top: 14px; font-size: 26px; font-weight: 900; color: #c2185b; font-family: 'Tajawal', sans-serif; text-align: center; padding: 0 16px; }
+.p-game { display: flex; align-items: center; gap: 12px; background: linear-gradient(135deg, #fff7e0, #ffeef5); border: 2px solid #ffe2a8;
+    border-radius: 18px; padding: 10px 14px; margin-bottom: 20px; font-size: 13px; line-height: 1.7; }
+.p-game-m { font-size: 40px; }
