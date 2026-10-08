@@ -897,7 +897,7 @@ async function loadParentDashboard(studentId, studentName) {
     const sourahsTotal = typeof SURAHS !== "undefined" ? SURAHS.length : 0;
     const hks = harakatStats(data);
     loadParentRecordings(studentId); // se remplit juste après l'affichage du tableau de bord
-    setTimeout(() => renderParentPhoto(studentId, data.photo || ""), 0);
+    setTimeout(() => { renderParentPhoto(studentId, data.photo || ""); addParentTourButton(); }, 0);
     const sc = data.quizScores || [];
     const avgQuiz = sc.length > 0 ? Math.round(sc.reduce((a,s)=>a+(s.score/s.total*100),0)/sc.length) : null;
     const lastActivity = data.lastActivity ? new Date(data.lastActivity).toLocaleDateString("fr-FR") : bi("لا يوجد نشاط بعد","pNoActivity");
@@ -1103,6 +1103,7 @@ window.logout = ()=>{
     // Arrêter toute synthèse vocale en cours
     if(window.speechSynthesis) window.speechSynthesis.cancel();
     currentUser=null;currentRole=null;currentSchoolId=null;currentClassId=null;selectedRole="student";isDemoMode=false;
+    try { tourStop(); } catch (e) {}
     _game = window._game = null; childWelcomeShown = false; try { renderGameBar(); renderDemoNews(); } catch (e) {}
     document.getElementById("header-logo-img")?.classList.remove("child-photo-header");
     applyFeatureTranslations(""); // reset : évite qu'une langue d'école reste affichée pour le prochain utilisateur
@@ -1155,6 +1156,7 @@ async function buildMenu(){
     lettres.forEach((item,i)=>{const div=document.createElement("div");div.className="circle";div.textContent=item.l;if(data.learned.includes(i))div.classList.add("learned");div.onclick=()=>openLetter(i);grid.appendChild(div);});
     initGame(data);
     applyChildPhoto(data);
+    tourAutoStart();
     if(currentRole==="student" && !isDemoMode) await checkExerciseBadge();
 
     // Première fonctionnalité à la carte : message de bienvenue personnalisé (activé par école/famille)
@@ -3796,7 +3798,7 @@ function gameSave() {
 
 // Point d'entrée unique : chaque action de l'élève appelle gameEvent(...)
 function gameEvent(type, info = {}) {
-    if (!gameActive()) return;
+    if (!gameActive() || window._tourRunning) return;
     const g = _game;
     gameRollover();
     let xp = 0;
@@ -3891,6 +3893,7 @@ function renderGameBar() {
         <div class="gb-chips">
             <button class="gb-chip ${g.lastGoalDay === todayLocalIso() ? "gb-fire-on" : ""}" onclick="openGameHowTo()" title="${bi("أيام متتالية", "gStreak")}">🔥 ${g.streak}</button>
             <button class="gb-chip" onclick="openGameBadges()" title="${bi("أوسمتي", "gBadges")}">🏅 ${g.badges.length}</button>
+            <button class="gb-chip gb-tour" onclick="openTourMenu()" title="${bi("كيف تعمل؟", "tourHelp")}">🎬</button>
         </div>
         <div id="gb-bubble" class="gb-bubble hidden"></div>
     </div>
@@ -4189,6 +4192,244 @@ function applyChildPhoto(data) {
     document.body.appendChild(overlay);
     requestAnimationFrame(() => { overlay.classList.add("in"); overlay.querySelector(".wreath-pop").classList.add("in"); });
     setTimeout(() => { overlay.classList.remove("in"); setTimeout(() => overlay.remove(), 450); }, 2600);
+}
+
+// ============================================================
+//  🎬 VISITES ANIMÉES — « vidéos » générées automatiquement par l'appli
+//  L'appli se montre elle-même : un doigt animé touche les vrais boutons,
+//  un projecteur éclaire chaque zone, sous-titres arabe + langue de l'école,
+//  voix de synthèse. Toujours à jour : la visite utilise l'appli telle qu'elle est.
+// ============================================================
+const T = (ar, fr, nl, en, es) => ({ ar, tr: { fr, nl, en, es } });
+const tabBtn = name => document.getElementById("tab-btn-" + name);
+const goTab = name => () => window.switchTab(name, tabBtn(name));
+
+const TOURS = {
+  general: { icon: "🎬", title: T("جولة في حروفي", "Découvrir حروفي", "حروفي ontdekken", "Discover حروفي", "Descubrir حروفي"), steps: [
+    { sel: null, ...T("مرحبًا! سأريك كيف تتعلّم مع حروفي", "Bienvenue ! Je vais te montrer comment apprendre avec حروفي.", "Welkom! Ik laat je zien hoe je leert met حروفي.", "Welcome! Let me show you how to learn with حروفي.", "¡Bienvenido! Te muestro cómo aprender con حروفي.") },
+    { sel: ".game-bar", ...T("هذا رفيقك: اجمع النجوم ليكبر", "Voici ton compagnon. Gagne des étoiles pour le faire grandir.", "Dit is je maatje. Verdien sterren om het te laten groeien.", "This is your buddy. Earn stars to make it grow.", "Este es tu compañero. Gana estrellas para que crezca.") },
+    { sel: ".gb-goals", ...T("كلّ يوم: هدف اليوم وتحدٍّ جديد 🔥", "Chaque jour : un objectif à atteindre et un nouveau défi pour garder ta flamme 🔥.", "Elke dag: een doel en een nieuwe uitdaging om je vlam 🔥 te houden.", "Every day: a goal and a new challenge to keep your flame 🔥.", "Cada día: un objetivo y un nuevo reto para mantener tu llama 🔥.") },
+    { do: goTab("learn"), sel: "#lettersGrid", ...T("في «تعلّم» اضغط على حرف لتكتشفه", "Dans « Apprendre », touche une lettre pour la découvrir et l'écouter.", "Tik in « Leren » op een letter om ze te ontdekken en te beluisteren.", "In « Learn », tap a letter to discover and hear it.", "En « Aprender », toca una letra para descubrirla y escucharla.") },
+    { do: goTab("harakat"), sel: "#tab-btn-harakat", tap: true, ...T("ثمّ أضف الحركات إلى الحروف", "Ensuite, ajoute les voyelles aux lettres.", "Voeg daarna de klinkers toe aan de letters.", "Then add the vowels to the letters.", "Después, añade las vocales a las letras.") },
+    { sel: ".harakat-grid .harakat-tile:nth-child(3)", tap: true, ...T("اضغط على مربّع لتسمع المقطع", "Touche une case pour entendre la syllabe, avec la voix de ton professeur.", "Tik op een vakje om de lettergreep te horen, met de stem van je leerkracht.", "Tap a box to hear the syllable, in your teacher's voice.", "Toca una casilla para oír la sílaba, con la voz de tu profesor.") },
+    { sel: "#harakat-mic", ...T("سجّل صوتك وقارنه بصوت المعلم", "Enregistre-toi et compare ta voix avec celle de ton professeur.", "Neem jezelf op en vergelijk je stem met die van je leerkracht.", "Record yourself and compare your voice with your teacher's.", "Grábate y compara tu voz con la de tu profesor.") },
+    { sel: "#harakat-series", ...T("استمع إلى سلاسل المقاطع وكوّن كلماتك", "Écoute des séries de syllabes et compose tes propres mots.", "Beluister reeksen lettergrepen en maak je eigen woorden.", "Listen to syllable series and build your own words.", "Escucha series de sílabas y forma tus propias palabras.") },
+    { do: goTab("quiz"), sel: "#tab-btn-quiz", tap: true, ...T("اختبر نفسك واربح الأوسمة", "Teste-toi avec les quiz et gagne des badges.", "Test jezelf met de quizzen en verdien badges.", "Test yourself with quizzes and earn badges.", "Ponte a prueba y gana insignias.") },
+    { do: goTab("quran"), sel: "#tab-btn-quran", tap: true, ...T("واحفظ السور آيةً بعد آية", "Et mémorise les sourates, verset après verset.", "En leer de soera's uit je hoofd, vers na vers.", "And memorise the surahs, verse by verse.", "Y memoriza las suras, versículo a versículo.") },
+    { do: goTab("learn"), sel: ".gb-mascot", ...T("١٥ دقيقة كلّ يوم وتصبح بطلًا!", "15 minutes par jour, et tu deviendras un champion !", "15 minuten per dag, en je wordt een kampioen!", "15 minutes a day, and you'll become a champion!", "¡15 minutos al día y serás un campeón!") },
+  ]},
+  harakat: { icon: "🔤", title: T("الحركات", "Les voyelles (harakat)", "De klinkers (harakat)", "Vowels (harakat)", "Las vocales (harakat)"), steps: [
+    { do: goTab("harakat"), sel: "#harakat-letter-strip", ...T("اختر حرفًا من الشريط", "Choisis une lettre dans la bande du haut.", "Kies een letter in de balk bovenaan.", "Choose a letter in the top strip.", "Elige una letra en la franja de arriba.") },
+    { do: () => window.harakatSelectLetter?.(2), sel: "#harakat-big", ...T("تسمع الحرف مع حركته", "Tu entends la lettre avec sa voyelle.", "Je hoort de letter met haar klinker.", "You hear the letter with its vowel.", "Oyes la letra con su vocal.") },
+    { sel: ".harakat-grid .harakat-tile:nth-child(2)", tap: true, ...T("الفتحة والضمّة والكسرة والسكون", "Fatha, damma, kasra, soukoun : touche chaque case.", "Fatha, damma, kasra, soekoen: tik op elk vakje.", "Fatha, damma, kasra, sukun: tap each box.", "Fatha, damma, kasra, sukún: toca cada casilla.") },
+    { sel: "#harakat-positions", ...T("شاهد شكل الحرف في أوّل الكلمة ووسطها وآخرها", "Regarde la forme de la lettre au début, au milieu et à la fin du mot.", "Bekijk de vorm van de letter aan het begin, midden en einde van het woord.", "See the letter's shape at the start, middle and end of a word.", "Mira la forma de la letra al inicio, en medio y al final.") },
+    { sel: "#harakat-mic", ...T("🎙️ سجّل ثم 🔁 قارن", "🎙️ Enregistre-toi, puis 🔁 compare.", "🎙️ Neem jezelf op en 🔁 vergelijk.", "🎙️ Record yourself, then 🔁 compare.", "🎙️ Grábate y luego 🔁 compara.") },
+    { sel: "#harakat-series", ...T("سلسلة المقاطع: اختر السرعة واستمع", "Lecture en série : choisis la vitesse et écoute بَ بُ بِ، تَ تُ تِ…", "Reeks afspelen: kies het tempo en luister naar بَ بُ بِ، تَ تُ تِ…", "Syllable series: choose the speed and listen to بَ بُ بِ، تَ تُ تِ…", "Lectura en serie: elige la velocidad y escucha بَ بُ بِ، تَ تُ تِ…") },
+    { do: () => tourComposeDemo(), sel: ".hk-word", ...T("كوّن كلمة: بَا + بُ = بَابُ", "Compose un mot : بَا + بُ = بَابُ (la porte).", "Maak een woord: بَا + بُ = بَابُ (de deur).", "Build a word: بَا + بُ = بَابُ (the door).", "Forma una palabra: بَا + بُ = بَابُ (la puerta).") },
+    { sel: ".hk-word .hk-btn-main", tap: true, ...T("واستمع إلى الكلمة موصولة", "Et écoute le mot, lettres liées.", "En beluister het woord, met verbonden letters.", "And listen to the word, letters connected.", "Y escucha la palabra, con las letras ligadas.") },
+  ]},
+  quiz: { icon: "🎯", title: T("الاختبارات", "Les quiz", "De quizzen", "The quizzes", "Los cuestionarios"), steps: [
+    { do: goTab("quiz"), sel: "#tab-quiz", ...T("اختر نوع الاختبار", "Choisis ton type de quiz.", "Kies je soort quiz.", "Choose your type of quiz.", "Elige tu tipo de cuestionario.") },
+    { sel: "#quiz-mode-harakat", ...T("ما هذا المقطع؟ استمع واختر", "« Quelle syllabe entends-tu ? » : écoute et choisis la bonne réponse.", "« Welke lettergreep hoor je? »: luister en kies het juiste antwoord.", "« Which syllable do you hear? »: listen and choose.", "« ¿Qué sílaba oyes? »: escucha y elige.") },
+    { sel: "#quiz-mode-harakat", ...T("ثلاثة مستويات ⭐ ⭐⭐ ⭐⭐⭐", "Trois niveaux ⭐ ⭐⭐ ⭐⭐⭐ : commence par le premier !", "Drie niveaus ⭐ ⭐⭐ ⭐⭐⭐: begin met het eerste!", "Three levels ⭐ ⭐⭐ ⭐⭐⭐: start with the first!", "Tres niveles ⭐ ⭐⭐ ⭐⭐⭐: ¡empieza por el primero!") },
+    { sel: ".gb-chips", ...T("كلّ إجابة صحيحة تربحك نجومًا وأوسمة", "Chaque bonne réponse te rapporte des étoiles et des badges.", "Elk goed antwoord levert sterren en badges op.", "Every right answer earns stars and badges.", "Cada respuesta correcta te da estrellas e insignias.") },
+  ]},
+  quran: { icon: "🕌", title: T("القرآن", "Le Coran", "De Koran", "The Quran", "El Corán"), steps: [
+    { do: goTab("quran"), sel: "#tab-quran", ...T("اختر سورة", "Choisis une sourate.", "Kies een soera.", "Choose a surah.", "Elige una sura.") },
+    { sel: "#tab-quran", ...T("استمع إلى كلّ آية ثم ردّدها", "Écoute chaque verset, puis répète-le.", "Beluister elk vers en herhaal het.", "Listen to each verse, then repeat it.", "Escucha cada versículo y repítelo.") },
+    { sel: "#tab-quran", ...T("ثمّ احفظها خطوة بخطوة", "Puis mémorise-la, étape par étape. 🎙️ Tu peux aussi t'enregistrer pour tes parents.", "Leer ze daarna stap voor stap uit je hoofd. 🎙️ Je kunt jezelf ook opnemen voor je ouders.", "Then memorise it, step by step. 🎙️ You can also record yourself for your parents.", "Luego memorízala paso a paso. 🎙️ También puedes grabarte para tus padres.") },
+  ]},
+  game: { icon: "🎮", title: T("مغامرة حروفي", "Hourouf Aventure", "Hourouf Avontuur", "Hourouf Adventure", "Aventura Hourouf"), steps: [
+    { sel: ".gb-mascot", ...T("رفيقك يكبر مع كلّ مستوى", "Ton compagnon grandit à chaque niveau : 🥚 🐣 🐥 🦉 … 🦄", "Je maatje groeit bij elk niveau: 🥚 🐣 🐥 🦉 … 🦄", "Your buddy grows with each level: 🥚 🐣 🐥 🦉 … 🦄", "Tu compañero crece en cada nivel: 🥚 🐣 🐥 🦉 … 🦄") },
+    { sel: ".gb-main", ...T("اجمع النجوم ⭐ لترتقي", "Gagne des étoiles ⭐ pour monter de niveau.", "Verdien sterren ⭐ om een niveau hoger te gaan.", "Earn stars ⭐ to level up.", "Gana estrellas ⭐ para subir de nivel.") },
+    { sel: ".gb-goal", ...T("اجمع ٣٠ نجمة كلّ يوم لتحافظ على شعلتك 🔥", "Gagne 30 ⭐ chaque jour pour garder ta flamme 🔥 allumée.", "Verdien elke dag 30 ⭐ om je vlam 🔥 brandend te houden.", "Earn 30 ⭐ every day to keep your flame 🔥 alive.", "Gana 30 ⭐ cada día para mantener tu llama 🔥.") },
+    { sel: ".gb-challenge", ...T("تحدٍّ جديد كلّ يوم: +٢٥ ⭐", "Un nouveau défi chaque jour : +25 ⭐.", "Elke dag een nieuwe uitdaging: +25 ⭐.", "A new challenge every day: +25 ⭐.", "Un reto nuevo cada día: +25 ⭐.") },
+    { sel: ".gb-chips", ...T("اجمع كلّ الأوسمة 🏅", "Collectionne tous les badges 🏅.", "Verzamel alle badges 🏅.", "Collect all the badges 🏅.", "Colecciona todas las insignias 🏅.") },
+  ]},
+  parent: { icon: "👪", title: T("فضاء ولي الأمر", "L'espace parent", "De ouderruimte", "The parent space", "El espacio de padres"), steps: [
+    { sel: null, ...T("مرحبًا! هذا فضاء متابعة طفلك", "Bienvenue ! Voici l'espace de suivi de votre enfant.", "Welkom! Dit is de opvolgingsruimte van uw kind.", "Welcome! This is your child's tracking space.", "¡Bienvenido! Este es el espacio de seguimiento de su hijo/a.") },
+    { sel: "#parent-dashboard-content .summary-card", ...T("تقدّمه في الحروف والحركات والقرآن", "Sa progression : lettres, voyelles, Coran et quiz.", "Zijn/haar voortgang: letters, klinkers, Koran en quizzen.", "Their progress: letters, vowels, Quran and quizzes.", "Su progreso: letras, vocales, Corán y cuestionarios.") },
+    { sel: ".p-game", ...T("مغامرته: المستوى والنجوم والأيام المتتالية", "Sa motivation : niveau, étoiles et jours d'entraînement de suite 🔥.", "Zijn/haar motivatie: niveau, sterren en oefendagen op rij 🔥.", "Their motivation: level, stars and days in a row 🔥.", "Su motivación: nivel, estrellas y días seguidos 🔥.") },
+    { sel: "#parent-photo", ...T("أضف صورة طفلك", "Ajoutez la photo de votre enfant : il la verra entourée de fleurs.", "Voeg de foto van uw kind toe: het ziet ze omringd door bloemen.", "Add your child's photo: they will see it surrounded by flowers.", "Añada la foto de su hijo/a: la verá rodeada de flores.") },
+    { sel: "#parent-recordings", ...T("استمع إلى تسجيلاته وأرسلها إلى المعلم", "Écoutez ses enregistrements et choisissez ceux à transmettre au professeur.", "Beluister zijn/haar opnames en kies welke u doorstuurt naar de leerkracht.", "Listen to their recordings and choose which to send to the teacher.", "Escuche sus grabaciones y elija cuáles enviar al profesor.") },
+  ]},
+};
+Object.assign(DYNAMIC_I18N, {
+  tourHelp:  { fr:"Comment ça marche ?", nl:"Hoe werkt het?", en:"How does it work?", es:"¿Cómo funciona?" },
+  tourPick:  { fr:"Choisis une visite", nl:"Kies een rondleiding", en:"Choose a tour", es:"Elige una visita" },
+  tourSkip:  { fr:"Passer", nl:"Overslaan", en:"Skip", es:"Saltar" },
+  tourEnd:   { fr:"Terminé !", nl:"Klaar!", en:"Done!", es:"¡Terminado!" },
+  tourVoice: { fr:"Voix", nl:"Stem", en:"Voice", es:"Voz" },
+});
+
+let _tour = null; // { steps, i, paused, token }
+window._tourRunning = false;
+const tourTxt = s => (currentUILang && s.tr[currentUILang]) || null;
+
+function tourComposeDemo() {
+  hkSeriesStop();
+  hkSeries.letters = "compose"; hkSeries.composed = [{ i: 1, key: "mad_alif" }, { i: 1, key: "damma" }];
+  renderHarakatSeries();
+}
+function tourSpeak(step) {
+  return new Promise(resolve => {
+    const syn = window.speechSynthesis;
+    const text = tourTxt(step) || step.ar;
+    const words = text.split(/\s+/).length;
+    const minMs = 1800 + words * 380; // temps de lecture des sous-titres, même sans voix
+    if (!syn || !_tour.voice) return setTimeout(resolve, minMs);
+    const lang = currentUILang || "ar";
+    const voices = syn.getVoices().filter(v => v.lang && v.lang.toLowerCase().startsWith(lang));
+    const v = lang === "ar" ? bestArabicVoice() : (voices.find(x => /natural|online|google/i.test(x.name)) || voices[0]);
+    if (!v) return setTimeout(resolve, minMs);
+    const u = new SpeechSynthesisUtterance(text);
+    u.voice = v; u.lang = v.lang; u.rate = 0.95;
+    const start = Date.now();
+    const done = () => setTimeout(resolve, Math.max(0, Math.min(minMs, 2500) - (Date.now() - start)) + 500);
+    u.onend = done; u.onerror = done;
+    syn.cancel(); syn.speak(u);
+    setTimeout(resolve, minMs + 8000); // filet de sécurité
+  });
+}
+function tourEls() {
+  let o = document.getElementById("tour-overlay");
+  if (o) return o;
+  o = document.createElement("div");
+  o.id = "tour-overlay";
+  o.innerHTML = `<div class="tour-spot"></div><div class="tour-finger">👆</div>
+    <div class="tour-card">
+      <div class="tour-progress"><span></span></div>
+      <div class="tour-ar"></div><div class="tour-tr"></div>
+      <div class="tour-ctrl">
+        <button onclick="tourPrev()">⏮</button>
+        <button class="tour-pp" onclick="tourTogglePause()">⏸</button>
+        <button onclick="tourNext()">⏭</button>
+        <button class="tour-voice" onclick="tourToggleVoice()">🔊</button>
+        <button class="tour-close" onclick="tourStop()">✕ ${bi("تخطّي", "tourSkip")}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(o);
+  return o;
+}
+function tourPlace(el) {
+  const o = tourEls(), spot = o.querySelector(".tour-spot"), finger = o.querySelector(".tour-finger");
+  if (!el) { spot.style.cssText = "left:50%;top:40%;width:0;height:0"; finger.style.opacity = 0; return null; }
+  const r = el.getBoundingClientRect(), pad = 8;
+  const h = Math.min(r.height, window.innerHeight * 0.55);
+  spot.style.cssText = `left:${r.left - pad}px;top:${r.top - pad}px;width:${r.width + pad * 2}px;height:${h + pad * 2}px`;
+  finger.style.opacity = 1;
+  finger.style.left = (r.left + Math.min(r.width / 2, 60)) + "px";
+  finger.style.top = (r.top + Math.min(h / 2, 40)) + "px";
+  // La carte de sous-titres se met là où elle ne cache pas la zone éclairée
+  o.querySelector(".tour-card").classList.toggle("top", r.top + h / 2 > window.innerHeight * 0.55);
+  return r;
+}
+async function tourRunStep(token) {
+  const t = _tour, step = t.steps[t.i], o = tourEls();
+  if (step.do) { try { step.do(); } catch (e) {} await new Promise(r => setTimeout(r, 450)); }
+  if (token !== t.token) return;
+  let el = null;
+  if (step.sel) for (const s of step.sel.split(",")) { el = document.querySelector(s.trim()); if (el && el.offsetParent !== null) break; el = null; }
+  if (step.sel && !el) { tourNext(); return; } // zone absente (ex. option non activée) : on passe
+  if (el) { el.scrollIntoView({ block: "center", behavior: "smooth" }); await new Promise(r => setTimeout(r, 450)); }
+  if (token !== t.token) return;
+  tourPlace(el);
+  o.querySelector(".tour-ar").textContent = step.ar;
+  const tr = tourTxt(step);
+  o.querySelector(".tour-tr").textContent = tr || "";
+  o.querySelector(".tour-progress span").style.width = ((t.i + 1) / t.steps.length * 100) + "%";
+  const card = o.querySelector(".tour-card"); card.classList.remove("in"); void card.offsetWidth; card.classList.add("in");
+  if (step.tap && el) {
+    await new Promise(r => setTimeout(r, 700));
+    if (token !== t.token) return;
+    const f = o.querySelector(".tour-finger"); f.classList.remove("tap"); void f.offsetWidth; f.classList.add("tap");
+    await new Promise(r => setTimeout(r, 250));
+    el.click();
+  }
+  await tourSpeak(step);
+  if (token !== t.token || t.paused) return;
+  tourNext();
+}
+window.startTour = (key) => {
+  const def = TOURS[key]; if (!def) return;
+  document.querySelectorAll(".tour-menu-bg").forEach(m => m.remove());
+  tourStop(true);
+  _tour = { key, steps: def.steps, i: 0, paused: false, token: 0, voice: true };
+  window._tourRunning = true;
+  document.body.classList.add("tour-on");
+  tourEls();
+  tourRunStep(++_tour.token);
+};
+window.tourNext = () => {
+  if (!_tour) return;
+  window.speechSynthesis?.cancel();
+  if (_tour.i >= _tour.steps.length - 1) { tourFinish(); return; }
+  _tour.i++; _tour.paused = false; tourSyncPause();
+  tourRunStep(++_tour.token);
+};
+window.tourPrev = () => {
+  if (!_tour) return;
+  window.speechSynthesis?.cancel();
+  _tour.i = Math.max(0, _tour.i - 1); _tour.paused = false; tourSyncPause();
+  tourRunStep(++_tour.token);
+};
+window.tourTogglePause = () => {
+  if (!_tour) return;
+  _tour.paused = !_tour.paused; tourSyncPause();
+  if (_tour.paused) { _tour.token++; window.speechSynthesis?.cancel(); }
+  else tourRunStep(++_tour.token);
+};
+window.tourToggleVoice = () => {
+  if (!_tour) return;
+  _tour.voice = !_tour.voice;
+  if (!_tour.voice) window.speechSynthesis?.cancel();
+  const b = document.querySelector("#tour-overlay .tour-voice"); if (b) b.textContent = _tour.voice ? "🔊" : "🔇";
+};
+function tourSyncPause() { const b = document.querySelector("#tour-overlay .tour-pp"); if (b) b.textContent = _tour?.paused ? "▶️" : "⏸"; }
+function tourCleanup() {
+  window.speechSynthesis?.cancel();
+  try { hkSeriesStop(); hkStopChain(); stopCurrentQuranAudio(); } catch (e) {}
+  if (typeof hkSeries !== "undefined" && _tour?.key && hkSeries.letters === "compose" && hkSeries.composed.length === 2 && hkSeries.composed[0].key === "mad_alif") {
+    hkSeries.composed = []; hkSeries.letters = "current";
+    try { renderHarakatSeries(); } catch (e) {}
+  }
+  document.getElementById("tour-overlay")?.remove();
+  document.body.classList.remove("tour-on");
+  window._tourRunning = false;
+}
+window.tourStop = (silent) => { if (!_tour) return; _tour.token++; tourCleanup(); _tour = null; };
+function tourFinish() {
+  const key = _tour?.key;
+  tourStop();
+  if (key === "parent") return;
+  if (window._game) { window._game.toursSeen = [...new Set([...(window._game.toursSeen || []), key])]; gameSave(); }
+  gameConfetti(); gameSay?.("🎉 " + bi("انتهت الجولة!", "tourEnd"));
+}
+// Menu des visites (bouton 🎬)
+window.openTourMenu = (parent) => {
+  const keys = parent ? ["parent"] : ["general", "harakat", "quiz", "quran", "game"];
+  if (keys.length === 1) { startTour(keys[0]); return; }
+  const m = document.createElement("div");
+  m.className = "gb-modal-bg tour-menu-bg";
+  m.onclick = e => { if (e.target === m) m.remove(); };
+  m.innerHTML = `<div class="gb-modal gb-sheet"><h2>🎬 ${bi("كيف تعمل؟", "tourHelp")}</h2><p>${bi("اختر جولة", "tourPick")}</p>
+    <div class="tour-list">${keys.map(k => { const d = TOURS[k], seen = (window._game?.toursSeen || []).includes(k);
+      return `<button class="tour-item" onclick="startTour('${k}')"><span>${d.icon}</span><span>${gTr(d.title.ar, d.title.tr)}</span><span>${seen ? "✅" : "▶️"}</span></button>`; }).join("")}</div>
+    <button class="btn-secondary" onclick="this.closest('.gb-modal-bg').remove()">✕</button></div>`;
+  document.body.appendChild(m);
+};
+// Première connexion d'un élève : la visite générale démarre toute seule (une seule fois)
+function tourAutoStart() {
+  if (currentRole !== "student" || !window._game || (window._game.toursSeen || []).includes("general")) return;
+  setTimeout(() => { if (currentRole === "student" && !_tour) startTour("general"); }, 2200);
+}
+function addParentTourButton() {
+  const box = document.getElementById("parent-dashboard-content");
+  if (!box || box.querySelector(".tour-help-btn")) return;
+  const b = document.createElement("button");
+  b.className = "tour-help-btn"; b.innerHTML = `🎬 ${bi("كيف تعمل؟", "tourHelp")}`;
+  b.onclick = () => startTour("parent");
+  box.prepend(b);
 }
 
 // ============================================================
