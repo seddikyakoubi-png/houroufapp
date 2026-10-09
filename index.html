@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حروفي - تعلم الأبجدية العربية</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20260971">
+    <link rel="stylesheet" href="style.css?v=20260973">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -13,91 +13,134 @@
 
 <!-- ========== LOGIN ========== -->
 <div id="screen-login" class="screen active">
-    <div class="login-bg">
-        <div class="floating-letters">
-            <span>ا</span><span>ب</span><span>ت</span><span>ج</span><span>ح</span><span>م</span>
-        </div>
-        <div class="login-box">
-            <div class="login-logo" id="login-logo-main">🌙</div>
-            <h1 class="login-title">حروفي</h1>
-            <p class="login-sub" id="login-sub"><span class="tab-label">تعلّم الأبجدية العربية بطريقة ممتعة</span></p>
-            <!-- من أنت؟ — Qui êtes-vous ? -->
-            <p class="role-label" id="role-label-text"><span class="tab-label">من أنت؟</span></p>
-            <div class="role-cards" dir="rtl">
-                <div class="role-card active" data-role="student" onclick="selectRole('student', this)">
-                    <span class="role-card-icon">👦</span>
-                    <span class="role-card-name-ar">تلميذ</span>
-                    <span class="role-card-name-fr">Élève</span>
-                </div>
-                <div class="role-card" data-role="parent" onclick="selectRole('parent', this)">
-                    <span class="role-card-icon">👪</span>
-                    <span class="role-card-name-ar">ولي الأمر</span>
-                    <span class="role-card-name-fr">Parent</span>
-                </div>
-                <div class="role-card" data-role="teacher" onclick="selectRole('teacher', this)">
-                    <span class="role-card-icon">👩‍🏫</span>
-                    <span class="role-card-name-ar">أستاذ</span>
-                    <span class="role-card-name-fr">Professeur</span>
-                </div>
-                <div class="role-card" data-role="schooladmin" onclick="selectRole('schooladmin', this)">
-                    <span class="role-card-icon">🏫</span>
-                    <span class="role-card-name-ar">مدير</span>
-                    <span class="role-card-name-fr">Directeur</span>
-                </div>
-                <div class="role-card role-card-admin" data-role="superadmin" onclick="selectRole('superadmin', this)">
-                    <span class="role-card-icon">👑</span>
-                    <span class="role-card-name-ar">المشرف</span>
-                    <span class="role-card-name-fr">Super Admin</span>
-                </div>
+    <div class="welcome">
+        <header class="wl-sky">
+            <div class="wl-langs" role="group" aria-label="Langue / Taal / Language / Idioma">
+                <button data-lang="fr" onclick="wlSetLang('fr')">FR</button>
+                <button data-lang="nl" onclick="wlSetLang('nl')">NL</button>
+                <button data-lang="en" onclick="wlSetLang('en')">EN</button>
+                <button data-lang="es" onclick="wlSetLang('es')">ES</button>
             </div>
+            <div class="wl-stars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="login-logo wl-moon" id="login-logo-main">🌙</div>
+            <div class="wl-lanterns" aria-hidden="true"><span>أ</span><span>ب</span><span>ت</span></div>
+            <p class="wl-hello" data-wl="hello"></p>
+            <h1 class="login-title wl-title">حروفي</h1>
+            <p class="login-sub wl-sub" id="login-sub"><span class="tab-label">تعلّم الأبجدية العربية بطريقة ممتعة</span></p>
+        </header>
 
-            <!-- ÉLÈVE -->
-            <div id="form-student" class="login-form-block">
-                <input type="text" id="student-school-code" placeholder="🏫 رمز المدرسة (Code école)" class="login-input" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override" maxlength="20" onchange="resolveSchoolCode()">
-                <p id="school-code-result" style="display:none;font-size:14px;text-align:center;margin:5px 0;font-weight:bold"></p>
-                <input type="hidden" id="student-school">
-                <select id="student-class" class="login-input" onchange="resetStudentSelect()">
-                    <option value="">-- اختر القسم --</option>
-                </select>
-                <input type="text" id="student-code" placeholder="رمز القسم (Code de classe)" class="login-input" maxlength="20" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override" onchange="loadStudentNames()">
-                <select id="student-name-select" class="login-input" style="display:none">
-                    <option value="">-- اختر اسمك --</option>
-                </select>
-                <p id="student-list-msg" style="display:none;color:#e67e22;font-size:14px;text-align:center;margin:5px 0">⏳ Chargement de la liste...</p>
-                <div id="pin-container">
-                    <input type="password" id="student-pin" placeholder="🔐 رمز التلميذ (Code élève)" class="login-input" maxlength="10" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override">
+        <main class="wl-ground">
+            <!-- Profils déjà utilisés sur cet appareil -->
+            <section id="wl-resume" class="wl-resume hidden"></section>
+
+            <!-- Choix : élève ou parent -->
+            <section id="wl-doors">
+                <p class="role-label wl-question" id="role-label-text"><span class="tab-label">من أنت؟</span></p>
+                <div class="wl-doors">
+                    <button class="role-card wl-door wl-door-student active" data-role="student" onclick="wlChooseRole('student', this)">
+                        <span class="wl-door-icon">👦</span>
+                        <span class="wl-door-ar">تلميذ</span>
+                        <span class="wl-door-tr" data-wl="student"></span>
+                        <span class="wl-door-sub" data-wl="studentSub" data-stack></span>
+                    </button>
+                    <button class="role-card wl-door wl-door-parent" data-role="parent" onclick="wlChooseRole('parent', this)">
+                        <span class="wl-door-icon">👪</span>
+                        <span class="wl-door-ar">وليّ أمر</span>
+                        <span class="wl-door-tr" data-wl="parent"></span>
+                        <span class="wl-door-sub" data-wl="parentSub" data-stack></span>
+                    </button>
                 </div>
-                <button onclick="loginStudent()" class="login-btn" id="student-login-btn">ابدأ التعلم ✨</button>
-            </div>
+                <button class="wl-team-link" onclick="wlShowTeam()">👩‍🏫 <span data-wl="team" data-stack></span></button>
+            </section>
 
-            <!-- PROF -->
-            <div id="form-teacher" class="login-form-block hidden">
-                <input type="email" id="teacher-email" placeholder="البريد الإلكتروني" class="login-input" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override">
-                <input type="password" id="teacher-pwd" placeholder="كلمة المرور" class="login-input">
-                <button onclick="loginTeacher()" class="login-btn">دخول 👩‍🏫</button>
-                <p id="teacher-first-login" class="info-text">🔑 أول دخول؟ / مشكلة في كلمة المرور؟ <a href="#" onclick="showFirstLogin()">انقر هنا</a></p>
-            </div>
+            <!-- Formulaire -->
+            <section id="wl-form" class="wl-form hidden">
+                <div class="wl-form-head">
+                    <button class="wl-back" onclick="wlBack()" aria-label="رجوع">→</button>
+                    <span id="wl-form-title" class="wl-form-title"></span>
+                </div>
 
-            <!-- ADMIN ÉCOLE -->
-            <div id="form-schooladmin" class="login-form-block hidden">
-                <input type="email" id="schooladmin-email" placeholder="البريد الإلكتروني" class="login-input" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override">
-                <input type="password" id="schooladmin-pwd" placeholder="كلمة المرور" class="login-input">
-                <button onclick="loginSchoolAdmin()" class="login-btn">دخول 🏫</button>
-                <button onclick="startDemoMode()" class="btn-secondary" style="margin-top:10px;width:100%;background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;border:none">
-                    🎬 Voir une démo (tableau de bord directeur)
-                </button>
-            </div>
+                <div id="wl-team-tabs" class="wl-team-tabs hidden">
+                    <button class="role-card wl-team-tab" data-role="teacher" onclick="wlChooseRole('teacher', this)">👩‍🏫 <span data-wl="teacher"></span></button>
+                    <button class="role-card wl-team-tab" data-role="schooladmin" onclick="wlChooseRole('schooladmin', this)">🏫 <span data-wl="director"></span></button>
+                    <button class="role-card wl-team-tab wl-team-admin" data-role="superadmin" onclick="wlChooseRole('superadmin', this)" title="Super Admin">👑</button>
+                </div>
 
-            <!-- SUPER ADMIN -->
-            <div id="form-superadmin" class="login-form-block hidden">
-                <input type="password" id="superadmin-pwd" placeholder="Mot de passe Super Admin" class="login-input" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override">
-                <button onclick="loginSuperAdmin()" class="login-btn">Accès Super Admin 👨‍💼</button>
-            </div>
+                <!-- ÉLÈVE / PARENT : 3 étapes -->
+                <div id="form-student" class="login-form-block">
+                    <ol class="wl-steps" id="wl-steps">
+                        <li data-s="1" onclick="wlGoBack(1)"><b>١</b><span data-wl="stepSchool"></span></li>
+                        <li data-s="2" onclick="wlGoBack(2)"><b>٢</b><span data-wl="stepClass"></span></li>
+                        <li data-s="3"><b>٣</b><span data-wl="stepMe"></span></li>
+                    </ol>
 
-            <p id="login-error" class="login-error hidden">❌ Erreur de connexion</p>
-        </div>
+                    <div class="wl-step" data-step="1">
+                        <label class="wl-label" for="student-school-code" data-wl="schoolLabel" data-stack></label>
+                        <input type="text" id="student-school-code" placeholder="ECO-1234" class="login-input wl-code" dir="ltr" maxlength="20" autocomplete="off" onkeydown="if(event.key==='Enter')wlNext(1)">
+                        <p class="wl-hint" data-wl="schoolHint" data-stack></p>
+                        <p id="school-code-result" style="display:none;font-size:14px;text-align:center;margin:5px 0;font-weight:bold"></p>
+                        <input type="hidden" id="student-school">
+                        <button class="login-btn wl-next" onclick="wlNext(1)"><span data-wl="next"></span></button>
+                    </div>
+
+                    <div class="wl-step hidden" data-step="2">
+                        <label class="wl-label" for="student-class" data-wl="classLabel" data-stack></label>
+                        <select id="student-class" class="login-input" onchange="resetStudentSelect()">
+                            <option value="">-- اختر القسم --</option>
+                        </select>
+                        <input type="text" id="student-code" placeholder="CLS-AB12C" class="login-input wl-code" maxlength="20" dir="ltr" autocomplete="off" onkeydown="if(event.key==='Enter')wlNext(2)">
+                        <p class="wl-hint" data-wl="classHint" data-stack></p>
+                        <p id="student-list-msg" style="display:none;color:#e67e22;font-size:14px;text-align:center;margin:5px 0">⏳</p>
+                        <button class="login-btn wl-next" onclick="wlNext(2)"><span data-wl="next"></span></button>
+                    </div>
+
+                    <div class="wl-step hidden" data-step="3">
+                        <label class="wl-label" for="student-name-select" id="wl-me-label"></label>
+                        <select id="student-name-select" class="login-input" style="display:none">
+                            <option value="">-- اختر اسمك --</option>
+                        </select>
+                        <div id="pin-container">
+                            <input type="password" id="student-pin" placeholder="🔐 رمز التلميذ (Code élève)" class="login-input wl-pin" maxlength="10" dir="ltr" inputmode="numeric" autocomplete="off" onkeydown="if(event.key==='Enter')document.getElementById('student-login-btn').click()">
+                        </div>
+                        <p class="wl-hint" id="wl-pin-hint"></p>
+                        <button onclick="loginStudent()" class="login-btn" id="student-login-btn">ابدأ التعلم ✨</button>
+                    </div>
+                </div>
+
+                <!-- PROF -->
+                <div id="form-teacher" class="login-form-block hidden">
+                    <input type="email" id="teacher-email" placeholder="البريد الإلكتروني" class="login-input" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override">
+                    <input type="password" id="teacher-pwd" placeholder="كلمة المرور" class="login-input">
+                    <button onclick="loginTeacher()" class="login-btn">دخول 👩‍🏫</button>
+                    <p id="teacher-first-login" class="info-text">🔑 أول دخول؟ / مشكلة في كلمة المرور؟ <a href="#" onclick="showFirstLogin()">انقر هنا</a></p>
+                </div>
+
+                <!-- ADMIN ÉCOLE -->
+                <div id="form-schooladmin" class="login-form-block hidden">
+                    <input type="email" id="schooladmin-email" placeholder="البريد الإلكتروني" class="login-input" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override">
+                    <input type="password" id="schooladmin-pwd" placeholder="كلمة المرور" class="login-input">
+                    <button onclick="loginSchoolAdmin()" class="login-btn">دخول 🏫</button>
+                    <button onclick="startDemoMode()" class="btn-secondary wl-demo-btn">🎬 <span data-wl="demo"></span></button>
+                </div>
+
+                <!-- SUPER ADMIN -->
+                <div id="form-superadmin" class="login-form-block hidden">
+                    <input type="password" id="superadmin-pwd" placeholder="Mot de passe Super Admin" class="login-input" dir="ltr" style="direction:ltr;text-align:left;unicode-bidi:bidi-override">
+                    <button onclick="loginSuperAdmin()" class="login-btn">Accès Super Admin 👨‍💼</button>
+                </div>
+
+                <p id="login-error" class="login-error hidden">❌ Erreur de connexion</p>
+            </section>
+
+            <ul class="wl-trust">
+                <li>🎙️ <span data-wl="trustVoice"></span></li>
+                <li>👪 <span data-wl="trustParents"></span></li>
+                <li>🚫 <span data-wl="trustAds"></span></li>
+            </ul>
+        </main>
     </div>
 </div>
+
 
 <!-- ========== PREMIER LOGIN PROF ========== -->
 <div id="screen-first-login" class="screen hidden">
@@ -837,6 +880,6 @@
     </div>
 </div>
 
-<script type="module" src="script.js?v=20260971"></script>
+<script type="module" src="script.js?v=20260973"></script>
 </body>
 </html>

@@ -620,11 +620,12 @@ function applyFeatureTranslations(uiLang) {
         const labelSpan = el ? el.querySelector(".tab-label") : null;
         if (!labelSpan) return;
         const prefix = data.emoji ? data.emoji + " " : "";
-        labelSpan.textContent = uiLang && data[uiLang]
-            ? `${prefix}${data.ar} / ${data[uiLang]}`
+        labelSpan.innerHTML = uiLang && data[uiLang]
+            ? `${prefix}${data.ar} / <bdi>${data[uiLang]}</bdi>`
             : `${prefix}${data.ar}`;
     });
     applyPlaceholderTranslations();
+    try { wlRenderTexts(); helpRenderFab(); } catch (e) {} // pas encore prêts au tout premier chargement
 }
 
 
@@ -835,6 +836,7 @@ window.loginStudent = async () => {
         if(studentData.pin!==personalPin){showError("الرمز الشخصي غير صحيح ❌");return;}
     }
     currentUser=studentId; currentRole="student"; currentSchoolId=sid; currentClassId=cid;
+    wlRememberProfile("student", selectedName);
     document.getElementById("header-name").textContent=selectedName;
     applySchoolBranding(schoolData);
     currentOrgType = schoolData?.orgType || "school";
@@ -874,6 +876,7 @@ window.loginParent = async () => {
     if(!personalPin){showError("أدخل رمز ولي الأمر 🔐");return;}
     if(studentData.parentPin!==personalPin){showError("رمز ولي الأمر غير صحيح ❌");return;}
     currentUser=studentId; currentRole="parent"; currentSchoolId=sid; currentClassId=cid;
+    wlRememberProfile("parent", selectedName);
     currentOrgType = schoolData?.orgType || "school";
     document.getElementById("parent-student-name").textContent = selectedName;
     const pht = document.getElementById("parent-header-title"); if (pht) pht.textContent = bi("متابعة ولي الأمر","parentSpace");
@@ -1127,6 +1130,7 @@ window.logout = ()=>{
         if (el) el.innerHTML = "";
     });
     showScreen("screen-login");
+    try { helpClose(); wlInit(); } catch (e) {}
 };
 
 // MENU ÉLÈVE
@@ -1192,7 +1196,7 @@ window.switchTab=(name,btn)=>{
 };
 
 // LETTRE
-async function openLetter(i){letterIndex=i;isFlipped=false;document.getElementById("letter-card-inner").classList.remove("flipped");showScreen("screen-letter");loadLetter();await buildDots();}
+async function openLetter(i){gameMark("letter");letterIndex=i;isFlipped=false;document.getElementById("letter-card-inner").classList.remove("flipped");showScreen("screen-letter");loadLetter();await buildDots();}
 window.recordCurrentLetter = () => {
     const l = lettres[letterIndex].l;
     openRecordingWidget('letter', l, l, l);
@@ -3304,6 +3308,7 @@ window.switchTab = (name, btn) => {
     if (name === "exercises") loadStudentExercises();
     if (name === "vocab") loadVocab();
     if (name === "harakat") initHarakat(); else { hkSeriesStop(); hkMicReset(); } // on coupe tout si on quitte l'onglet
+    gameMark("tab:" + name);
     if (name === "learn") { buildMenu(); updateProgress(); }
     if (name === "quran") { loadQuranProgress().then(() => showQuranHome()); }
     // FIX: reset quiz view when switching to ikhtebar tab
@@ -3502,6 +3507,7 @@ window.harakatPlay = async (key) => {
     if (hkSeries.playing || hkSeries.paused) hkSeriesStop(); // un appui manuel interrompt la série
     hkStopChain();
     gameEvent("listen");
+    gameMark("hk");
     harakatKey = key;
     renderHarakatBody();
     const item = lettres[harakatLetterIdx];
@@ -3799,6 +3805,7 @@ function gameSave() {
 // Point d'entrée unique : chaque action de l'élève appelle gameEvent(...)
 function gameEvent(type, info = {}) {
     if (!gameActive() || window._tourRunning) return;
+    gameMark(type);
     const g = _game;
     gameRollover();
     let xp = 0;
@@ -4431,6 +4438,477 @@ function addParentTourButton() {
   b.onclick = () => startTour("parent");
   box.prepend(b);
 }
+
+// ============================================================
+//  🌙 ÉCRAN D'ACCUEIL — choix simple, connexion en 3 étapes, profils mémorisés
+// ============================================================
+const WL_LANGS = ["fr", "nl", "en", "es"];
+const WL = {
+    hello:        ["أهلًا وسهلًا", "Bienvenue", "Welkom", "Welcome", "Bienvenido"],
+    student:      ["تلميذ", "Élève", "Leerling", "Pupil", "Alumno"],
+    studentSub:   ["أتعلّم الحروف", "J'apprends", "Ik leer", "I'm learning", "Aprendo"],
+    parent:       ["وليّ أمر", "Parent", "Ouder", "Parent", "Padre / madre"],
+    parentSub:    ["أتابع طفلي", "Je suis mon enfant", "Ik volg mijn kind", "I follow my child", "Sigo a mi hijo/a"],
+    team:         ["فضاء المعلّمين والإدارة", "Espace équipe : professeurs et direction", "Teamruimte: leerkrachten en directie", "Staff area: teachers and principal", "Espacio del equipo: profesores y dirección"],
+    teacher:      ["أستاذ", "Professeur", "Leerkracht", "Teacher", "Profesor"],
+    director:     ["مدير", "Directeur", "Directeur", "Principal", "Director"],
+    stepSchool:   ["المدرسة", "École", "School", "School", "Escuela"],
+    stepClass:    ["القسم", "Classe", "Klas", "Class", "Clase"],
+    stepMe:       ["أنا", "Moi", "Ik", "Me", "Yo"],
+    schoolLabel:  ["رمز المدرسة", "Code de l'école", "Code van de school", "School code", "Código de la escuela"],
+    schoolHint:   ["تعطيه المدرسة، مثل ECO-1234", "Donné par l'école, par exemple ECO-1234", "Gekregen van de school, bijvoorbeeld ECO-1234", "Given by the school, for example ECO-1234", "Lo da la escuela, por ejemplo ECO-1234"],
+    classLabel:   ["القسم ورمزه", "La classe et son code", "De klas en haar code", "The class and its code", "La clase y su código"],
+    classHint:    ["يعطي المعلّم رمز القسم، مثل CLS-AB12C", "Le professeur donne le code de classe, par exemple CLS-AB12C", "De leerkracht geeft de klascode, bijvoorbeeld CLS-AB12C", "The teacher gives the class code, for example CLS-AB12C", "El profesor da el código de clase, por ejemplo CLS-AB12C"],
+    meStudent:    ["اسمك ورمزك الشخصي", "Ton prénom et ton code personnel", "Je voornaam en je persoonlijke code", "Your first name and your personal code", "Tu nombre y tu código personal"],
+    meParent:     ["اسم طفلك ورمز وليّ الأمر", "Le prénom de votre enfant et le code parent", "De voornaam van uw kind en de oudercode", "Your child's first name and the parent code", "El nombre de su hijo/a y el código de padres"],
+    pinHintStudent: ["رمز من ٤ أرقام يعطيه لك المعلّم", "Un code de 4 chiffres donné par ton professeur", "Een code van 4 cijfers van je leerkracht", "A 4-digit code from your teacher", "Un código de 4 cifras que te da tu profesor"],
+    pinHintParent:  ["رمز وليّ الأمر يختلف عن رمز التلميذ", "Le code parent est différent du code de l'élève", "De oudercode verschilt van de code van de leerling", "The parent code is different from the pupil's code", "El código de padres es distinto del código del alumno"],
+    next:         ["التالي", "Continuer", "Verder", "Continue", "Continuar"],
+    demo:         ["عرض تجريبي", "Voir une démo", "Een demo bekijken", "See a demo", "Ver una demo"],
+    trustVoice:   ["صوت معلّمك", "La voix de ton professeur", "De stem van je leerkracht", "Your teacher's voice", "La voz de tu profesor"],
+    trustParents: ["بمتابعة الوالدين", "Suivi par les parents", "Gevolgd door de ouders", "Followed by parents", "Con seguimiento de los padres"],
+    trustAds:     ["بدون إعلانات", "Sans publicité", "Zonder reclame", "No ads", "Sin publicidad"],
+    welcomeBack:  ["👋 مرحبًا من جديد", "Content de te revoir", "Fijn je terug te zien", "Welcome back", "Qué bien verte de nuevo"],
+    tapName:      ["اضغط على اسمك", "Touche ton prénom", "Tik op je naam", "Tap your name", "Toca tu nombre"],
+    someoneElse:  ["شخص آخر", "Une autre personne", "Iemand anders", "Someone else", "Otra persona"],
+    remove:       ["إزالة", "Retirer", "Verwijderen", "Remove", "Quitar"],
+    wrongClass:   ["رمز القسم غير صحيح", "Code de classe incorrect", "Klascode onjuist", "Wrong class code", "Código de clase incorrecto"],
+    chooseClass:  ["اختر قسمك", "Choisis ta classe", "Kies je klas", "Choose your class", "Elige tu clase"],
+    typeSchool:   ["اكتب رمز المدرسة", "Écris le code de l'école", "Typ de code van de school", "Type the school code", "Escribe el código de la escuela"],
+};
+let wlLang = "fr";
+let wlRole = "student";
+let wlStep = 1;
+// Arabe + langue choisie (comme partout dans l'appli)
+const wlT = key => { const v = WL[key]; if (!v) return ""; const i = WL_LANGS.indexOf(currentUILang || wlLang) + 1; return i > 0 ? v[i] : v[0]; };
+const wlBi = key => { const v = WL[key]; if (!v) return ""; const t = wlT(key); return t && t !== v[0] ? `${v[0]} / ${t}` : v[0]; };
+// Version HTML : la traduction est isolée (<bdi>) ; stack = arabe et traduction sur deux lignes
+const wlHtml = (key, stack) => { const v = WL[key]; if (!v) return ""; const t = wlT(key);
+    if (!t || t === v[0]) return v[0];
+    return stack ? `<span class="wl-ar">${v[0]}</span><bdi class="wl-trl" dir="auto">${t}</bdi>` : `${v[0]} / <bdi>${t}</bdi>`; };
+function wlStore(k, v) { try { v === undefined ? localStorage.removeItem(k) : localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function wlLoad(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } }
+
+function wlRenderTexts() {
+    const login = document.getElementById("screen-login"); if (!login) return;
+    login.querySelectorAll("[data-wl]").forEach(el => {
+        const k = el.dataset.wl;
+        // Les portes et onglets ont déjà l'arabe écrit à côté : on n'y met que la traduction
+        if (el.classList.contains("wl-door-tr") || el.closest(".wl-team-tab")) el.textContent = wlT(k);
+        else el.innerHTML = wlHtml(k, el.hasAttribute("data-stack"));
+    });
+    const lang = currentUILang || wlLang;
+    login.querySelectorAll(".wl-langs button").forEach(b => b.classList.toggle("on", b.dataset.lang === lang));
+    const me = document.getElementById("wl-me-label");
+    if (me) me.innerHTML = wlHtml(wlRole === "parent" ? "meParent" : "meStudent", true);
+    const ph = document.getElementById("wl-pin-hint");
+    if (ph) ph.innerHTML = wlHtml(wlRole === "parent" ? "pinHintParent" : "pinHintStudent", true);
+    const ft = document.getElementById("wl-form-title");
+    if (ft) ft.innerHTML = wlRole === "parent" ? "👪 " + wlHtml("parent") : wlRole === "student" ? "👦 " + wlHtml("student") : "👩‍🏫 " + wlHtml("team", true);
+    wlRenderResume();
+}
+window.wlSetLang = (lang) => {
+    wlLang = lang; wlStore("hourouf_lang", lang);
+    applyFeatureTranslations(lang); // traduit aussi le sous-titre et « من أنت؟ »
+};
+
+// --- Portes et formulaire ---
+window.wlChooseRole = (role, btn) => {
+    wlRole = role;
+    window.selectRole(role, btn);
+    document.getElementById("wl-form").classList.toggle("parent", role === "parent");
+    const pin = document.getElementById("student-pin"); if (pin) pin.placeholder = "🔐 • • • •";
+    document.getElementById("wl-doors").classList.add("hidden");
+    document.getElementById("wl-resume").classList.add("hidden");
+    document.getElementById("wl-form").classList.remove("hidden");
+    const team = role === "teacher" || role === "schooladmin" || role === "superadmin";
+    document.getElementById("wl-team-tabs").classList.toggle("hidden", !team);
+    if (!team) wlGo(document.getElementById("student-school").value ? (document.getElementById("student-name-select").style.display === "block" ? 3 : 2) : 1);
+    wlRenderTexts();
+    setTimeout(() => document.querySelector("#wl-form .login-form-block:not(.hidden) .wl-step:not(.hidden) input, #wl-form .login-form-block:not(.hidden) input")?.focus(), 80);
+};
+window.wlShowTeam = () => {
+    const first = document.querySelector('.wl-team-tab[data-role="teacher"]');
+    wlChooseRole("teacher", first);
+};
+window.wlBack = () => {
+    document.getElementById("wl-form").classList.add("hidden");
+    document.getElementById("wl-doors").classList.remove("hidden");
+    wlRenderResume();
+    // la porte « élève » reste le choix par défaut
+    const stu = document.querySelector('.wl-door[data-role="student"]');
+    if (stu && wlRole !== "parent") { wlRole = "student"; window.selectRole("student", stu); }
+};
+function wlGo(n) {
+    wlStep = n;
+    document.querySelectorAll("#form-student .wl-step").forEach(s => s.classList.toggle("hidden", +s.dataset.step !== n));
+    document.querySelectorAll("#wl-steps li").forEach(li => {
+        const s = +li.dataset.s;
+        li.classList.toggle("done", s < n); li.classList.toggle("now", s === n);
+    });
+}
+window.wlGoBack = (n) => { if (n < wlStep) wlGo(n); };
+window.wlNext = async (n) => {
+    if (n === 1) {
+        if (!document.getElementById("student-school-code").value.trim()) { showError(wlBi("typeSchool")); return; }
+        await window.resolveSchoolCode();
+        if (document.getElementById("student-school").value) { wlGo(2); setTimeout(() => document.getElementById("student-class").focus(), 1900); }
+    } else if (n === 2) {
+        if (!document.getElementById("student-class").value) { showError(wlBi("chooseClass")); return; }
+        await window.loadStudentNames();
+        const sel = document.getElementById("student-name-select"), msg = document.getElementById("student-list-msg");
+        if (sel.style.display === "block") { wlGo(3); sel.focus(); }
+        else if (msg.style.display === "none") showError(wlBi("wrongClass"));
+    }
+};
+
+// --- Profils mémorisés sur cet appareil (sans le code personnel) ---
+function wlRememberProfile(role, name) {
+    const p = {
+        role, name,
+        schoolCode: document.getElementById("student-school-code")?.value.trim().toUpperCase(),
+        classId: document.getElementById("student-class")?.value,
+        classCode: document.getElementById("student-code")?.value.trim().toUpperCase(),
+        logo: document.querySelector("#login-logo-main img")?.getAttribute("src") || "",
+    };
+    if (!p.schoolCode || !p.classId || !p.classCode) return;
+    if (p.logo && p.logo.length > 200000) p.logo = ""; // pas d'image trop lourde dans la mémoire du navigateur
+    const list = wlLoad("hourouf_profiles", []).filter(x => !(x.role === role && x.name === name && x.classId === p.classId));
+    list.unshift(p);
+    wlStore("hourouf_profiles", list.slice(0, 4));
+}
+function wlRenderResume() {
+    const box = document.getElementById("wl-resume"); if (!box) return;
+    const list = wlLoad("hourouf_profiles", []);
+    const formOpen = !document.getElementById("wl-form")?.classList.contains("hidden");
+    if (!list.length || formOpen) { box.classList.add("hidden"); box.innerHTML = ""; return; }
+    const colors = ["#FF6B6B", "#2EA89A", "#764ba2", "#f5a623"];
+    box.classList.remove("hidden");
+    box.innerHTML = `<p class="wl-resume-title">${wlHtml("welcomeBack")}</p>
+        <p class="wl-resume-sub">${wlHtml("tapName")}</p>
+        <div class="wl-profiles">${list.map((p, i) => `
+            <div class="wl-profile">
+                <button class="wl-profile-btn" onclick="wlResume(${i})">
+                    <span class="wl-avatar" style="background:${colors[i % colors.length]}">${p.logo ? `<img src="${p.logo}" alt="">` : ""}<b>${(p.name || "?").trim().charAt(0)}</b></span>
+                    <span class="wl-profile-name">${p.name}</span>
+                    <span class="wl-profile-role">${p.role === "parent" ? "👪" : "👦"}</span>
+                </button>
+                <button class="wl-profile-x" onclick="wlForget(${i})" title="${wlBi("remove")}" aria-label="${wlBi("remove")}">✕</button>
+            </div>`).join("")}</div>`;
+}
+window.wlForget = (i) => { const l = wlLoad("hourouf_profiles", []); l.splice(i, 1); wlStore("hourouf_profiles", l); wlRenderResume(); };
+window.wlResume = async (i) => {
+    const p = wlLoad("hourouf_profiles", [])[i]; if (!p) return;
+    const door = document.querySelector(`.wl-door[data-role="${p.role}"]`);
+    wlChooseRole(p.role, door);
+    document.getElementById("student-school-code").value = p.schoolCode;
+    await window.resolveSchoolCode();
+    if (!document.getElementById("student-school").value) { wlGo(1); return; }
+    document.getElementById("student-class").value = p.classId;
+    document.getElementById("student-code").value = p.classCode;
+    await window.loadStudentNames();
+    const sel = document.getElementById("student-name-select");
+    if (sel.style.display !== "block") { wlGo(2); return; }
+    sel.value = p.name;
+    wlGo(3);
+    setTimeout(() => document.getElementById("student-pin")?.focus(), 1900); // après l'apparition du logo
+};
+
+// --- Démarrage et retour après déconnexion ---
+function wlInit() {
+    const saved = wlLoad("hourouf_lang", null);
+    const nav = (navigator.language || "fr").slice(0, 2);
+    wlLang = saved || (WL_LANGS.includes(nav) ? nav : "fr");
+    wlRole = "student";
+    document.getElementById("wl-form")?.classList.add("hidden");
+    document.getElementById("wl-doors")?.classList.remove("hidden");
+    wlGo(1);
+    applyFeatureTranslations(wlLang);
+    document.getElementById("screen-login")?.classList.remove("wl-played");
+    void document.getElementById("screen-login")?.offsetWidth;
+    document.getElementById("screen-login")?.classList.add("wl-played");
+}
+
+// ============================================================
+//  🧭 ASSISTANT — aide permanente, adaptée à chaque utilisateur et toujours à jour
+//  Bouton ❓ sur tous les écrans → « Ta prochaine étape » (calculée sur les vraies données),
+//  « L'essentiel » (la routine de base), « Ici » (l'écran ouvert), visites 🎬, « Un souci ? »,
+//  « Nouveautés » (une pastille signale chaque mise à jour de l'appli).
+//  👉 À chaque nouvelle fonction : ajouter une ligne en haut de HELP_NEWS.
+// ============================================================
+// [icône, arabe, fr, nl, en, es]
+const HL = (icon, ar, fr, nl, en, es) => ({ icon, ar, tr: { fr, nl, en, es } });
+const helpLang = () => currentUILang || (currentRole ? "" : wlLang);
+const helpStaff = () => ["teacher", "schooladmin", "superadmin"].includes(currentRole);
+// Élève, parent, accueil : arabe + langue · Équipe : la langue seule (base française, comme le reste de l'espace équipe)
+function hTx(x, stack) {
+    const l = helpLang(), t = x.tr[l];
+    if (helpStaff() || !x.ar) return `<bdi dir="auto">${t || x.tr.fr}</bdi>`;
+    if (!t) return x.ar;
+    return stack ? `<span class="h-ar">${x.ar}</span><bdi class="h-tr" dir="auto">${t}</bdi>` : `${x.ar} / <bdi>${t}</bdi>`;
+}
+
+const HELP_NEWS = [
+    { date: "2026-10-09", items: [
+        HL("🧭", "مساعد دائم في كلّ الشاشات", "Un assistant permanent sur tous les écrans (bouton ❓)", "Een vaste assistent op elk scherm (knop ❓)", "A permanent assistant on every screen (❓ button)", "Un asistente permanente en todas las pantallas (botón ❓)"),
+        HL("🌙", "شاشة ترحيب جديدة وتسجيل دخول في ٣ خطوات", "Nouvel écran d'accueil, connexion en 3 étapes et profils mémorisés", "Nieuw onthaalscherm, aanmelden in 3 stappen en onthouden profielen", "New welcome screen, 3-step sign-in and remembered profiles", "Nueva pantalla de inicio, acceso en 3 pasos y perfiles recordados") ] },
+    { date: "2026-10-07", items: [
+        HL("🎬", "جولات متحرّكة تشرح التطبيق", "Visites animées qui expliquent l'appli", "Geanimeerde rondleidingen door de app", "Animated tours of the app", "Visitas animadas de la app"),
+        HL("📖", "ترجمة القرآن بالإنجليزية والإسبانية", "Traductions anglaise et espagnole du Coran", "Engelse en Spaanse vertaling van de Koran", "English and Spanish Quran translations", "Traducciones inglesa y española del Corán"),
+        HL("📷", "صورة الطفل في النسخة العائلية", "Photo de l'enfant (version famille)", "Foto van het kind (gezinsversie)", "Child's photo (family version)", "Foto del niño (versión familiar)") ] },
+    { date: "2026-10-06", items: [
+        HL("🎮", "مغامرة حروفي: نجوم وأوسمة وتحدّيات", "Hourouf Aventure : étoiles, badges et défis", "Hourouf Avontuur: sterren, badges en uitdagingen", "Hourouf Adventure: stars, badges and challenges", "Aventura Hourouf: estrellas, insignias y retos"),
+        HL("👪", "التسجيلات تمرّ عبر الوالدين", "Les enregistrements passent par les parents", "Opnames gaan via de ouders", "Recordings go through the parents", "Las grabaciones pasan por los padres") ] },
+    { date: "2026-10-04", items: [
+        HL("🔊", "اختبار «ما هذا المقطع؟»", "Quiz « Quelle syllabe entends-tu ? »", "Quiz « Welke lettergreep hoor je? »", "« Which syllable do you hear? » quiz", "Cuestionario « ¿Qué sílaba oyes? »"),
+        HL("🎤", "استمع إلى نفسك وقارن", "Écoute-toi et compare", "Luister naar jezelf en vergelijk", "Listen to yourself and compare", "Escúchate y compara") ] },
+];
+
+// Routine de base par rôle. seq:true = étapes dans l'ordre (numérotées), sinon simple liste
+const HELP_ROUTINE = {
+    student: { seq: true, title: HL("⏱️", "حصّتي اليومية (١٥ دقيقة)", "Ma séance du jour (15 min)", "Mijn sessie van vandaag (15 min)", "My daily session (15 min)", "Mi sesión del día (15 min)"), steps: [
+        { k: ["letter"],    go: "learn",   ...HL("📖", "اكتشف حرفًا أو راجعه", "Découvre ou revois une lettre", "Ontdek of herhaal een letter", "Discover or review a letter", "Descubre o repasa una letra") },
+        { k: ["hk"],        go: "harakat", ...HL("🔤", "أضف الحركات وردّد", "Ajoute les voyelles et répète", "Voeg de klinkers toe en zeg ze na", "Add the vowels and repeat", "Añade las vocales y repite") },
+        { k: ["compare"],   go: "harakat", ...HL("🎤", "سجّل صوتك وقارن", "Enregistre-toi et compare", "Neem jezelf op en vergelijk", "Record yourself and compare", "Grábate y compara") },
+        { k: ["tab:trace"], go: "trace",   ...HL("✏️", "اكتب الحرف بإصبعك", "Trace la lettre avec ton doigt", "Schrijf de letter met je vinger", "Trace the letter with your finger", "Traza la letra con el dedo") },
+        { k: ["quizDone"],  go: "quiz",    ...HL("🎯", "أنجز اختبارًا", "Fais un quiz", "Maak een quiz", "Do a quiz", "Haz un cuestionario") },
+        { k: ["tab:quran"], go: "quran",   ...HL("🕌", "راجع آية من القرآن", "Révise un verset du Coran", "Herhaal een vers uit de Koran", "Review a Quran verse", "Repasa un versículo del Corán") } ] },
+    parent: { seq: false, title: HL("🗓️", "ما يفيد طفلك كلّ أسبوع", "Ce qui aide votre enfant chaque semaine", "Wat uw kind elke week helpt", "What helps your child each week", "Lo que ayuda a su hijo/a cada semana"), steps: [
+        HL("🔥", "تأكّد أنّه يتدرّب ١٥ دقيقة كلّ يوم", "Vérifiez qu'il s'entraîne 15 minutes chaque jour (la flamme 🔥)", "Kijk of het elke dag 15 minuten oefent (de vlam 🔥)", "Check they practise 15 minutes a day (the flame 🔥)", "Compruebe que practica 15 minutos al día (la llama 🔥)"),
+        HL("🎙️", "استمع إلى تسجيلاته وأرسل الجيّد منها إلى المعلّم", "Écoutez ses enregistrements et transmettez les meilleurs au professeur", "Beluister de opnames en stuur de beste door naar de leerkracht", "Listen to the recordings and send the best to the teacher", "Escuche las grabaciones y envíe las mejores al profesor"),
+        HL("✉️", "اقرأ رسائل المدرسة وإعلاناتها", "Lisez les messages et annonces de l'école", "Lees de berichten en aankondigingen van de school", "Read the school's messages and announcements", "Lea los mensajes y anuncios de la escuela"),
+        HL("💡", "ساعده على مراجعة نقطة ضعفه", "Aidez-le à réviser son point faible indiqué ici", "Help het zijn zwakke punt te herhalen", "Help them review their weak point", "Ayúdele a repasar su punto débil"),
+        HL("🏅", "شجّعه على كلّ وسام جديد", "Félicitez-le pour chaque nouveau badge", "Feliciteer het bij elke nieuwe badge", "Praise them for every new badge", "Felicítele por cada nueva insignia") ] },
+    teacher: { seq: false, title: HL("🗓️", "روتين المعلّم كلّ أسبوع", "Ma routine de la semaine", "Mijn weekroutine", "My weekly routine", "Mi rutina semanal"), steps: [
+        HL("👥", "", "Regardez le tableau « Élèves » : progression, harakat, points faibles de la classe", "Bekijk het overzicht « Leerlingen »: voortgang, harakat, zwakke punten", "Check the « Pupils » table: progress, harakat, class weak points", "Mire la tabla « Alumnos »: progreso, harakat, puntos débiles"),
+        HL("🎙️", "", "Écoutez les enregistrements transmis par les parents et marquez-les « écoutés »", "Beluister de opnames van de ouders en markeer ze als beluisterd", "Listen to recordings sent by parents and mark them as heard", "Escuche las grabaciones enviadas por los padres y márquelas"),
+        HL("📬", "", "Corrigez les travaux rendus", "Verbeter het ingeleverde werk", "Correct the submitted work", "Corrija los trabajos entregados"),
+        HL("✏️", "", "Publiez un exercice adapté au point faible de la classe", "Publiceer een oefening voor het zwakke punt van de klas", "Publish an exercise for the class weak point", "Publique un ejercicio para el punto débil de la clase"),
+        HL("📅", "", "Faites l'appel au début du cours", "Neem de aanwezigheden aan het begin van de les", "Take attendance at the start of class", "Pase lista al inicio de la clase"),
+        HL("✉️", "", "Envoyez un mot aux parents (félicitation, absence…)", "Stuur een bericht naar de ouders (felicitatie, afwezigheid…)", "Send a note to parents (praise, absence…)", "Envíe un mensaje a los padres (felicitación, ausencia…)") ] },
+    schooladmin: { seq: true, title: HL("🏫", "", "Mettre l'école en route", "De school opstarten", "Setting up the school", "Poner en marcha la escuela"), steps: [
+        HL("📚", "", "Créez les classes (chaque classe reçoit son code CLS-…)", "Maak de klassen aan (elke klas krijgt een code CLS-…)", "Create the classes (each gets a CLS-… code)", "Cree las clases (cada una recibe un código CLS-…)"),
+        HL("👩‍🏫", "", "Ajoutez les professeurs et donnez-leur leur code d'activation", "Voeg de leerkrachten toe en geef hun activatiecode", "Add the teachers and give them their activation code", "Añada los profesores y deles su código de activación"),
+        HL("👥", "", "Ajoutez les élèves (un par un ou par Excel) : codes élève et parent créés automatiquement", "Voeg de leerlingen toe (één voor één of via Excel): leerling- en oudercodes automatisch", "Add pupils (one by one or by Excel): pupil and parent codes are created automatically", "Añada los alumnos (uno a uno o por Excel): códigos de alumno y padres automáticos"),
+        HL("📋", "", "Imprimez le « Registre » et distribuez les codes aux familles", "Druk het « Register » af en geef de codes aan de gezinnen", "Print the « Register » and hand out the codes to families", "Imprima el « Registro » y entregue los códigos a las familias"),
+        HL("⚙️", "", "Ajoutez le logo de l'école dans Paramètres", "Voeg het logo van de school toe in Instellingen", "Add the school logo in Settings", "Añada el logo de la escuela en Ajustes"),
+        HL("📊", "", "Suivez chaque semaine les Statistiques et la Communication", "Volg elke week de Statistieken en de Communicatie", "Check Statistics and Communication each week", "Consulte cada semana Estadísticas y Comunicación") ] },
+    superadmin: { seq: false, title: HL("👑", "", "Gestion de la plateforme", "Beheer van het platform", "Platform management", "Gestión de la plataforma"), steps: [
+        HL("🏫", "", "Créez une école ou une famille, choisissez sa langue et générez son code ECO-…", "Maak een school of gezin aan, kies de taal en maak de code ECO-…", "Create a school or family, choose its language and generate its ECO-… code", "Cree una escuela o familia, elija su idioma y genere su código ECO-…"),
+        HL("⚙️", "", "« Fonctionnalités » : options premium et dates d'abonnement", "« Functies »: premium-opties en abonnementsdata", "« Features »: premium options and subscription dates", "« Funciones »: opciones premium y fechas de suscripción"),
+        HL("📊", "", "Suivez les statistiques de toutes les écoles", "Volg de statistieken van alle scholen", "Follow the statistics of all schools", "Siga las estadísticas de todas las escuelas") ] },
+    login: { seq: true, title: HL("🔑", "كيف أدخل؟", "Comment se connecter ?", "Hoe meld ik me aan?", "How do I sign in?", "¿Cómo entro?"), steps: [
+        HL("🏫", "رمز المدرسة (ECO-1234) تعطيه المدرسة", "Le code de l'école (ECO-…) est donné par l'école", "De schoolcode (ECO-…) krijg je van de school", "The school code (ECO-…) comes from the school", "El código de la escuela (ECO-…) lo da la escuela"),
+        HL("📚", "رمز القسم (CLS-AB12C) يعطيه المعلّم", "Le code de classe (CLS-…) est donné par le professeur", "De klascode (CLS-…) krijg je van de leerkracht", "The class code (CLS-…) comes from the teacher", "El código de clase (CLS-…) lo da el profesor"),
+        HL("🔐", "لكلّ تلميذ رمز شخصي، ولوليّ الأمر رمز آخر", "Chaque élève a un code personnel ; le parent a un autre code", "Elke leerling heeft een eigen code; de ouder een andere", "Each pupil has a personal code; the parent has a different one", "Cada alumno tiene su código; los padres tienen otro"),
+        HL("💾", "بعد أوّل دخول، يتذكّر الجهاز اسمك", "Après la première fois, l'appareil se souvient de ton prénom", "Na de eerste keer onthoudt het toestel je naam", "After the first time, the device remembers your name", "Tras la primera vez, el dispositivo recuerda tu nombre") ] },
+};
+
+// « Ici » : ce que fait l'écran ouvert
+const HELP_HERE = {
+    "login":           HL("🌙", "اختر «تلميذ» أو «وليّ أمر» ثم اتبع الخطوات الثلاث", "Choisis « Élève » ou « Parent », puis suis les 3 étapes", "Kies « Leerling » of « Ouder » en volg de 3 stappen", "Choose « Pupil » or « Parent », then follow the 3 steps", "Elige « Alumno » o « Padre » y sigue los 3 pasos"),
+    "learn":           HL("📖", "اضغط على حرف لتسمعه وتشاهد أشكاله، ثم اضغط «فهمت!»", "Touche une lettre pour l'écouter et voir ses formes, puis « J'ai compris ! »", "Tik op een letter om ze te horen en haar vormen te zien, daarna « Begrepen! »", "Tap a letter to hear it and see its shapes, then « Got it! »", "Toca una letra para oírla y ver sus formas, luego « ¡Entendido! »"),
+    "letter":          HL("🔤", "استمع، اقلب البطاقة، ثم اضغط «فهمت!» لتربح ١٠ نجوم", "Écoute, retourne la carte, puis « J'ai compris ! » pour gagner 10 ⭐", "Luister, draai de kaart om en tik « Begrepen! » voor 10 ⭐", "Listen, flip the card, then « Got it! » to earn 10 ⭐", "Escucha, gira la tarjeta y pulsa « ¡Entendido! » para ganar 10 ⭐"),
+    "harakat":         HL("🔤", "اختر حرفًا، المس الحركات، سجّل صوتك وكوّن كلمات", "Choisis une lettre, touche les voyelles, enregistre-toi et compose des mots", "Kies een letter, tik op de klinkers, neem jezelf op en maak woorden", "Pick a letter, tap the vowels, record yourself and build words", "Elige una letra, toca las vocales, grábate y forma palabras"),
+    "quiz":            HL("🎯", "ابدأ بالمستوى ⭐ ثم ارتقِ", "Commence par le niveau ⭐, puis monte", "Begin met niveau ⭐ en ga dan hoger", "Start with level ⭐, then move up", "Empieza por el nivel ⭐ y luego sube"),
+    "trace":           HL("✏️", "اختر حرفًا واتبع الخطّ بإصبعك", "Choisis une lettre et suis le trait avec ton doigt", "Kies een letter en volg de lijn met je vinger", "Pick a letter and follow the line with your finger", "Elige una letra y sigue la línea con el dedo"),
+    "exercises":       HL("📋", "هنا تمارين معلّمك: أنجزها ثم أرسلها", "Ici, les exercices de ton professeur : fais-les puis envoie-les", "Hier staan de oefeningen van je leerkracht: maak ze en stuur ze op", "Here are your teacher's exercises: do them and send them", "Aquí están los ejercicios de tu profesor: hazlos y envíalos"),
+    "vocab":           HL("📖", "تعلّم كلمات جديدة بالصور والصوت", "Apprends de nouveaux mots avec images et sons", "Leer nieuwe woorden met beeld en geluid", "Learn new words with pictures and sounds", "Aprende palabras nuevas con imágenes y sonidos"),
+    "quran":           HL("🕌", "اختر سورة: استمع، ردّد، ثم احفظ آية بعد آية", "Choisis une sourate : écoute, répète, puis mémorise verset après verset", "Kies een soera: luister, herhaal en leer vers per vers", "Pick a surah: listen, repeat, then memorise verse by verse", "Elige una sura: escucha, repite y memoriza versículo a versículo"),
+    "parent":          HL("👪", "تابع تقدّم طفلك وتسجيلاته ورسائل المدرسة", "Suivez la progression, les enregistrements et les messages de l'école", "Volg de voortgang, de opnames en de berichten van de school", "Follow progress, recordings and school messages", "Siga el progreso, las grabaciones y los mensajes de la escuela"),
+    "t-students":      HL("👥", "", "La progression de chaque élève ; ⚠️ signale un point faible", "De voortgang van elke leerling; ⚠️ toont een zwak punt", "Each pupil's progress; ⚠️ flags a weak point", "El progreso de cada alumno; ⚠️ indica un punto débil"),
+    "t-classlist":     HL("📋", "", "La liste de la classe, à imprimer", "De klaslijst, om af te drukken", "The class list, ready to print", "La lista de la clase, para imprimir"),
+    "t-attendance":    HL("📅", "", "Chargez la date, cochez présents et absents, enregistrez", "Laad de datum, vink aanwezig/afwezig aan en sla op", "Load the date, tick present/absent and save", "Cargue la fecha, marque presentes/ausentes y guarde"),
+    "t-exercises":     HL("✏️", "", "Créez un exercice (lettre, mot, formes, libre) pour toute la classe ou un élève", "Maak een oefening voor de hele klas of één leerling", "Create an exercise for the whole class or one pupil", "Cree un ejercicio para toda la clase o un alumno"),
+    "t-submissions":   HL("📬", "", "Les dessins envoyés par les élèves", "De tekeningen die leerlingen opstuurden", "Drawings sent by pupils", "Los dibujos enviados por los alumnos"),
+    "t-recordings":    HL("🎙️", "", "Seuls les enregistrements transmis par les parents apparaissent ici", "Alleen opnames die ouders doorstuurden verschijnen hier", "Only recordings forwarded by parents appear here", "Solo aparecen las grabaciones enviadas por los padres"),
+    "t-comms":         HL("📢", "", "Échangez avec la direction et lisez les annonces", "Wissel berichten uit met de directie en lees de aankondigingen", "Talk with the principal and read announcements", "Hable con la dirección y lea los anuncios"),
+    "sa-classes":      HL("📚", "", "Créez les classes et ajoutez les élèves (👥)", "Maak klassen aan en voeg leerlingen toe (👥)", "Create classes and add pupils (👥)", "Cree clases y añada alumnos (👥)"),
+    "sa-teachers":     HL("👩‍🏫", "", "Ajoutez un professeur et donnez-lui son code d'activation", "Voeg een leerkracht toe en geef de activatiecode", "Add a teacher and give the activation code", "Añada un profesor y dele el código de activación"),
+    "sa-absences":     HL("📅", "", "Suivez les absences et exportez-les en Excel", "Volg de afwezigheden en exporteer naar Excel", "Track absences and export to Excel", "Siga las ausencias y expórtelas a Excel"),
+    "sa-stats":        HL("📊", "", "Vue d'ensemble : lettres, harakat, Coran, par classe et par élève", "Overzicht: letters, harakat, Koran, per klas en per leerling", "Overview: letters, harakat, Quran, by class and pupil", "Vista general: letras, harakat, Corán, por clase y alumno"),
+    "sa-settings":     HL("⚙️", "", "Logo de l'école et code à communiquer aux familles", "Logo van de school en code voor de gezinnen", "School logo and code for families", "Logo de la escuela y código para las familias"),
+    "sa-comms":        HL("📢", "", "Annonces aux professeurs ou aux parents, et messages directs", "Aankondigingen voor leerkrachten of ouders en directe berichten", "Announcements to teachers or parents, and direct messages", "Anuncios a profesores o padres y mensajes directos"),
+};
+
+// « Un souci ? » — les problèmes les plus fréquents
+const HELP_FAQ = [
+    { q: HL("🔄", "لا أرى الجديد", "Je ne vois pas la nouveauté", "Ik zie de nieuwigheid niet", "I don't see the new feature", "No veo la novedad"),
+      a: HL("", "على الحاسوب: Ctrl+Shift+R. على الهاتف: أغلق الصفحة وافتحها من جديد", "Ordinateur : Ctrl+Maj+R. Téléphone : fermez l'onglet puis rouvrez-le", "Computer: Ctrl+Shift+R. Telefoon: sluit het tabblad en open het opnieuw", "Computer: Ctrl+Shift+R. Phone: close the tab and open it again", "Ordenador: Ctrl+Mayús+R. Teléfono: cierre la pestaña y vuelva a abrirla") },
+    { q: HL("🔇", "لا أسمع شيئًا", "Je n'entends rien", "Ik hoor niets", "I can't hear anything", "No oigo nada"),
+      a: HL("", "ارفع الصوت. على iPhone أوقف الوضع الصامت (الزرّ الجانبي)", "Montez le volume. Sur iPhone, désactivez le mode silencieux (bouton sur le côté)", "Zet het volume hoger. Op iPhone: zet de stille modus uit (knop aan de zijkant)", "Turn the volume up. On iPhone, turn off silent mode (side switch)", "Suba el volumen. En iPhone, quite el modo silencio (botón lateral)") },
+    { q: HL("🎤", "الميكروفون لا يعمل", "Le micro ne marche pas", "De microfoon werkt niet", "The microphone doesn't work", "El micrófono no funciona"),
+      a: HL("", "اضغط على 🔒 بجانب العنوان واسمح بالميكروفون", "Touchez 🔒 à côté de l'adresse du site et autorisez le micro", "Tik op 🔒 naast het adres en sta de microfoon toe", "Tap 🔒 next to the address and allow the microphone", "Toque 🔒 junto a la dirección y permita el micrófono") },
+    { q: HL("🗣️", "لا توجد قراءة طبيعية", "Pas de lecture naturelle", "Geen natuurlijk lezen", "No natural reading", "No hay lectura natural"),
+      a: HL("", "افتح التطبيق في Microsoft Edge أو على الهاتف", "Ouvrez l'appli dans Microsoft Edge ou sur un téléphone / une tablette", "Open de app in Microsoft Edge of op een telefoon / tablet", "Open the app in Microsoft Edge or on a phone / tablet", "Abra la app en Microsoft Edge o en un teléfono / tableta") },
+    { q: HL("🔐", "نسيت رمزي", "J'ai oublié mon code", "Ik ben mijn code vergeten", "I forgot my code", "Olvidé mi código"),
+      a: HL("", "اطلبه من معلّمك أو من الإدارة", "Demandez-le au professeur ou à la direction", "Vraag hem aan de leerkracht of de directie", "Ask the teacher or the principal", "Pídalo al profesor o a la dirección") },
+    { q: HL("📲", "ضع التطبيق على الشاشة الرئيسية", "Mettre l'appli sur l'écran d'accueil", "De app op het startscherm zetten", "Put the app on the home screen", "Poner la app en la pantalla de inicio"),
+      a: HL("", "iPhone: زرّ المشاركة ← «إلى الشاشة الرئيسية». Android: ⋮ ← «إضافة إلى الشاشة الرئيسية»", "iPhone : bouton Partager → « Sur l'écran d'accueil ». Android : ⋮ → « Ajouter à l'écran d'accueil »", "iPhone: Deel-knop → « Zet op beginscherm ». Android: ⋮ → « Toevoegen aan startscherm »", "iPhone: Share → « Add to Home Screen ». Android: ⋮ → « Add to Home screen »", "iPhone: Compartir → « Añadir a pantalla de inicio ». Android: ⋮ → « Añadir a pantalla de inicio »") },
+];
+
+const HELP_UI = {
+    title:   HL("🧭", "كيف أساعدك؟", "Comment puis-je t'aider ?", "Hoe kan ik je helpen?", "How can I help you?", "¿Cómo puedo ayudarte?"),
+    titleA:  HL("🧭", "كيف أساعدك؟", "Comment puis-je vous aider ?", "Hoe kan ik u helpen?", "How can I help you?", "¿Cómo puedo ayudarle?"),
+    next:    HL("🎯", "خطوتك التالية", "Ta prochaine étape", "Je volgende stap", "Your next step", "Tu siguiente paso"),
+    nextA:   HL("🎯", "الخطوة التالية", "Votre prochaine étape", "Uw volgende stap", "Your next step", "Su siguiente paso"),
+    here:    HL("📍", "في هذه الصفحة", "Sur cet écran", "Op dit scherm", "On this screen", "En esta pantalla"),
+    tours:   HL("🎬", "شاهد كيف يعمل", "Voir comment ça marche", "Bekijk hoe het werkt", "See how it works", "Ver cómo funciona"),
+    faq:     HL("🛠️", "مشكلة؟", "Un souci ?", "Een probleem?", "A problem?", "¿Algún problema?"),
+    news:    HL("✨", "الجديد", "Nouveautés", "Nieuw", "What's new", "Novedades"),
+    go:      HL("", "اذهب", "Y aller", "Ga", "Go", "Ir"),
+    allDone: HL("🌟", "أحسنت! أنجزت حصّة اليوم", "Bravo, ta séance du jour est faite !", "Goed zo, je sessie van vandaag is klaar!", "Well done, today's session is complete!", "¡Bravo, tu sesión de hoy está hecha!"),
+    fab:     HL("", "مساعدة", "Aide", "Hulp", "Help", "Ayuda"),
+};
+
+// Ce qui a déjà été fait aujourd'hui (pour cocher la routine de l'élève)
+function gameMark(key) {
+    const g = window._game; if (!g || window._tourRunning) return;
+    const today = todayLocalIso();
+    if (!g.acts || g.acts.day !== today) g.acts = { day: today, k: [] };
+    if (!g.acts.k.includes(key)) { g.acts.k.push(key); gameSave(); }
+}
+const doneToday = key => { const a = window._game?.acts; return !!(a && a.day === todayLocalIso() && a.k.includes(key)); };
+
+function helpContext() {
+    const screen = document.querySelector(".screen.active")?.id || "";
+    if (screen === "screen-login") return "login";
+    if (screen === "screen-letter") return "letter";
+    if (screen === "screen-menu") return (document.querySelector("#screen-menu .tab-btn.active")?.id || "tab-btn-learn").replace("tab-btn-", "");
+    if (screen === "screen-parent") return "parent";
+    const tab = document.querySelector(`#${screen} .admin-tab.active`)?.getAttribute("onclick") || "";
+    return (tab.match(/'([a-z-]+)'/) || [])[1] || "";
+}
+function helpRole() { return currentRole || "login"; }
+
+// 🎯 Suggestions calculées à partir des vraies données
+async function helpSuggestions() {
+    const role = helpRole(), out = [];
+    try {
+        if (role === "student" && currentUser) {
+            const data = await getStudentData(currentUser), g = window._game;
+            const nextLetter = lettres.findIndex((_, i) => !(data.learned || []).includes(i));
+            const pending = +(document.getElementById("exercise-badge")?.textContent || 0);
+            if (pending && !document.getElementById("exercise-badge")?.classList.contains("hidden"))
+                out.push({ ...HL("📋", `لديك ${pending} تمرين`, `Tu as ${pending} exercice(s) à faire`, `Je hebt ${pending} oefening(en) te maken`, `You have ${pending} exercise(s) to do`, `Tienes ${pending} ejercicio(s) por hacer`), act: "tab:exercises" });
+            if (g && g.dayXp < GAME_GOAL)
+                out.push({ ...HL("🔥", `${GAME_GOAL - g.dayXp} نجمة لتحافظ على شعلتك`, `Encore ${GAME_GOAL - g.dayXp} ⭐ pour garder ta flamme`, `Nog ${GAME_GOAL - g.dayXp} ⭐ om je vlam te houden`, `${GAME_GOAL - g.dayXp} more ⭐ to keep your flame`, `${GAME_GOAL - g.dayXp} ⭐ más para mantener tu llama`), act: "tab:harakat" });
+            if (nextLetter >= 0)
+                out.push({ ...HL("📖", `اكتشف حرف ${lettres[nextLetter].l}`, `Découvre la lettre ${lettres[nextLetter].l}`, `Ontdek de letter ${lettres[nextLetter].l}`, `Discover the letter ${lettres[nextLetter].l}`, `Descubre la letra ${lettres[nextLetter].l}`), act: "letter:" + nextLetter });
+            const weak = harakatStats(data).weak;
+            if (weak) { const c = HK_CATS[weak];
+                out.push({ ...HL("💡", `راجع ${c.ar}`, `Révise : ${DYNAMIC_I18N[c.i18n].fr}`, `Herhaal: ${DYNAMIC_I18N[c.i18n].nl}`, `Review: ${DYNAMIC_I18N[c.i18n].en}`, `Repasa: ${DYNAMIC_I18N[c.i18n].es}`), act: "tab:quiz" }); }
+            const def = typeof gameChallengeDef === "function" ? gameChallengeDef() : null;
+            if (def && g && !g.ch.done) out.push({ icon: def.emoji, ar: def.ar, tr: def.tr });
+        } else if (role === "parent" && currentUser) {
+            const data = await getStudentData(currentUser);
+            const days = data.lastActivity ? Math.floor((Date.now() - Date.parse(data.lastActivity)) / 86400000) : null;
+            let waiting = 0;
+            try { const snap = await getDocs(collection(db, "eleves", currentUser, "recordings")); snap.forEach(s => { if (s.data().status === "parent") waiting++; }); } catch (e) {}
+            if (waiting) out.push({ ...HL("🎙️", `${waiting} تسجيل في انتظارك`, `${waiting} enregistrement(s) attendent votre écoute`, `${waiting} opname(s) wachten op u`, `${waiting} recording(s) waiting for you`, `${waiting} grabación(es) le esperan`), act: "scroll:#parent-recordings" });
+            if (days === null || days >= 3) out.push({ ...HL("🔥", days === null ? "لم يبدأ طفلك بعد" : `لم يتدرّب طفلك منذ ${days} أيام`,
+                days === null ? "Votre enfant n'a pas encore commencé : 15 minutes suffisent pour démarrer" : `Votre enfant ne s'est pas entraîné depuis ${days} jours : 15 minutes par jour suffisent`,
+                days === null ? "Uw kind is nog niet begonnen: 15 minuten volstaan om te starten" : `Uw kind oefende al ${days} dagen niet: 15 minuten per dag volstaan`,
+                days === null ? "Your child hasn't started yet: 15 minutes is enough to begin" : `Your child hasn't practised for ${days} days: 15 minutes a day is enough`,
+                days === null ? "Su hijo/a aún no ha empezado: 15 minutos bastan para empezar" : `Su hijo/a no practica desde hace ${days} días: 15 minutos al día bastan`) });
+            const weak = harakatStats(data).weak;
+            if (weak) { const c = HK_CATS[weak];
+                out.push({ ...HL("💡", `ساعده على مراجعة ${c.ar}`, `Aidez-le à réviser : ${DYNAMIC_I18N[c.i18n].fr}`, `Help het herhalen: ${DYNAMIC_I18N[c.i18n].nl}`, `Help them review: ${DYNAMIC_I18N[c.i18n].en}`, `Ayúdele a repasar: ${DYNAMIC_I18N[c.i18n].es}`) }); }
+        } else if (role === "teacher") {
+            const n = id => { const b = document.getElementById(id); return b && !b.classList.contains("hidden") ? (+b.textContent || 1) : 0; };
+            if (n("recordings-badge")) out.push({ ...HL("🎙️", "", `${n("recordings-badge")} enregistrement(s) à écouter`, `${n("recordings-badge")} opname(s) te beluisteren`, `${n("recordings-badge")} recording(s) to listen to`, `${n("recordings-badge")} grabación(es) por escuchar`), act: "teacher:t-recordings" });
+            if (n("submissions-badge")) out.push({ ...HL("📬", "", "Des travaux rendus attendent votre correction", "Ingeleverd werk wacht op verbetering", "Submitted work is waiting for correction", "Hay trabajos entregados por corregir"), act: "teacher:t-submissions" });
+            if (n("teacher-comms-badge")) out.push({ ...HL("📢", "", "Nouveau message de la direction", "Nieuw bericht van de directie", "New message from the principal", "Nuevo mensaje de la dirección"), act: "teacher:t-comms" });
+            const weak = document.getElementById("teacher-harakat-weak")?.textContent.trim();
+            if (weak) out.push({ icon: "💡", ar: "", tr: { fr: weak, nl: weak, en: weak, es: weak }, act: "teacher:t-exercises" });
+        } else if (role === "schooladmin") {
+            const n = id => { const b = document.getElementById(id); return b && !b.classList.contains("hidden"); };
+            if (n("dir-comms-badge")) out.push({ ...HL("📢", "", "Nouveau message dans Communication", "Nieuw bericht in Communicatie", "New message in Communication", "Nuevo mensaje en Comunicación"), act: "admin:sa-comms" });
+        }
+    } catch (e) { console.warn("help", e); }
+    return out.slice(0, 4);
+}
+window.helpAct = (act) => {
+    helpClose();
+    const [kind, arg] = act.split(":");
+    if (kind === "tab") { const b = document.getElementById("tab-btn-" + arg); if (document.getElementById("screen-letter")?.classList.contains("active")) window.showMenu?.(); if (b) window.switchTab(arg, b); }
+    if (kind === "letter") openLetter(+arg);
+    if (kind === "scroll") document.querySelector(arg)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (kind === "teacher") { const b = document.getElementById("t-tab-btn-" + arg.replace("t-", "")); if (b) window.switchTeacherTab(arg, b); }
+    if (kind === "admin") { const b = document.querySelector(`.admin-tab[onclick*="'${arg}'"]`); if (b) window.switchAdminTab(arg, b); }
+};
+
+function helpNewsUnseen() { return wlLoad("hourouf_news_seen", "") < HELP_NEWS[0].date; }
+function helpRenderFab() {
+    let b = document.getElementById("help-fab");
+    if (!b) {
+        b = document.createElement("button");
+        b.id = "help-fab"; b.className = "help-fab";
+        b.onclick = () => window.openHelp();
+        document.body.appendChild(b);
+    }
+    b.innerHTML = `<span class="help-fab-q">؟</span><span class="help-fab-l">${hTx(HELP_UI.fab)}</span>${helpNewsUnseen() ? `<span class="help-fab-dot"></span>` : ""}`;
+    b.setAttribute("aria-label", "مساعدة / Aide / Hulp / Help / Ayuda");
+}
+function helpClose() { document.getElementById("help-sheet-bg")?.remove(); }
+
+window.openHelp = async () => {
+    helpClose();
+    const role = helpRole(), ctx = helpContext(), adult = role !== "student" && role !== "login";
+    const routine = HELP_ROUTINE[role] || HELP_ROUTINE.login;
+    const here = HELP_HERE[ctx];
+    const bg = document.createElement("div");
+    bg.id = "help-sheet-bg"; bg.className = "help-sheet-bg";
+    bg.onclick = e => { if (e.target === bg) helpClose(); };
+    const line = (x) => `<span class="help-i">${x.icon}</span><span class="help-t">${hTx(x, true)}</span>`;
+    const allDone = role === "student" && routine.steps.every(s => s.k.some(doneToday));
+    const tours = role === "student" ? ["general", "harakat", "quiz", "quran", "game"] : role === "parent" ? ["parent"] : [];
+    bg.innerHTML = `<div class="help-sheet" role="dialog" aria-modal="true">
+        <div class="help-grip"></div>
+        <div class="help-head"><h2>${hTx(adult ? HELP_UI.titleA : HELP_UI.title)}</h2><button class="help-x" onclick="helpClose()" aria-label="✕">✕</button></div>
+
+        ${role === "login" ? "" : `<section class="help-sec help-next"><h3>${hTx(adult ? HELP_UI.nextA : HELP_UI.next)}</h3><div id="help-sugg" class="help-sugg"><span class="help-wait">⏳</span></div></section>`}
+
+        ${here ? `<section class="help-sec help-here"><h3>${hTx(HELP_UI.here)}</h3><p>${line(here)}</p></section>` : ""}
+
+        <section class="help-sec"><h3>${hTx(routine.title)}</h3>
+            ${allDone ? `<p class="help-alldone">${line(HELP_UI.allDone)}</p>` : ""}
+            <${routine.seq ? "ol" : "ul"} class="help-routine ${routine.seq ? "seq" : ""}">${routine.steps.map(s => {
+                const done = s.k && s.k.some(doneToday);
+                return `<li class="${done ? "done" : ""}" ${s.go ? `onclick="helpAct('tab:${s.go}')"` : ""}>${line(s)}${done ? `<span class="help-check">✅</span>` : ""}</li>`; }).join("")}
+            </${routine.seq ? "ol" : "ul"}>
+        </section>
+
+        ${tours.length ? `<section class="help-sec"><h3>${hTx(HELP_UI.tours)}</h3><div class="help-tours">${tours.map(k => {
+            const d = TOURS[k], seen = (window._game?.toursSeen || []).includes(k);
+            return `<button onclick="helpClose(); startTour('${k}')">${d.icon} ${gTr(d.title.ar, d.title.tr)} ${seen ? "✅" : ""}</button>`; }).join("")}</div></section>` : ""}
+
+        <section class="help-sec"><h3>${hTx(HELP_UI.faq)}</h3>
+            ${HELP_FAQ.map(f => `<details class="help-faq"><summary>${line(f.q)}</summary><p>${hTx(f.a)}</p></details>`).join("")}
+        </section>
+
+        <section class="help-sec help-news"><h3>${hTx(HELP_UI.news)} ${helpNewsUnseen() ? `<span class="help-new-tag">NEW</span>` : ""}</h3>
+            ${HELP_NEWS.slice(0, 3).map(n => `<div class="help-news-day"><span class="help-news-date">${isoToFr(n.date)}</span>
+                <ul>${n.items.map(i => `<li>${line(i)}</li>`).join("")}</ul></div>`).join("")}
+        </section>
+    </div>`;
+    document.body.appendChild(bg);
+    requestAnimationFrame(() => bg.classList.add("in"));
+    wlStore("hourouf_news_seen", HELP_NEWS[0].date);
+    helpRenderFab();
+    // suggestions calculées après l'ouverture (lecture des données)
+    const sugg = await helpSuggestions();
+    const box = document.getElementById("help-sugg");
+    if (!box) return;
+    box.innerHTML = sugg.length
+        ? sugg.map(s => `<div class="help-card">${line(s)}${s.act ? `<button onclick="helpAct('${s.act}')">${hTx(HELP_UI.go)}</button>` : ""}</div>`).join("")
+        : `<div class="help-card">${line(role === "login" ? HELP_HERE.login : HELP_UI.allDone)}</div>`;
+};
+document.addEventListener("keydown", e => { if (e.key === "Escape") helpClose(); });
+
+// Démarrage : écran d'accueil + bouton d'aide
+wlInit();
+helpRenderFab();
 
 // ============================================================
 //  🎤 ÉCOUTE-TOI ET COMPARE — enregistrement 100 % LOCAL

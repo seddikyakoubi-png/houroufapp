@@ -2161,3 +2161,229 @@ body.tour-on #screen-menu, body.tour-on #screen-parent { pointer-events: none; }
 .tour-item span:first-child { font-size: 26px; } .tour-item span:nth-child(2) { flex: 1; }
 .tour-help-btn { display: block; margin: 0 auto 16px; padding: 10px 20px; border: none; border-radius: 22px; cursor: pointer;
     background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; font-family: 'Tajawal', sans-serif; font-size: 15px; font-weight: 800; }
+
+/* =====================================================================
+   🌙 ÉCRAN D'ACCUEIL — l'arche de nuit, les deux portes, les 3 étapes
+   ===================================================================== */
+#screen-login { --wl-night: #2B2560; --wl-night2: #3D348B; --wl-dawn: #FFB677; --wl-gold: #FFD58A;
+                --wl-paper: #FFF9F0; --wl-ink: #2D3436; --wl-coral: #FF6B6B; --wl-teal: #2EA89A; }
+.welcome {
+    min-height: 100vh; background: var(--wl-paper); display: flex; flex-direction: column; align-items: center;
+    font-family: 'Tajawal', sans-serif; color: var(--wl-ink);
+}
+/* L'arche : le ciel de nuit, une porte qui s'ouvre sur l'apprentissage */
+.wl-sky {
+    position: relative; width: calc(100% - 32px); max-width: 440px; margin-top: 16px; padding: 64px 20px 30px;
+    text-align: center; color: #fff; overflow: hidden;
+    border-radius: 50% 50% 28px 28px / 30% 30% 28px 28px;
+    background:
+        radial-gradient(ellipse 80% 45% at 50% 112%, rgba(255, 182, 119, .55), transparent 70%),
+        linear-gradient(180deg, var(--wl-night) 0%, var(--wl-night2) 70%, #4A3E9E 100%);
+    box-shadow: 0 18px 40px rgba(43, 37, 96, .28);
+}
+.wl-langs { position: absolute; top: 22px; left: 50%; transform: translateX(-50%); display: flex; gap: 4px; direction: ltr; z-index: 2; }
+.wl-langs button {
+    border: 1.5px solid rgba(255,255,255,.35); background: transparent; color: rgba(255,255,255,.85);
+    border-radius: 12px; padding: 2px 8px; font: 800 11px 'Tajawal', sans-serif; cursor: pointer; letter-spacing: .5px;
+}
+.wl-langs button.on { background: #fff; color: var(--wl-night); border-color: #fff; }
+.wl-stars i { position: absolute; width: 3px; height: 3px; border-radius: 50%; background: #fff; opacity: .55; }
+.wl-stars i:nth-child(1) { top: 22%; left: 18%; } .wl-stars i:nth-child(2) { top: 30%; left: 80%; width: 2px; height: 2px; }
+.wl-stars i:nth-child(3) { top: 48%; left: 9%; width: 2px; height: 2px; } .wl-stars i:nth-child(4) { top: 16%; left: 66%; }
+.wl-stars i:nth-child(5) { top: 58%; left: 90%; width: 2px; height: 2px; } .wl-stars i:nth-child(6) { top: 40%; left: 30%; width: 2px; height: 2px; opacity: .35; }
+.wl-stars i:nth-child(7) { top: 62%; left: 72%; opacity: .35; }
+/* Les trois lanternes أ ب ت : le seul moment animé de la page */
+.wl-lanterns { display: flex; justify-content: center; gap: 18px; direction: rtl; margin-bottom: 2px; }
+.wl-lanterns span {
+    font-family: 'Noto Naskh Arabic', serif; font-size: 30px; font-weight: 700; color: var(--wl-gold); line-height: 1.4;
+    text-shadow: 0 0 14px rgba(255, 213, 138, .8); opacity: .25;
+}
+.wl-played .wl-lanterns span { animation: wlLantern .6s ease-out forwards; }
+.wl-played .wl-lanterns span:nth-child(1) { animation-delay: .25s; }
+.wl-played .wl-lanterns span:nth-child(2) { animation-delay: .65s; }
+.wl-played .wl-lanterns span:nth-child(3) { animation-delay: 1.05s; }
+@keyframes wlLantern { 0% { opacity: .25; transform: scale(.8); } 60% { opacity: 1; transform: scale(1.18); } 100% { opacity: 1; transform: scale(1); } }
+.wl-moon { font-size: 52px; margin: 0 0 4px; line-height: 1.1; }
+.wl-hello { margin: 0; font-size: 15px; font-weight: 700; color: #FFE3B8; }
+.welcome .wl-title {
+    font-family: 'Noto Naskh Arabic', serif; font-weight: 700; font-size: 76px; line-height: 1.35; color: #fff; margin: 0;
+    text-shadow: 0 4px 18px rgba(0,0,0,.25);
+}
+.welcome .wl-sub { color: rgba(255,255,255,.88); font-size: 15px; margin: 2px 0 0; line-height: 1.6; }
+
+.wl-ground { width: calc(100% - 32px); max-width: 440px; padding: 22px 0 88px; text-align: center; }
+.welcome .wl-question { font-size: 18px; font-weight: 900; color: var(--wl-ink); margin: 0 0 12px; }
+/* Les deux portes, petites arches qui répondent à la grande */
+.wl-doors { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; direction: rtl; }
+.welcome .wl-door {
+    position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 2px;
+    min-height: 172px; padding: 18px 8px 16px; cursor: pointer; background: #fff; transform: none;
+    border: 3px solid var(--door); border-radius: 90px 90px 22px 22px; box-shadow: 0 8px 0 var(--door-shadow);
+    font-family: 'Tajawal', sans-serif; transition: transform .15s, box-shadow .15s;
+}
+.welcome .wl-door.active { background: #fff; transform: none; box-shadow: 0 8px 0 var(--door-shadow); }
+.welcome .wl-door:hover { transform: translateY(-3px); box-shadow: 0 11px 0 var(--door-shadow); background: #fff; }
+.welcome .wl-door:active { transform: translateY(5px); box-shadow: 0 3px 0 var(--door-shadow); }
+.wl-door-student { --door: var(--wl-coral); --door-shadow: #f1b3b3; }
+.wl-door-parent  { --door: var(--wl-teal);  --door-shadow: #a9ddd6; }
+.wl-door-icon { font-size: 46px; line-height: 1.1; margin-bottom: 4px; }
+.wl-door-ar { font-size: 24px; font-weight: 900; color: var(--wl-ink); line-height: 1.2; }
+.wl-door-tr { font-size: 15px; font-weight: 800; color: var(--door); }
+.wl-door-sub { font-size: 12px; color: #6b6f72; }
+.wl-team-link {
+    margin-top: 18px; background: none; border: none; cursor: pointer; color: #5c5f8a; font: 700 14px 'Tajawal', sans-serif;
+    padding: 6px 10px; border-radius: 10px;
+}
+.wl-team-link:hover { text-decoration: underline; }
+
+/* Profils déjà connus sur cet appareil */
+.wl-resume { margin-bottom: 22px; }
+.wl-resume-title { font-size: 19px; font-weight: 900; margin: 0; }
+.wl-resume-sub { font-size: 13px; color: #6b6f72; margin: 2px 0 10px; }
+.wl-profiles { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+.wl-profile { position: relative; }
+.wl-profile-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; cursor: pointer; font-family: 'Tajawal', sans-serif; padding: 4px; }
+.wl-avatar {
+    position: relative; width: 68px; height: 68px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 30px; font-weight: 900; border: 4px solid #fff; box-shadow: 0 6px 14px rgba(0,0,0,.15); overflow: hidden;
+}
+.wl-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .35; }
+.wl-avatar b { position: relative; }
+.wl-profile-name { font-size: 15px; font-weight: 800; color: var(--wl-ink); max-width: 96px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wl-profile-role { position: absolute; top: 48px; inset-inline-end: 6px; font-size: 18px; }
+.wl-profile-x {
+    position: absolute; top: 0; inset-inline-start: 0; width: 22px; height: 22px; border-radius: 50%; border: none; cursor: pointer;
+    background: #eee; color: #777; font-size: 11px; line-height: 22px; padding: 0; opacity: .8;
+}
+
+/* Formulaire */
+.wl-form { background: #fff; border-radius: 24px; padding: 16px 16px 18px; box-shadow: 0 10px 30px rgba(43,37,96,.10); --acc: var(--wl-coral); }
+.wl-form.parent { --acc: var(--wl-teal); }
+.wl-form-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.wl-back {
+    width: 38px; height: 38px; border-radius: 50%; border: 2px solid #eee; background: #fff; cursor: pointer; font-size: 18px; color: var(--wl-ink);
+    flex: 0 0 38px;
+}
+.wl-form-title { font-size: 16px; font-weight: 900; color: var(--wl-ink); text-align: start; }
+.wl-team-tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+.welcome .wl-team-tab {
+    flex: 1; flex-direction: row; justify-content: center; padding: 10px 8px; border-radius: 14px; border: 2px solid #eee;
+    background: #fff; font: 800 14px 'Tajawal', sans-serif; color: var(--wl-ink); transform: none; box-shadow: none; cursor: pointer;
+}
+.welcome .wl-team-tab.active { border-color: var(--wl-night2); background: #f1effb; color: var(--wl-night2); transform: none; box-shadow: none; }
+.welcome .wl-team-admin { flex: 0 0 44px; opacity: .45; }
+.welcome .wl-team-admin.active { opacity: 1; }
+/* Les trois étapes */
+.wl-steps { display: flex; justify-content: space-between; list-style: none; padding: 0; margin: 0 0 16px; position: relative; direction: rtl; }
+.wl-steps::before { content: ""; position: absolute; top: 16px; left: 16%; right: 16%; height: 3px; background: #eee; border-radius: 2px; }
+.wl-steps li { position: relative; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 12.5px; font-weight: 800; color: #9a9da0; }
+.wl-steps b {
+    width: 34px; height: 34px; border-radius: 50%; background: #fff; border: 3px solid #e6e6e6; display: flex; align-items: center;
+    justify-content: center; font-size: 16px; color: #9a9da0; font-family: 'Noto Naskh Arabic', serif;
+}
+.wl-steps li.now { color: var(--acc); } .wl-steps li.now b { border-color: var(--acc); color: var(--acc); }
+.wl-steps li.done { color: var(--wl-ink); cursor: pointer; } .wl-steps li.done b { background: var(--acc); border-color: var(--acc); color: #fff; }
+.wl-label { display: block; font-size: 15px; font-weight: 800; margin-bottom: 8px; color: var(--wl-ink); }
+.welcome .wl-code { direction: ltr; text-align: center; letter-spacing: 2px; text-transform: uppercase; font-weight: 700; }
+.welcome .wl-code::placeholder { letter-spacing: 2px; color: #c9c9c9; }
+.wl-hint { font-size: 12.5px; color: #75797c; margin: -6px 0 12px; line-height: 1.5; }
+.welcome .login-input:focus { border-color: var(--acc); box-shadow: 0 0 0 3px color-mix(in srgb, var(--acc) 20%, transparent); }
+.wl-form.parent .login-btn { background: linear-gradient(135deg, #2EA89A, #43c6ac); box-shadow: 0 6px 20px rgba(46,168,154,.35); }
+.wl-demo-btn { margin-top: 10px; width: 100%; background: #fff; color: var(--wl-night2); border: 2px solid #ddd8f5; }
+
+.wl-trust { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 16px; padding: 0; margin: 24px 0 0; font-size: 12.5px; color: #6b6f72; }
+.welcome button:focus-visible, .welcome input:focus-visible, .welcome select:focus-visible { outline: 3px solid #A29BFE; outline-offset: 2px; }
+@media (max-width: 360px) { .welcome .wl-title { font-size: 62px; } .wl-door-icon { font-size: 38px; } }
+@media (prefers-reduced-motion: reduce) {
+    .wl-played .wl-lanterns span { animation: none; opacity: 1; }
+    .welcome .wl-door, .help-sheet { transition: none; }
+}
+
+/* =====================================================================
+   🧭 ASSISTANT — bouton permanent et volet d'aide
+   ===================================================================== */
+.help-fab {
+    position: fixed; left: 14px; bottom: 14px; z-index: 900; display: flex; align-items: center; gap: 6px;
+    padding: 6px 14px 6px 6px; border: none; border-radius: 26px; cursor: pointer; direction: ltr;
+    background: #3D348B; color: #fff; font-family: 'Tajawal', sans-serif; box-shadow: 0 8px 20px rgba(43,37,96,.35);
+}
+.help-fab-q {
+    width: 34px; height: 34px; border-radius: 50%; background: #FFD58A; color: #2B2560; display: flex; align-items: center;
+    justify-content: center; font-size: 22px; font-weight: 900; font-family: 'Noto Naskh Arabic', serif;
+}
+.help-fab-l { font-size: 13px; font-weight: 800; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.help-fab-dot { position: absolute; top: 2px; left: 30px; width: 11px; height: 11px; border-radius: 50%; background: #FF6B6B; border: 2px solid #3D348B; }
+body.tour-on .help-fab { display: none; }
+.help-sheet-bg {
+    position: fixed; inset: 0; z-index: 3000; background: rgba(25, 20, 60, 0); display: flex; align-items: flex-end; justify-content: center;
+    transition: background .25s;
+}
+.help-sheet-bg.in { background: rgba(25, 20, 60, .45); }
+.help-sheet {
+    width: 100%; max-width: 560px; max-height: 88vh; overflow-y: auto; background: #FFF9F0; border-radius: 26px 26px 0 0;
+    padding: 6px 16px 24px; font-family: 'Tajawal', sans-serif; color: #2D3436; direction: rtl;
+    transform: translateY(100%); transition: transform .3s cubic-bezier(.2,.9,.3,1);
+}
+.help-sheet-bg.in .help-sheet { transform: translateY(0); }
+.help-grip { width: 44px; height: 5px; border-radius: 3px; background: #ddd; margin: 6px auto 8px; }
+.help-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; position: sticky; top: -6px; background: #FFF9F0; padding: 4px 0 8px; z-index: 1; }
+.help-head h2 { margin: 0; font-size: 19px; color: #2B2560; }
+.help-x { width: 34px; height: 34px; border-radius: 50%; border: none; background: #efeae0; cursor: pointer; font-size: 14px; flex: 0 0 34px; }
+.help-sec { margin-top: 14px; }
+.help-sec h3 { margin: 0 0 8px; font-size: 15px; color: #3D348B; }
+.help-i { flex: 0 0 26px; font-size: 18px; text-align: center; }
+.help-t { flex: 1; line-height: 1.55; font-size: 14px; }
+.help-sugg { display: flex; flex-direction: column; gap: 8px; }
+.help-card { display: flex; align-items: center; gap: 8px; background: #fff; border-radius: 16px; padding: 10px 12px; border: 2px solid #ffe2a8; }
+.help-card button {
+    flex: 0 0 auto; border: none; border-radius: 14px; padding: 7px 14px; cursor: pointer;
+    background: #3D348B; color: #fff; font: 800 13px 'Tajawal', sans-serif;
+}
+.help-wait { color: #999; }
+.help-here p { display: flex; gap: 8px; align-items: flex-start; background: #fff; border-radius: 14px; padding: 10px 12px; margin: 0; }
+.help-routine { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; counter-reset: hstep; }
+.help-routine li { display: flex; align-items: center; gap: 8px; background: #fff; border-radius: 14px; padding: 9px 12px; }
+.help-routine li[onclick] { cursor: pointer; }
+.help-routine.seq li::before {
+    counter-increment: hstep; content: counter(hstep, arabic-indic); flex: 0 0 24px; height: 24px; border-radius: 50%;
+    background: #f1effb; color: #3D348B; font-size: 13px; font-weight: 900; display: flex; align-items: center; justify-content: center;
+}
+.help-routine li.done { background: #eafaf1; }
+.help-routine li.done .help-t { color: #4b7a5c; }
+.help-check { flex: 0 0 auto; }
+.help-alldone { display: flex; gap: 8px; background: #eafaf1; border-radius: 14px; padding: 10px 12px; margin: 0 0 8px; font-weight: 800; }
+.help-tours { display: flex; flex-wrap: wrap; gap: 6px; }
+.help-tours button { border: 2px solid #e5def7; background: #fff; border-radius: 16px; padding: 7px 12px; cursor: pointer; font: 700 13px 'Tajawal', sans-serif; color: #2D3436; }
+.help-faq { background: #fff; border-radius: 14px; padding: 9px 12px; margin-bottom: 6px; }
+.help-faq summary { display: flex; gap: 8px; align-items: center; cursor: pointer; list-style: none; font-weight: 700; }
+.help-faq summary::-webkit-details-marker { display: none; }
+.help-faq p { margin: 8px 0 2px; font-size: 13.5px; color: #555; line-height: 1.6; }
+.help-new-tag { background: #FF6B6B; color: #fff; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 8px; vertical-align: middle; }
+.help-news-day { background: #fff; border-radius: 14px; padding: 8px 12px; margin-bottom: 6px; }
+.help-news-date { font-size: 12px; color: #999; font-weight: 700; }
+.help-news ul { list-style: none; padding: 0; margin: 4px 0 0; }
+.help-news li { display: flex; gap: 8px; align-items: flex-start; padding: 3px 0; }
+
+/* Bilingue sur deux lignes : arabe, puis la traduction plus discrète */
+.wl-ar, .h-ar { display: block; }
+.wl-trl, .h-tr { display: block; font-weight: 500; color: #6b6f72; font-size: .92em; margin-top: 1px; }
+.welcome .wl-label .wl-trl { color: #6b6f72; font-weight: 600; }
+.wl-team-link .wl-trl { color: #7a7da3; }
+.help-head h2 bdi, .help-sec h3 bdi { unicode-bidi: isolate; }
+.help-t .h-tr { color: #5f6366; font-size: 13px; }
+.welcome .wl-pin { direction: ltr; text-align: center; letter-spacing: 6px; font-weight: 800; }
+.welcome .wl-pin::placeholder { letter-spacing: 2px; color: #c9c9c9; }
+.welcome .wl-moon { margin: 0 0 2px; }
+.welcome .login-btn { font-size: 18px; line-height: 1.35; }
+/* Bouton d'aide : rond sur téléphone, avec son nom sur grand écran */
+@media (max-width: 699px) {
+    .help-fab { padding: 6px; }
+    .help-fab-l { display: none; }
+}
+
+/* Sur l'écran d'accueil, le bouton d'aide se place en haut, dans le coin libre à côté de l'arche */
+#screen-login.active ~ #help-fab { top: 14px; bottom: auto; }
+/* Le défi du jour ne doit jamais élargir l'écran : le texte se coupe avec « … » */
+.gb-goal { min-width: 0; max-width: 100%; }
+.gb-goal-text { min-width: 0; }
+#screen-parent .header-title { font-size: 16px; line-height: 1.3; }
