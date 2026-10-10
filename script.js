@@ -4649,6 +4649,8 @@ function hTx(x, stack) {
 }
 
 const HELP_NEWS = [
+    { date: "2026-10-10", items: [
+        HL("👓", "كتابة أكبر وأوضح في المساعد", "Des textes plus grands et plus lisibles dans l'assistant", "Grotere en beter leesbare tekst in de assistent", "Larger, more readable text in the assistant", "Textos más grandes y legibles en el asistente") ] },
     { date: "2026-10-09", items: [
         HL("🧭", "مساعد دائم في كلّ الشاشات", "Un assistant permanent sur tous les écrans (bouton ❓)", "Een vaste assistent op elk scherm (knop ❓)", "A permanent assistant on every screen (❓ button)", "Un asistente permanente en todas las pantallas (botón ❓)"),
         HL("🌙", "شاشة ترحيب جديدة وتسجيل دخول في ٣ خطوات", "Nouvel écran d'accueil, connexion en 3 étapes et profils mémorisés", "Nieuw onthaalscherm, aanmelden in 3 stappen en onthouden profielen", "New welcome screen, 3-step sign-in and remembered profiles", "Nueva pantalla de inicio, acceso en 3 pasos y perfiles recordados") ] },
@@ -4743,6 +4745,8 @@ const HELP_FAQ = [
       a: HL("", "افتح التطبيق في Microsoft Edge أو على الهاتف", "Ouvrez l'appli dans Microsoft Edge ou sur un téléphone / une tablette", "Open de app in Microsoft Edge of op een telefoon / tablet", "Open the app in Microsoft Edge or on a phone / tablet", "Abra la app en Microsoft Edge o en un teléfono / tableta") },
     { q: HL("🔐", "نسيت رمزي", "J'ai oublié mon code", "Ik ben mijn code vergeten", "I forgot my code", "Olvidé mi código"),
       a: HL("", "اطلبه من معلّمك أو من الإدارة", "Demandez-le au professeur ou à la direction", "Vraag hem aan de leerkracht of de directie", "Ask the teacher or the principal", "Pídalo al profesor o a la dirección") },
+    { q: HL("🔎", "الكتابة صغيرة جدًّا", "Le texte est trop petit", "De tekst is te klein", "The text is too small", "El texto es demasiado pequeño"),
+      a: HL("", "على الحاسوب: Ctrl و + للتكبير. على الهاتف: باعد بين إصبعين على الشاشة", "Ordinateur : Ctrl et + pour agrandir (Ctrl et 0 pour revenir). Téléphone : écartez deux doigts sur l'écran", "Computer: Ctrl en + om te vergroten (Ctrl en 0 om terug te gaan). Telefoon: spreid twee vingers op het scherm", "Computer: Ctrl and + to enlarge (Ctrl and 0 to reset). Phone: spread two fingers on the screen", "Ordenador: Ctrl y + para ampliar (Ctrl y 0 para volver). Teléfono: separe dos dedos en la pantalla") },
     { q: HL("📲", "ضع التطبيق على الشاشة الرئيسية", "Mettre l'appli sur l'écran d'accueil", "De app op het startscherm zetten", "Put the app on the home screen", "Poner la app en la pantalla de inicio"),
       a: HL("", "iPhone: زرّ المشاركة ← «إلى الشاشة الرئيسية». Android: ⋮ ← «إضافة إلى الشاشة الرئيسية»", "iPhone : bouton Partager → « Sur l'écran d'accueil ». Android : ⋮ → « Ajouter à l'écran d'accueil »", "iPhone: Deel-knop → « Zet op beginscherm ». Android: ⋮ → « Toevoegen aan startscherm »", "iPhone: Share → « Add to Home Screen ». Android: ⋮ → « Add to Home screen »", "iPhone: Compartir → « Añadir a pantalla de inicio ». Android: ⋮ → « Añadir a pantalla de inicio »") },
 ];
@@ -4757,6 +4761,7 @@ const HELP_UI = {
     faq:     HL("🛠️", "مشكلة؟", "Un souci ?", "Een probleem?", "A problem?", "¿Algún problema?"),
     news:    HL("✨", "الجديد", "Nouveautés", "Nieuw", "What's new", "Novedades"),
     go:      HL("", "اذهب", "Y aller", "Ga", "Go", "Ir"),
+    nothing: HL("✅", "لا شيء عاجل الآن، كلّ شيء على ما يرام", "Rien d'urgent pour l'instant : tout est à jour", "Niets dringends op dit moment: alles is bijgewerkt", "Nothing urgent right now: everything is up to date", "Nada urgente por ahora: todo está al día"),
     allDone: HL("🌟", "أحسنت! أنجزت حصّة اليوم", "Bravo, ta séance du jour est faite !", "Goed zo, je sessie van vandaag is klaar!", "Well done, today's session is complete!", "¡Bravo, tu sesión de hoy está hecha!"),
     fab:     HL("", "مساعدة", "Aide", "Hulp", "Help", "Ayuda"),
 };
@@ -4863,15 +4868,15 @@ window.openHelp = async () => {
     const line = (x) => `<span class="help-i">${x.icon}</span><span class="help-t">${hTx(x, true)}</span>`;
     const allDone = role === "student" && routine.steps.every(s => s.k.some(doneToday));
     const tours = role === "student" ? ["general", "harakat", "quiz", "quran", "game"] : role === "parent" ? ["parent"] : [];
-    bg.innerHTML = `<div class="help-sheet" role="dialog" aria-modal="true">
+    bg.innerHTML = `<div class="help-sheet" role="dialog" aria-modal="true" dir="${helpStaff() ? "ltr" : "rtl"}">
         <div class="help-grip"></div>
-        <div class="help-head"><h2>${hTx(adult ? HELP_UI.titleA : HELP_UI.title)}</h2><button class="help-x" onclick="helpClose()" aria-label="✕">✕</button></div>
+        <div class="help-head"><h2>${hTx(adult ? HELP_UI.titleA : HELP_UI.title, true)}</h2><button class="help-x" onclick="helpClose()" aria-label="✕">✕</button></div>
 
-        ${role === "login" ? "" : `<section class="help-sec help-next"><h3>${hTx(adult ? HELP_UI.nextA : HELP_UI.next)}</h3><div id="help-sugg" class="help-sugg"><span class="help-wait">⏳</span></div></section>`}
+        ${role === "login" ? "" : `<section class="help-sec help-next"><h3>${hTx(adult ? HELP_UI.nextA : HELP_UI.next, true)}</h3><div id="help-sugg" class="help-sugg"><span class="help-wait">⏳</span></div></section>`}
 
-        ${here ? `<section class="help-sec help-here"><h3>${hTx(HELP_UI.here)}</h3><p>${line(here)}</p></section>` : ""}
+        ${here ? `<section class="help-sec help-here"><h3>${hTx(HELP_UI.here, true)}</h3><p>${line(here)}</p></section>` : ""}
 
-        <section class="help-sec"><h3>${hTx(routine.title)}</h3>
+        <section class="help-sec"><h3>${hTx(routine.title, true)}</h3>
             ${allDone ? `<p class="help-alldone">${line(HELP_UI.allDone)}</p>` : ""}
             <${routine.seq ? "ol" : "ul"} class="help-routine ${routine.seq ? "seq" : ""}">${routine.steps.map(s => {
                 const done = s.k && s.k.some(doneToday);
@@ -4879,15 +4884,15 @@ window.openHelp = async () => {
             </${routine.seq ? "ol" : "ul"}>
         </section>
 
-        ${tours.length ? `<section class="help-sec"><h3>${hTx(HELP_UI.tours)}</h3><div class="help-tours">${tours.map(k => {
+        ${tours.length ? `<section class="help-sec"><h3>${hTx(HELP_UI.tours, true)}</h3><div class="help-tours">${tours.map(k => {
             const d = TOURS[k], seen = (window._game?.toursSeen || []).includes(k);
             return `<button onclick="helpClose(); startTour('${k}')">${d.icon} ${gTr(d.title.ar, d.title.tr)} ${seen ? "✅" : ""}</button>`; }).join("")}</div></section>` : ""}
 
-        <section class="help-sec"><h3>${hTx(HELP_UI.faq)}</h3>
+        <section class="help-sec"><h3>${hTx(HELP_UI.faq, true)}</h3>
             ${HELP_FAQ.map(f => `<details class="help-faq"><summary>${line(f.q)}</summary><p>${hTx(f.a)}</p></details>`).join("")}
         </section>
 
-        <section class="help-sec help-news"><h3>${hTx(HELP_UI.news)} ${helpNewsUnseen() ? `<span class="help-new-tag">NEW</span>` : ""}</h3>
+        <section class="help-sec help-news"><h3>${hTx(HELP_UI.news, true)} ${helpNewsUnseen() ? `<span class="help-new-tag">NEW</span>` : ""}</h3>
             ${HELP_NEWS.slice(0, 3).map(n => `<div class="help-news-day"><span class="help-news-date">${isoToFr(n.date)}</span>
                 <ul>${n.items.map(i => `<li>${line(i)}</li>`).join("")}</ul></div>`).join("")}
         </section>
@@ -4902,11 +4907,11 @@ window.openHelp = async () => {
     if (!box) return;
     box.innerHTML = sugg.length
         ? sugg.map(s => `<div class="help-card">${line(s)}${s.act ? `<button onclick="helpAct('${s.act}')">${hTx(HELP_UI.go)}</button>` : ""}</div>`).join("")
-        : `<div class="help-card">${line(role === "login" ? HELP_HERE.login : HELP_UI.allDone)}</div>`;
+        : `<div class="help-card">${line(role === "student" ? HELP_UI.allDone : HELP_UI.nothing)}</div>`;
 };
 document.addEventListener("keydown", e => { if (e.key === "Escape") helpClose(); });
 
-// Démarrage : écran d'accueil + bouton d'aide
+// Démarrage : écran d'accueil + bouton d'aide + taille du texte choisie
 wlInit();
 helpRenderFab();
 
