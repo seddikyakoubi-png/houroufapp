@@ -129,6 +129,7 @@ const formesMots = {
     "ص": { mots:["صَابُون",  "نَصِيب",   "قَفَص",   "رَصَاص"] ,     formes:["صَـ",  "ـصِـ", "ـصْ",  "صْ"]  }, // قفص: ف-ص ✅ | نص: (ن-ص) ✅
     "ض": { mots:["ضِفْدَع",  "نَضِيج",   "بَعْض",   "فَرْض"],    formes:["ضِـ",  "ـضِـ", "ـضْ",  "ضْ"]  }, // بعض: ع-ض ✅ | فرض: ر-ض ✅
     "ط": { mots:["طَبِيب",   "نَطِيح",   "خَطّ",    "شَرْط"],    formes:["طَـ",  "ـطِـ", "ـطّ",  "طْ"]  }, // خط: خ-ط ✅ | شرط: ر-ط ✅
+    "ظ": { mots:["ظَرْف",    "نَظِيف",   "حَظّ",    "حِفَاظ"],   formes:["ظَـ",  "ـظِـ", "ـظّ",  "ظْ"]  }, // حظ: ح-ظ ✅ | حفاظ: ا-ظ ✅
     "ع": { mots:["عَيْن",    "نَعِيم",   "رَبِيع",  "ذِرَاع"],   formes:["عَـ",  "ـعِـ", "ـعْ",  "عْ"]  }, // ربيع: ي-ع ✅ | ذراع: ا-ع ✅
     "غ": { mots:["غُرْفَة",  "نَغِيم",   "مَبْلَغ", "فَرَاغ"],   formes:["غُـ",  "ـغِـ", "ـغْ",  "غْ"]  }, // مبلغ: ل-غ ✅ | فراغ: ا-غ ✅
     "ف": { mots:["فَرَس",    "نَفِيس",   "صَفّ",    "زَوْف"],    formes:["فَـ",  "ـفِـ", "ـفْ",  "فْ"]  }, // صف: ص-ف ✅ | زوف: و-ف ✅
@@ -1498,7 +1499,11 @@ window.playAutoWrite = async () => {
         `;
     } else {
         const data = formesMots[letterChar];
-        if (!data) return;
+        if (!data) {
+            svg.innerHTML = `<text x="110" y="120" font-size="16" text-anchor="middle" fill="#888">⚠️ ${letterChar} ?</text>`;
+            console.warn("Écriture automatique : aucune forme pour", letterChar);
+            return;
+        }
         // 🔤 On retire les harakats (تشكيل) pour ne montrer QUE la forme de la lettre
         const formText = data.formes[formIdx].replace(/[\u064B-\u065F\u0670]/g, "");
         svg.innerHTML = `
