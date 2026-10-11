@@ -122,140 +122,144 @@
       "arabic": "فَأَمَّا الْإِنسَانُ إِذَا مَا ابْتَلَاهُ رَبُّهُ فَأَكْرَمَهُ وَنَعَّمَهُ",
       "french": "Quant à l'homme, quand son Seigneur l'éprouve en l'honorant et en le comblant de bienfaits",
       "dutch": "Wat de mens betreft, wanneer zijn Heer hem beproeft door hem te eren en te overladen met gunsten",
-      "english": "And as for man, when his Lord tries him and [thus] is generous to him and favors him, he says, \"My Lord has honored me.\"",
-      "spanish": "El ser humano, cuando su Señor lo agracia, dice: \"Mi Señor me ha honrado [porque lo merezco]\"."
+      "english": "And as for man, when his Lord tries him and [thus] is generous to him and favors him,",
+      "spanish": "El ser humano, cuando su Señor lo agracia,"
     },
     {
       "number": 16,
       "arabic": "فَيَقُولُ رَبِّي أَكْرَمَنِ",
       "french": "il dit alors : « Mon Seigneur m'a honoré »",
       "dutch": "dan zegt hij: 'Mijn Heer heeft mij geëerd'",
-      "english": "But when He tries him and restricts his provision, he says, \"My Lord has humiliated me.\"",
-      "spanish": "En cambio cuando lo pone a prueba restringiendo su sustento, dice: \"Mi Señor me ha despreciado [y no ha tenido en cuenta mis méritos]\"."
+      "english": "he says, \"My Lord has honored me.\"",
+      "spanish": "dice: \"Mi Señor me ha honrado [porque lo merezco]\"."
     },
     {
       "number": 17,
       "arabic": "وَأَمَّا إِذَا مَا ابْتَلَاهُ فَقَدَرَ عَلَيْهِ رِزْقَهُ",
       "french": "Mais quand Il l'éprouve en limitant sa subsistance",
       "dutch": "Maar wanneer Hij hem beproeft door zijn levensonderhoud te beperken",
-      "english": "No! But you do not honor the orphan",
-      "spanish": "¡Pero no! No han comprendido el verdadero significado de las pruebas [de la riqueza y la pobreza] y por eso no son generosos con el huérfano"
+      "english": "But when He tries him and restricts his provision,",
+      "spanish": "En cambio cuando lo pone a prueba restringiendo su sustento,"
     },
     {
       "number": 18,
       "arabic": "فَيَقُولُ رَبِّي أَهَانَنِ",
       "french": "il dit : « Mon Seigneur m'a humilié »",
       "dutch": "dan zegt hij: 'Mijn Heer heeft mij vernederd'",
-      "english": "And you do not encourage one another to feed the poor.",
-      "spanish": "ni exhortan unos a otros a alimentar al pobre."
+      "english": "he says, \"My Lord has humiliated me.\"",
+      "spanish": "dice: \"Mi Señor me ha despreciado [y no ha tenido en cuenta mis méritos]\"."
     },
     {
       "number": 19,
       "arabic": "كَلَّا ۖ بَل لَّا تُكْرِمُونَ الْيَتِيمَ",
       "french": "Non ! C'est vous plutôt qui n'honorez pas l'orphelin",
       "dutch": "Nee! Integendeel, jullie eren de wees niet",
-      "english": "And you consume inheritance, devouring [it] altogether,",
-      "spanish": "[En lugar de eso] se apropian codiciosamente de los bienes del prójimo,"
+      "english": "No! But you do not honor the orphan",
+      "spanish": "¡Pero no! No han comprendido el verdadero significado de las pruebas [de la riqueza y la pobreza] y por eso no son generosos con el huérfano"
     },
     {
       "number": 20,
       "arabic": "وَلَا تَحَاضُّونَ عَلَىٰ طَعَامِ الْمِسْكِينِ",
       "french": "et qui ne vous incitez pas mutuellement à nourrir le pauvre",
       "dutch": "en sporen elkaar niet aan tot het voeden van de arme",
-      "english": "And you love wealth with immense love.",
-      "spanish": "y son insaciables en su amor [y codicia] por el dinero."
+      "english": "And you do not encourage one another to feed the poor.",
+      "spanish": "ni exhortan unos a otros a alimentar al pobre."
     },
     {
       "number": 21,
       "arabic": "وَتَأْكُلُونَ التُّرَاثَ أَكْلًا لَّمًّا",
       "french": "et vous dévorez l'héritage avec une avidité vorace",
       "dutch": "en jullie verslinden de erfenis met onstuimige gulzigheid",
-      "english": "No! When the earth has been leveled - pounded and crushed -",
-      "spanish": "¡Basta! [Piensen en cuál será su destino] cuando la Tierra sea golpeada una y otra vez,"
+      "english": "And you consume inheritance, devouring [it] altogether,",
+      "spanish": "[En lugar de eso] se apropian codiciosamente de los bienes del prójimo,"
     },
     {
       "number": 22,
       "arabic": "وَتُحِبُّونَ الْمَالَ حُبًّا جَمًّا",
       "french": "et vous aimez les richesses d'un amour excessif",
       "dutch": "en jullie houden overmatig van rijkdom",
-      "english": "And your Lord has come and the angels, rank upon rank,",
-      "spanish": "y llegue su Señor y se presenten los ángeles en fila tras fila,"
+      "english": "And you love wealth with immense love.",
+      "spanish": "y son insaciables en su amor [y codicia] por el dinero."
     },
     {
       "number": 23,
       "arabic": "كَلَّا إِذَا دُكَّتِ الْأَرْضُ دَكًّا دَكًّا",
       "french": "Non ! Quand la terre sera pulvérisée, réduite en poussière",
       "dutch": "Nee! Wanneer de aarde volledig verpulverd wordt",
-      "english": "And brought [within view], that Day, is Hell - that Day, man will remember, but what good to him will be the remembrance?",
-      "spanish": "y sea traído el Infierno. Ese día el hombre recordará sus obras, pero de nada le servirá."
+      "english": "No! When the earth has been leveled - pounded and crushed -",
+      "spanish": "¡Basta! [Piensen en cuál será su destino] cuando la Tierra sea golpeada una y otra vez,"
     },
     {
       "number": 24,
       "arabic": "وَجَاءَ رَبُّكَ وَالْمَلَكُ صَفًّا صَفًّا",
       "french": "et que ton Seigneur viendra, ainsi que les anges, rang par rang",
       "dutch": "en jouw Heer komt, met de engelen, rij na rij",
-      "english": "He will say, \"Oh, I wish I had sent ahead [some good] for my life.\"",
-      "spanish": "Y dirá lamentándose: \"¡Ojalá hubiera realizado buenas obras para mi vida [del más allá]!\""
+      "english": "And your Lord has come and the angels, rank upon rank,",
+      "spanish": "y llegue su Señor y se presenten los ángeles en fila tras fila,"
     },
     {
       "number": 25,
       "arabic": "وَجِيءَ يَوْمَئِذٍ بِجَهَنَّمَ يَوْمَئِذٍ يَتَذَكَّرُ الْإِنسَانُ وَأَنَّىٰ لَهُ الذِّكْرَىٰ",
       "french": "et qu'on amènera ce jour-là l'Enfer — ce jour-là l'homme se souviendra, mais à quoi lui servira ce souvenir ?",
       "dutch": "en die Dag de Hel gebracht wordt — die Dag zal de mens zich herinneren, maar wat zal die herinnering hem baten?",
-      "english": "So on that Day, none will punish [as severely] as His punishment,",
-      "spanish": "Sepan que nadie ha castigado como Él castigará ese día,"
+      "english": "And brought [within view], that Day, is Hell - that Day, man will remember, but what good to him will be the remembrance?",
+      "spanish": "y sea traído el Infierno. Ese día el hombre recordará sus obras, pero de nada le servirá."
     },
     {
       "number": 26,
       "arabic": "يَقُولُ يَا لَيْتَنِي قَدَّمْتُ لِحَيَاتِي",
       "french": "Il dira : « Ah, si seulement j'avais fait de bonnes œuvres pour ma vie ! »",
       "dutch": "Hij zal zeggen: 'Had ik maar vooruit gezonden voor mijn leven!'",
-      "english": "And none will bind [as severely] as His binding [of the evildoers].",
-      "spanish": "y nadie ha encadenado como Él encadenará [ese día]."
+      "english": "He will say, \"Oh, I wish I had sent ahead [some good] for my life.\"",
+      "spanish": "Y dirá lamentándose: \"¡Ojalá hubiera realizado buenas obras para mi vida [del más allá]!\""
     },
     {
       "number": 27,
       "arabic": "فَيَوْمَئِذٍ لَّا يُعَذِّبُ عَذَابَهُ أَحَدٌ",
       "french": "Ce jour-là, nul ne châtiera comme Lui châtie",
       "dutch": "Die Dag zal niemand straffen zoals Hij straft",
-      "english": "[To the righteous it will be said], \"O reassured soul,",
-      "spanish": "[Le será dicho al creyente:] \"¡Oh, alma que estás en paz con tu Señor!"
+      "english": "So on that Day, none will punish [as severely] as His punishment,",
+      "spanish": "Sepan que nadie ha castigado como Él castigará ese día,"
     },
     {
       "number": 28,
       "arabic": "وَلَا يُوثِقُ وَثَاقَهُ أَحَدٌ",
       "french": "et nul n'enchaînera comme Lui enchaîne",
       "dutch": "en niemand zal binden zoals Hij bindt",
-      "english": "Return to your Lord, well-pleased and pleasing [to Him],",
-      "spanish": "Vuelve a la vera de tu Señor complacida, porque Dios está complacido contigo,"
+      "english": "And none will bind [as severely] as His binding [of the evildoers].",
+      "spanish": "y nadie ha encadenado como Él encadenará [ese día]."
     },
     {
       "number": 29,
       "arabic": "يَا أَيَّتُهَا النَّفْسُ الْمُطْمَئِنَّةُ",
       "french": "Ô âme apaisée",
       "dutch": "O gerustgestelde ziel",
-      "english": "And enter among My [righteous] servants",
-      "spanish": "y únete a Mis siervos piadosos"
+      "english": "[To the righteous it will be said], \"O reassured soul,",
+      "spanish": "[Le será dicho al creyente:] \"¡Oh, alma que estás en paz con tu Señor!"
     },
     {
       "number": 30,
       "arabic": "ارْجِعِي إِلَىٰ رَبِّكِ رَاضِيَةً مَّرْضِيَّةً",
       "french": "retourne vers ton Seigneur, satisfaite et agréée",
       "dutch": "keer terug tot jouw Heer, tevreden en welbehaaglijk",
-      "english": "And enter My Paradise.\"",
-      "spanish": "entrando a Mi Paraíso\"."
+      "english": "Return to your Lord, well-pleased and pleasing [to Him],",
+      "spanish": "Vuelve a la vera de tu Señor complacida, porque Dios está complacido contigo,"
     },
     {
       "number": 31,
       "arabic": "فَادْخُلِي فِي عِبَادِي",
       "french": "entre donc parmi Mes serviteurs",
-      "dutch": "treed dan binnen onder Mijn dienaren"
+      "dutch": "treed dan binnen onder Mijn dienaren",
+      "english": "And enter among My [righteous] servants",
+      "spanish": "y únete a Mis siervos piadosos"
     },
     {
       "number": 32,
       "arabic": "وَادْخُلِي جَنَّتِي",
       "french": "et entre dans Mon Paradis",
-      "dutch": "en treed binnen in Mijn Paradijs"
+      "dutch": "en treed binnen in Mijn Paradijs",
+      "english": "And enter My Paradise.\"",
+      "spanish": "entrando a Mi Paraíso\"."
     }
   ],
   "translation_credits": {

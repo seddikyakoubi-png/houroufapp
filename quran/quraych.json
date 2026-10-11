@@ -34,14 +34,16 @@
       "arabic": "الَّذِي أَطْعَمَهُمْ مِنْ جُوعٍ",
       "french": "qui les a nourris contre la faim",
       "dutch": "Die hen tegen honger heeft gevoed",
-      "english": "Who has fed them, [saving them] from hunger and made them safe, [saving them] from fear.",
-      "spanish": "Quien les concedió el sustento para que no sufrieran hambre y les dio seguridad para protegerlos del peligro."
+      "english": "Who has fed them, [saving them] from hunger",
+      "spanish": "Quien les concedió el sustento para que no sufrieran hambre"
     },
     {
       "number": 5,
       "arabic": "وَآمَنَهُمْ مِنْ خَوْفٍ",
       "french": "et les a protégés de la peur",
-      "dutch": "en hen tegen angst heeft beveiligd"
+      "dutch": "en hen tegen angst heeft beveiligd",
+      "english": "and made them safe, [saving them] from fear.",
+      "spanish": "y les dio seguridad para protegerlos del peligro."
     }
   ],
   "translation_credits": {

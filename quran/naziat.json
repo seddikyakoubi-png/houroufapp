@@ -295,22 +295,14 @@
     },
     {
       "number": 37,
-      "arabic": "فَأَمَّا مَن طَغَىٰ",
-      "french": "Quant à celui qui aura été rebelle",
-      "dutch": "Wat betreft hem die opstandig was",
-      "english": "So as for he who transgressed",
-      "spanish": "Quien se haya extralimitado"
+      "arabic": "فَأَمَّا مَن طَغَىٰ وَآثَرَ الْحَيَاةَ الدُّنْيَا",
+      "french": "Quant à celui qui aura été rebelle et aura préféré la vie d'ici-bas",
+      "dutch": "Wat betreft hem die opstandig was en het wereldse leven verkoos",
+      "english": "So as for he who transgressed and preferred the life of the world,",
+      "spanish": "Quien se haya extralimitado y preferido la vida mundanal,"
     },
     {
       "number": 38,
-      "arabic": "وَآثَرَ الْحَيَاةَ الدُّنْيَا",
-      "french": "et aura préféré la vie d'ici-bas",
-      "dutch": "en het wereldse leven verkoos",
-      "english": "And preferred the life of the world,",
-      "spanish": "y preferido la vida mundanal,"
-    },
-    {
-      "number": 39,
       "arabic": "فَإِنَّ الْجَحِيمَ هِيَ الْمَأْوَىٰ",
       "french": "la Fournaise sera alors son refuge",
       "dutch": "de Hel zal dan zijn verblijfplaats zijn",
@@ -318,7 +310,7 @@
       "spanish": "su morada será el Infierno."
     },
     {
-      "number": 40,
+      "number": 39,
       "arabic": "وَأَمَّا مَنْ خَافَ مَقَامَ رَبِّهِ وَنَهَى النَّفْسَ عَنِ الْهَوَىٰ",
       "french": "et quant à celui qui aura craint de comparaître devant son Seigneur et se sera privé des passions",
       "dutch": "en wat betreft hem die het vrezen om voor zijn Heer te staan en de ziel de begeerte ontzegd heeft",
@@ -326,7 +318,7 @@
       "spanish": "En cambio, quien haya tenido conciencia de que comparecerá ante su Señor y haya preservado su alma de seguir sus pasiones,"
     },
     {
-      "number": 41,
+      "number": 40,
       "arabic": "فَإِنَّ الْجَنَّةَ هِيَ الْمَأْوَىٰ",
       "french": "le Paradis sera alors son refuge",
       "dutch": "het Paradijs zal dan zijn verblijfplaats zijn",
@@ -334,7 +326,7 @@
       "spanish": "su morada será el Paraíso."
     },
     {
-      "number": 42,
+      "number": 41,
       "arabic": "يَسْأَلُونَكَ عَنِ السَّاعَةِ أَيَّانَ مُرْسَاهَا",
       "french": "Ils t'interrogent sur l'Heure : quand aura-t-elle lieu ?",
       "dutch": "Zij vragen jou naar het Uur: wanneer zal het plaatsvinden?",
@@ -342,7 +334,7 @@
       "spanish": "Te preguntan cuándo será la hora del Juicio Final."
     },
     {
-      "number": 43,
+      "number": 42,
       "arabic": "فِيمَ أَنتَ مِن ذِكْرَاهَا",
       "french": "Mais en quoi te concerne son évocation ?",
       "dutch": "Maar waarom zou jij het vermelden?",
@@ -350,7 +342,7 @@
       "spanish": "Pero tú [¡oh, Mujámmad!] no tienes conocimiento de cuándo será."
     },
     {
-      "number": 44,
+      "number": 43,
       "arabic": "إِلَىٰ رَبِّكَ مُنتَهَاهَا",
       "french": "C'est vers ton Seigneur qu'en revient le terme final",
       "dutch": "Bij jouw Heer berust het uiteindelijke weten ervan",
@@ -358,12 +350,20 @@
       "spanish": "Solo tu Señor lo sabe."
     },
     {
-      "number": 45,
+      "number": 44,
       "arabic": "إِنَّمَا أَنتَ مُنذِرُ مَن يَخْشَاهَا",
       "french": "Tu n'es que l'avertisseur de celui qui la craint",
       "dutch": "Jij bent slechts de waarschuwer van wie het vreest",
       "english": "You are only a warner for those who fear it.",
       "spanish": "Tú solamente eres un advertidor para quienes tienen temor [al Juicio]."
+    },
+    {
+      "number": 45,
+      "arabic": "كَأَنَّهُمْ يَوْمَ يَرَوْنَهَا لَمْ يَلْبَثُوا إِلَّا عَشِيَّةً أَوْ ضُحَاهَا",
+      "french": "Le jour où ils la verront, il leur semblera n'avoir demeuré qu'un soir ou un matin.",
+      "dutch": "Op de Dag dat zij het zien, zal het zijn alsof zij slechts een avond of een ochtend verbleven hebben",
+      "english": "It will be, on the Day they see it, as though they had not remained [in the world] except for an afternoon or a morning thereof.",
+      "spanish": "El día que lo vean suceder, les parecerá haber permanecido en la vida mundanal solo el tiempo de una tarde o una mañana."
     }
   ],
   "translation_credits": {

@@ -122,46 +122,48 @@
       "arabic": "كَلَّا لَئِن لَّمْ يَنتَهِ",
       "french": "Non ! S'il ne cesse pas",
       "dutch": "Nee! Als hij niet ophoudt",
-      "english": "No! If he does not desist, We will surely drag him by the forelock -",
-      "spanish": "Si no pone fin [a sus agresiones contra los creyentes] lo arrastraré por su frente,"
+      "english": "No! If he does not desist,",
+      "spanish": "Si no pone fin [a sus agresiones contra los creyentes],"
     },
     {
       "number": 16,
       "arabic": "لَنَسْفَعًا بِالنَّاصِيَةِ",
       "french": "Nous le saisirons certainement par le toupet",
       "dutch": "zullen Wij hem zeker bij de haarlok grijpen",
-      "english": "A lying, sinning forelock.",
-      "spanish": "esa frente mentirosa y perversa."
+      "english": "We will surely drag him by the forelock -",
+      "spanish": "lo arrastraré por su frente,"
     },
     {
       "number": 17,
       "arabic": "نَاصِيَةٍ كَاذِبَةٍ خَاطِئَةٍ",
       "french": "un toupet menteur et pécheur",
       "dutch": "een leugenachtige, zondige haarlok",
-      "english": "Then let him call his associates;",
-      "spanish": "Que pida auxilio a sus secuaces,"
+      "english": "A lying, sinning forelock.",
+      "spanish": "esa frente mentirosa y perversa."
     },
     {
       "number": 18,
       "arabic": "فَلْيَدْعُ نَادِيَهُ",
       "french": "Qu'il appelle donc son assemblée",
       "dutch": "Laat hij dan zijn kring maar oproepen",
-      "english": "We will call the angels of Hell.",
-      "spanish": "que llamaré a los ángeles guardianes del Infierno."
+      "english": "Then let him call his associates;",
+      "spanish": "Que pida auxilio a sus secuaces,"
     },
     {
       "number": 19,
       "arabic": "سَنَدْعُ الزَّبَانِيَةَ",
       "french": "Nous appellerons les gardiens de l'Enfer",
       "dutch": "Wij zullen de bewakers van de Hel oproepen",
-      "english": "No! Do not obey him. But prostrate and draw near [to Allah].",
-      "spanish": "¡No! No lo obedezcas, sino que prostérnate [ante Dios] y busca Su proximidad."
+      "english": "We will call the angels of Hell.",
+      "spanish": "que llamaré a los ángeles guardianes del Infierno."
     },
     {
       "number": 20,
       "arabic": "كَلَّا لَا تُطِعْهُ وَاسْجُدْ وَاقْتَرِب",
       "french": "Non ! Ne lui obéis pas, prosterne-toi et rapproche-toi",
-      "dutch": "Nee! Gehoorzaam hem niet, kniel neer en zoek toenadering"
+      "dutch": "Nee! Gehoorzaam hem niet, kniel neer en zoek toenadering",
+      "english": "No! Do not obey him. But prostrate and draw near [to Allah].",
+      "spanish": "¡No! No lo obedezcas, sino que prostérnate [ante Dios] y busca Su proximidad."
     }
   ],
   "translation_credits": {
