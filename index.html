@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حروفي - تعلم الأبجدية العربية</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20260976">
+    <link rel="stylesheet" href="style.css?v=20260981">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -63,7 +64,7 @@
                 <div id="wl-team-tabs" class="wl-team-tabs hidden">
                     <button class="role-card wl-team-tab" data-role="teacher" onclick="wlChooseRole('teacher', this)">👩‍🏫 <span data-wl="teacher"></span></button>
                     <button class="role-card wl-team-tab" data-role="schooladmin" onclick="wlChooseRole('schooladmin', this)">🏫 <span data-wl="director"></span></button>
-                    <button class="role-card wl-team-tab wl-team-admin" data-role="superadmin" onclick="wlChooseRole('superadmin', this)" title="Super Admin">👑</button>
+                    <button class="role-card wl-team-tab wl-team-admin" data-role="superadmin" onclick="wlChooseRole('superadmin', this)" title="Super Admin">👑 Admin</button>
                 </div>
 
                 <!-- ÉLÈVE / PARENT : 3 étapes -->
@@ -131,6 +132,11 @@
 
                 <p id="login-error" class="login-error hidden">❌ Erreur de connexion</p>
             </section>
+
+            <button class="wl-free-quran hidden" onclick="openFreeQuran()">
+                <span class="wl-fq-icon">🎧</span>
+                <span class="wl-fq-text"><b data-wl="freeQuran" data-stack></b><small data-wl="freeQuranSub"></small></span>
+            </button>
 
             <ul class="wl-trust">
                 <li>🎙️ <span data-wl="trustVoice"></span></li>
@@ -284,6 +290,7 @@
                 </div>
                 <div id="qsv-progress" class="quran-progress-badge">0 / 0</div>
             </div>
+            <div id="quran-reciter" class="quran-reciter"></div>
             <!-- Modes -->
             <div class="quran-modes">
                 <button class="quran-mode-btn active" id="qmode-listen" onclick="setQuranMode('listen',this)"><span class="tab-label">🎧 استمع</span></button>
@@ -443,7 +450,7 @@
             <!-- Tableau -->
             <div class="teacher-table-wrap">
                 <table class="teacher-table">
-                    <thead><tr><th id="th-t-eleve"><span class="tab-label">👤 Élève</span></th><th id="th-t-progression"><span class="tab-label">📊 Progression</span></th><th id="th-t-quiz"><span class="tab-label">🏆 Quiz</span></th><th id="th-t-harakat"><span class="tab-label">🔤 Harakat</span></th><th id="th-t-activite"><span class="tab-label">📅 Activité</span></th><th>⚙️</th></tr></thead>
+                    <thead><tr><th id="th-t-eleve"><span class="tab-label">👤 Élève</span></th><th id="th-t-progression"><span class="tab-label">📊 Progression</span></th><th id="th-t-quiz"><span class="tab-label">🏆 Quiz</span></th><th id="th-t-harakat"><span class="tab-label">🔤 Harakat</span></th><th id="th-t-quran"><span class="tab-label">📖 Coran</span></th><th id="th-t-activite"><span class="tab-label">📅 Activité</span></th><th>⚙️</th></tr></thead>
                     <tbody id="teacher-tbody"></tbody>
                 </table>
             </div>
@@ -709,6 +716,12 @@
             <div style="text-align:center;background:#f1effb;border-radius:14px;padding:18px">
                 <span id="sa-school-code-display" style="font-size:26px;font-weight:900;color:var(--primary);letter-spacing:2px">—</span>
             </div>
+            <!-- 📱 QR code : scanné avec un téléphone, il ouvre l'appli avec le code de l'école déjà rempli -->
+            <div class="sa-qr" dir="ltr">
+                <div id="sa-qr-box" class="sa-qr-box"></div>
+                <p class="sa-qr-text">📱 Scannez avec l'appareil photo du téléphone : l'appli s'ouvre avec le code de l'école déjà rempli.</p>
+                <button onclick="printSchoolQr()" class="btn-admin-add">🖨️ Imprimer l'affiche</button>
+            </div>
         </div>
     </div>
 
@@ -880,6 +893,6 @@
     </div>
 </div>
 
-<script type="module" src="script.js?v=20260976"></script>
+<script type="module" src="script.js?v=20260981"></script>
 </body>
 </html>

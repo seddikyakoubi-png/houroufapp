@@ -348,6 +348,7 @@ const FEATURE_I18N = {
     "th-t-progression": { emoji:"📊", ar:"التقدّم",  fr:"Progression",nl:"Voortgang", en:"Progress", es:"Progreso" },
     "th-t-quiz":        { emoji:"🏆", ar:"اختبار",  fr:"Quiz",       nl:"Quiz",      en:"Quiz",     es:"Cuestionario" },
     "th-t-harakat":     { emoji:"🔤", ar:"الحركات", fr:"Harakat", nl:"Harakat", en:"Harakat", es:"Harakat" },
+    "th-t-quran":       { emoji:"📖", ar:"القرآن", fr:"Coran", nl:"Koran", en:"Quran", es:"Corán" },
     "th-t-activite":    { emoji:"📅", ar:"النشاط",  fr:"Activité",   nl:"Activiteit",en:"Activity", es:"Actividad" },
     "t-attendance-title": { emoji:"📅", ar:"تسجيل الحضور", fr:"Faire l'appel", nl:"Aanwezigheid noteren", en:"Take attendance", es:"Pasar lista" },
     "btn-load-attendance":{ emoji:"📋", ar:"تحميل", fr:"Charger", nl:"Laden", en:"Load", es:"Cargar" },
@@ -931,6 +932,7 @@ async function loadParentDashboard(studentId, studentName) {
             return `<div class="p-game"><span class="p-game-m">${GAME_MASCOT[lv - 1]}</span><div><strong>🎮 ${bi("مغامرة حروفي","pGameTitle")}</strong><br>
                 ${bi("المستوى","gLevel")} ${lv} · ${gameTitle(lv)} · ⭐ ${g.xp} · 🔥 ${alive ? g.streak : 0} ${bi("أيام متتالية","pGameStreak")} · 🏅 ${(g.badges || []).length}</div></div>`; })()}
         ${currentOrgType === "family" ? `<div id="parent-photo"></div>` : ""}
+        <div class="admin-section" style="margin-bottom:20px">${quranNamesHtml(data)}</div>
         <div id="parent-recordings"></div>
 
         <div class="admin-section" style="margin-bottom:20px">
@@ -1131,7 +1133,7 @@ window.logout = ()=>{
         if (el) el.innerHTML = "";
     });
     showScreen("screen-login");
-    try { helpClose(); wlInit(); } catch (e) {}
+    try { helpClose(); fqClose(); wlInit(); } catch (e) {}
 };
 
 // MENU ÉLÈVE
@@ -1549,14 +1551,14 @@ async function loadTeacherDashboard(){
     weakBox.innerHTML = classWeak ? `<div class="hk-class-weak">⚠️ ${bi("الحركات","statHarakat")} — ${bi("للمراجعة","hkWeak")} : <strong>${hkCatLabel(classWeak[0])}</strong> (${classWeak[1]} 👤)</div>` : "";
 
     document.getElementById("teacher-tbody").innerHTML=mine.length===0
-        ?`<tr><td colspan="6" style="color:#777;padding:20px">${bi("لا يوجد تلاميذ","noStudentYet")}</td></tr>`
+        ?`<tr><td colspan="7" style="color:#777;padding:20px">${bi("لا يوجد تلاميذ","noStudentYet")}</td></tr>`
         :mine.map(([id,data])=>{
             let name=id;
             if(data.schoolId&&data.classId){const prefix=data.schoolId+"_"+data.classId+"_";if(id.startsWith(prefix))name=id.slice(prefix.length);else name=id.split("_").slice(4).join(" ")||id.split("_").slice(2).join(" ");}else{name=id.split("_").slice(2).join(" ");}const pct=Math.round(data.learned.length/lettres.length*100);const sc=data.quizScores||[];const avgS=sc.length>0?Math.round(sc.reduce((a,s)=>a+(s.score/s.total*100),0)/sc.length):"-";const date=data.lastActivity?new Date(data.lastActivity).toLocaleDateString("fr-FR"):"Jamais";
             const hasPin = data.pin ? "🔐" : "🔓";
             const pinBtn = `<button class="btn-pin-student" onclick="setPinForStudent('${id}', '${name}')" title="Code personnel">${hasPin}</button>`;
             const msgBtn = `<button class="btn-pin-student" onclick="openMessageModal('${id}', '${name}')" title="Envoyer un message au parent">✉️</button>`;
-            return `<tr><td><strong>${name}</strong>${gameSummaryHtml(data)}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${pct}%"></div></div><span>${pct}%</span></div></td><td>${avgS}${avgS!=="-"?"%":""} (${sc.length})</td><td>${harakatCellHtml(data)}</td><td>${date}</td><td style="display:flex;gap:6px">${pinBtn}${msgBtn}<button class="btn-reset-student" onclick="resetOneStudent('${id}')">🔄</button></td></tr>`;}).join("");
+            return `<tr><td><strong>${name}</strong>${gameSummaryHtml(data)}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${pct}%"></div></div><span>${pct}%</span></div></td><td>${avgS}${avgS!=="-"?"%":""} (${sc.length})</td><td>${harakatCellHtml(data)}</td><td><button class="qn-open" onclick="showQuranNames('${id}', '${name.replace(/'/g, "\\'")}')">📖 ${quranSourahsCompleted(data)} ✅</button></td><td>${date}</td><td style="display:flex;gap:6px">${pinBtn}${msgBtn}<button class="btn-reset-student" onclick="resetOneStudent('${id}')">🔄</button></td></tr>`;}).join("");
 
     // Draw charts
     setTimeout(() => {
@@ -1830,6 +1832,7 @@ async function loadSchoolAdminDashboard(){
             school = { ...school, code: newCode };
         }
         codeDisplay.textContent = isDemoMode ? "ECO-DEMO" : (school?.code || "—");
+        renderSchoolQr(isDemoMode ? "" : school?.code);
     }
     updateDirCommsBadge();
 }
@@ -2010,6 +2013,7 @@ window.startDemoMode = () => {
 function loadDemoDashboard({school, teachers, students}){
     const codeDisplay = document.getElementById("sa-school-code-display");
     if (codeDisplay) codeDisplay.textContent = "ECO-DEMO";
+    renderSchoolQr("");
     // --- Classes ---
     document.getElementById("sa-classes-list").innerHTML = Object.entries(school.classes).map(([cid,cl]) => {
         const stuCount = students.filter(([,d]) => d.classId===cid).length;
@@ -2048,7 +2052,7 @@ function loadDemoDashboard({school, teachers, students}){
         const date = data.lastActivity ? new Date(data.lastActivity).toLocaleDateString("fr-FR") : "Jamais";
         const qPct = quranPct(data);
         const qDone = quranSourahsCompleted(data);
-        return `<tr><td>${name}</td><td>${cls}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${pct}%"></div></div><span>${pct}%</span></div></td><td>${avgS}${avgS!=="-"?"%":""} (${sc.length})</td><td>${date}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${qPct}%;background:#43e97b"></div></div><span>${qPct}% (${qDone} ✅)</span></div></td><td>${harakatCellHtml(data)}</td><td><button class="btn-pin-student" disabled title="Désactivé en mode démo" style="opacity:0.4">✉️</button></td></tr>`;
+        return `<tr><td>${name}</td><td>${cls}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${pct}%"></div></div><span>${pct}%</span></div></td><td>${avgS}${avgS!=="-"?"%":""} (${sc.length})</td><td>${date}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${qPct}%;background:#43e97b"></div></div><span>${qPct}%</span></div><button class="qn-open" onclick="showQuranNames('${id}', '${name.replace(/'/g, "\\'")}')">📖 ${qDone} ✅</button></td><td>${harakatCellHtml(data)}</td><td><button class="btn-pin-student" disabled title="Désactivé en mode démo" style="opacity:0.4">✉️</button></td></tr>`;
     }).join("");
 
     setTimeout(() => {
@@ -2145,7 +2149,7 @@ async function saLoadStats(){
         :mine.map(([id,data])=>{
             let name=id;
             if(data.schoolId&&data.classId){const prefix=data.schoolId+"_"+data.classId+"_";if(id.startsWith(prefix))name=id.slice(prefix.length);else name=id.split("_").slice(4).join(" ")||id.split("_").slice(2).join(" ");}else{name=id.split("_").slice(2).join(" ");}const cls=school?.classes?.[data.classId]?.name||"?";const pct=Math.round(data.learned.length/lettres.length*100);const sc=data.quizScores||[];const avgS=sc.length>0?Math.round(sc.reduce((a,s)=>a+(s.score/s.total*100),0)/sc.length):"-";const date=data.lastActivity?new Date(data.lastActivity).toLocaleDateString("fr-FR"):"Jamais";const qPct=quranPct(data);const qDone=quranSourahsCompleted(data);
-            return `<tr><td>${name}</td><td>${cls}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${pct}%"></div></div><span>${pct}%</span></div></td><td>${avgS}${avgS!=="-"?"%":""} (${sc.length})</td><td>${date}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${qPct}%;background:#43e97b"></div></div><span>${qPct}% (${qDone} ✅)</span></div></td><td>${harakatCellHtml(data)}</td><td><button class="btn-pin-student" onclick="openMessageModal('${id}', '${name}')" title="Envoyer un message au parent">✉️</button></td></tr>`;}).join("");
+            return `<tr><td>${name}</td><td>${cls}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${pct}%"></div></div><span>${pct}%</span></div></td><td>${avgS}${avgS!=="-"?"%":""} (${sc.length})</td><td>${date}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${qPct}%;background:#43e97b"></div></div><span>${qPct}%</span></div><button class="qn-open" onclick="showQuranNames('${id}', '${name.replace(/'/g, "\\'")}')">📖 ${qDone} ✅</button></td><td>${harakatCellHtml(data)}</td><td><button class="btn-pin-student" onclick="openMessageModal('${id}', '${name}')" title="Envoyer un message au parent">✉️</button></td></tr>`;}).join("");
 
     // Draw charts
     setTimeout(() => {
@@ -4511,6 +4515,7 @@ function wlRenderTexts() {
     const ft = document.getElementById("wl-form-title");
     if (ft) ft.innerHTML = wlRole === "parent" ? "👪 " + wlHtml("parent") : wlRole === "student" ? "👦 " + wlHtml("student") : "👩‍🏫 " + wlHtml("team", true);
     wlRenderResume();
+    document.querySelector(".wl-free-quran")?.classList.toggle("hidden", !RECITERS_ENABLED);
 }
 window.wlSetLang = (lang) => {
     wlLang = lang; wlStore("hourouf_lang", lang);
@@ -4520,6 +4525,7 @@ window.wlSetLang = (lang) => {
 // --- Portes et formulaire ---
 window.wlChooseRole = (role, btn) => {
     wlRole = role;
+    try { fqClose(); } catch (e) {}
     window.selectRole(role, btn);
     document.getElementById("wl-form").classList.toggle("parent", role === "parent");
     const pin = document.getElementById("student-pin"); if (pin) pin.placeholder = "🔐 • • • •";
@@ -4529,6 +4535,11 @@ window.wlChooseRole = (role, btn) => {
     const team = role === "teacher" || role === "schooladmin" || role === "superadmin";
     document.getElementById("wl-team-tabs").classList.toggle("hidden", !team);
     if (!team) wlGo(document.getElementById("student-school").value ? (document.getElementById("student-name-select").style.display === "block" ? 3 : 2) : 1);
+    if (!team && window._wlPendingSchool && !document.getElementById("student-school").value) {
+        document.getElementById("student-school-code").value = window._wlPendingSchool;
+        window._wlPendingSchool = null;
+        setTimeout(() => wlNext(1), 150);
+    }
     wlRenderTexts();
     setTimeout(() => document.querySelector("#wl-form .login-form-block:not(.hidden) .wl-step:not(.hidden) input, #wl-form .login-form-block:not(.hidden) input")?.focus(), 80);
 };
@@ -4654,6 +4665,10 @@ function hTx(x, stack) {
 }
 
 const HELP_NEWS = [
+    { date: "2026-10-11", items: [
+        HL("📖", "أسماء السور المحفوظة", "Les noms des sourates mémorisées (élève, parent, professeur, directeur)", "De namen van de gememoriseerde soera's", "The names of memorised surahs", "Los nombres de las suras memorizadas"),
+        HL("📱", "رمز QR للمدرسة يفتح التطبيق مع رمزها", "Un QR code par école : il ouvre l'appli avec le code de l'école déjà rempli", "Een QR-code per school: opent de app met de schoolcode al ingevuld", "A QR code per school: opens the app with the school code filled in", "Un código QR por escuela: abre la app con el código ya rellenado"),
+        HL("🔗", "رابط للاستماع إلى قرّاء آخرين", "Un lien pour écouter d'autres récitateurs sur Quran.com", "Een link om naar andere reciteurs te luisteren op Quran.com", "A link to hear other reciters on Quran.com", "Un enlace para escuchar a otros recitadores en Quran.com") ] },
     { date: "2026-10-10", items: [
         HL("👓", "كتابة أكبر وأوضح في المساعد", "Des textes plus grands et plus lisibles dans l'assistant", "Grotere en beter leesbare tekst in de assistent", "Larger, more readable text in the assistant", "Textos más grandes y legibles en el asistente") ] },
     { date: "2026-10-09", items: [
@@ -4916,9 +4931,252 @@ window.openHelp = async () => {
 };
 document.addEventListener("keydown", e => { if (e.key === "Escape") helpClose(); });
 
-// Démarrage : écran d'accueil + bouton d'aide + taille du texte choisie
+// Démarrage : code d'école venu d'un QR code, écran d'accueil, bouton d'aide
+wlApplyUrlSchool();
 wlInit();
 helpRenderFab();
+
+// ============================================================
+//  📖 CORAN : noms des sourates mémorisées + récitateurs reconnus
+// ============================================================
+// Numéro officiel de chaque sourate (pour les récitations en ligne) et nom translittéré (anglais / espagnol)
+const SURAH_INFO = {
+    fatiha:[1,"Al-Fatiha"], naba:[78,"An-Naba"], naziat:[79,"An-Naziat"], abasa:[80,"Abasa"], takwir:[81,"At-Takwir"],
+    infitar:[82,"Al-Infitar"], moutaffifin:[83,"Al-Mutaffifin"], inchiqaq:[84,"Al-Inshiqaq"], bourouj:[85,"Al-Buruj"],
+    tariq:[86,"At-Tariq"], a3la:[87,"Al-Ala"], ghachiya:[88,"Al-Ghashiya"], fajr:[89,"Al-Fajr"], balad:[90,"Al-Balad"],
+    chams:[91,"Ash-Shams"], layl:[92,"Al-Layl"], doha:[93,"Ad-Duha"], charh:[94,"Ash-Sharh"], tine:[95,"At-Tin"],
+    alaq:[96,"Al-Alaq"], qadr:[97,"Al-Qadr"], bayina:[98,"Al-Bayyina"], zalzala:[99,"Az-Zalzala"], adiyat:[100,"Al-Adiyat"],
+    qari3a:[101,"Al-Qaria"], takathur:[102,"At-Takathur"], asr:[103,"Al-Asr"], humaza:[104,"Al-Humaza"], fil:[105,"Al-Fil"],
+    quraych:[106,"Quraysh"], maoun:[107,"Al-Maun"], kawthar:[108,"Al-Kawthar"], kafirun:[109,"Al-Kafirun"], nasr:[110,"An-Nasr"],
+    masad:[111,"Al-Masad"], ikhlas:[112,"Al-Ikhlas"], falaq:[113,"Al-Falaq"], nas:[114,"An-Nas"],
+};
+// Nom de la sourate : arabe + nom dans la langue de l'école
+function surahLabel(s) {
+    const t = currentUILang === "nl" ? s.name_nl : currentUILang === "fr" ? s.name_fr : currentUILang ? SURAH_INFO[s.id]?.[1] : "";
+    return t ? `${s.name_ar} <bdi class="sl-tr">${t}</bdi>` : s.name_ar;
+}
+// Sourates terminées et en cours, dans l'ordre de la liste
+function quranSurahLists(data) {
+    const qm = data?.quranMemorized || {};
+    const done = [], ongoing = [];
+    (typeof SURAHS !== "undefined" ? SURAHS : []).forEach(s => {
+        const n = qm[s.id]?.length || 0;
+        if (n >= s.ayahs) done.push(s); else if (n > 0) ongoing.push({ s, n });
+    });
+    return { done, ongoing };
+}
+Object.assign(DYNAMIC_I18N, {
+    qMemorized:  { fr:"Sourates mémorisées", nl:"Gememoriseerde soera's", en:"Memorised surahs", es:"Suras memorizadas" },
+    qOngoing:    { fr:"En cours", nl:"Bezig", en:"In progress", es:"En curso" },
+    qNone:       { fr:"Aucune sourate terminée pour l'instant", nl:"Nog geen soera afgerond", en:"No surah completed yet", es:"Ninguna sura terminada por ahora" },
+    qExtLink:    { fr:"Écouter d'autres récitateurs sur Quran.com", nl:"Luister naar andere reciteurs op Quran.com", en:"Listen to other reciters on Quran.com", es:"Escuchar a otros recitadores en Quran.com" },
+    qExtNote:    { fr:"S'ouvre dans un nouvel onglet", nl:"Opent in een nieuw tabblad", en:"Opens in a new tab", es:"Se abre en una nueva pestaña" },
+    qReciter:    { fr:"Voix", nl:"Stem", en:"Voice", es:"Voz" },
+    qMyTeacher:  { fr:"Mon professeur", nl:"Mijn leerkracht", en:"My teacher", es:"Mi profesor" },
+    qRecitation: { fr:"Récitation", nl:"Recitatie", en:"Recitation", es:"Recitación" },
+    qOffline:    { fr:"Récitation indisponible (connexion ?) : voix du professeur utilisée", nl:"Recitatie niet beschikbaar (verbinding?): stem van de leerkracht gebruikt", en:"Recitation unavailable (connection?): teacher's voice used", es:"Recitación no disponible (¿conexión?): se usa la voz del profesor" },
+});
+// Bloc « Sourates mémorisées » (parent, élève, fenêtre prof/directeur)
+function quranNamesHtml(data, compact) {
+    const { done, ongoing } = quranSurahLists(data);
+    return `<div class="qn ${compact ? "qn-compact" : ""}">
+        <div class="qn-title">📖 ${bi("السور المحفوظة", "qMemorized")} <b>${done.length}</b></div>
+        ${done.length ? `<div class="qn-chips">${done.map(s => `<span class="qn-chip done">✅ ${surahLabel(s)}</span>`).join("")}</div>`
+                      : `<p class="qn-none">${bi("لم تكتمل أي سورة بعد", "qNone")}</p>`}
+        ${ongoing.length ? `<div class="qn-sub">⏳ ${bi("قيد الحفظ", "qOngoing")}</div>
+            <div class="qn-chips">${ongoing.map(({ s, n }) => `<span class="qn-chip"><span>${surahLabel(s)}</span><i style="--p:${Math.round(n / s.ayahs * 100)}%"></i><small>${n}/${s.ayahs}</small></span>`).join("")}</div>` : ""}
+    </div>`;
+}
+// Fenêtre ouverte depuis les tableaux du professeur / du directeur
+window.showQuranNames = async (studentId, name) => {
+    const demo = isDemoMode && (window._demoData?.students || []).find(([id]) => id === studentId);
+    const data = demo ? demo[1] : await getStudentData(studentId);
+    gameOpenSheet(`<h2>👤 ${name}</h2>${quranNamesHtml(data)}`);
+};
+
+// ---------- Récitateurs (récitations murattal publiées gratuitement par alquran.cloud / everyayah) ----------
+// ⏸️ REPORTÉ : mettre à true quand l'autorisation écrite des ayants droit sera obtenue.
+// Désactivé : seule la voix du professeur est utilisée, et l'écoute libre de l'accueil est masquée.
+const RECITERS_ENABLED = false;
+const QURAN_RECITERS = [
+    { id: "teacher",               ar: "صوت معلّمي",            name: null },
+    { id: "ar.husary",             ar: "محمود خليل الحصري",     name: "Mahmoud Khalil Al-Husary" },
+    { id: "ar.minshawi",           ar: "محمد صدّيق المنشاوي",   name: "Mohamed Siddiq Al-Minshawi" },
+    { id: "ar.alafasy",            ar: "مشاري راشد العفاسي",    name: "Mishary Rashid Alafasy" },
+    { id: "ar.abdulbasitmurattal", ar: "عبد الباسط عبد الصمد",  name: "Abdul Basit Abdus-Samad" },
+];
+const quranReciter = () => { if (!RECITERS_ENABLED) return "teacher"; const r = wlLoad("hourouf_reciter", "teacher"); return QURAN_RECITERS.some(x => x.id === r) ? r : "teacher"; };
+const reciterCache = {};
+async function reciterUrls(surahId, edition) {
+    const key = surahId + "|" + edition;
+    if (reciterCache[key]) return reciterCache[key];
+    const num = SURAH_INFO[surahId]?.[0]; if (!num) return null;
+    const res = await fetch(`https://api.alquran.cloud/v1/surah/${num}/${edition}`);
+    const j = await res.json();
+    const map = {}; j.data.ayahs.forEach(a => map[a.numberInSurah] = a.audio);
+    return (reciterCache[key] = map);
+}
+// Lecture d'un fichier en ligne (balise audio : fonctionne sans autorisation spéciale du serveur)
+function playUrlAudio(url) {
+    return new Promise(resolve => {
+        stopCurrentQuranAudio();
+        const a = new Audio(url);
+        window._reciterAudio = a; window._reciterResolve = resolve;
+        const end = ok => { if (window._reciterAudio === a) { window._reciterAudio = null; window._reciterResolve = null; } resolve(ok); };
+        a.onended = () => end(true); a.onerror = () => end(false);
+        a.play().catch(() => end(false));
+    });
+}
+// Joue un verset avec la voix choisie ; repli sur la voix du professeur si le récitateur est injoignable
+async function playQuranAyah(ayahNumber) {
+    const rec = quranReciter();
+    if (rec !== "teacher") {
+        try {
+            const urls = await reciterUrls(currentSurah.id, rec);
+            if (urls?.[ayahNumber] && await playUrlAudio(urls[ayahNumber])) return true;
+        } catch (e) {}
+        const note = document.getElementById("quran-reciter-note");
+        if (note) note.textContent = "⚠️ " + bi("التلاوة غير متوفرة", "qOffline");
+    }
+    return window.playNormalizedAudio(`quran/audio/${currentSurah.id}_${ayahNumber}.mp3`);
+}
+function renderReciterPicker() {
+    const box = document.getElementById("quran-reciter"); if (!box) return;
+    if (!RECITERS_ENABLED) {
+        // 🔗 En attendant l'autorisation : un simple lien vers la sourate sur Quran.com (site gratuit qui gère lui-même les droits).
+        // L'appli ne diffuse rien : la page s'ouvre dans un nouvel onglet, chez eux.
+        const num = SURAH_INFO[currentSurah?.id]?.[0];
+        box.classList.toggle("hidden", !num);
+        box.innerHTML = num ? `<a class="quran-ext-link" href="https://quran.com/${num}" target="_blank" rel="noopener noreferrer">
+            <span class="qel-icon">🔗</span>
+            <span class="qel-text"><b>${bi("استمع إلى قرّاء آخرين على Quran.com", "qExtLink")}</b><small>${bi("يُفتح في نافذة جديدة", "qExtNote")}</small></span>
+        </a>` : "";
+        return;
+    }
+    const cur = quranReciter(), r = QURAN_RECITERS.find(x => x.id === cur);
+    box.innerHTML = `<label for="quran-reciter-select">🎙️ ${bi("الصوت", "qReciter")}</label>
+        <select id="quran-reciter-select" onchange="setQuranReciter(this.value)">
+            ${QURAN_RECITERS.map(x => `<option value="${x.id}" ${x.id === cur ? "selected" : ""}>${x.id === "teacher" ? bi(x.ar, "qMyTeacher") : `${x.ar}${currentUILang ? " — " + x.name : ""}`}</option>`).join("")}
+        </select>
+        <div id="quran-reciter-note" class="quran-reciter-note">${r?.name ? `${bi("التلاوة", "qRecitation")} : ${r.name} · alquran.cloud` : ""}</div>`;
+}
+window.setQuranReciter = (id) => {
+    wlStore("hourouf_reciter", id);
+    stopCurrentQuranAudio();
+    renderReciterPicker();
+    if (currentQuranMode === "listen") window.speakAyah?.();
+};
+
+// ============================================================
+//  🎧 ÉCOUTE LIBRE DU CORAN — sur l'écran d'accueil, sans connexion ni abonnement
+//  Les récitations des grands récitateurs restent ainsi accessibles gratuitement à tous,
+//  comme le demande la source qui les diffuse (alquran.cloud).
+// ============================================================
+Object.assign(WL, {
+    freeQuran:    ["استمع إلى القرآن مجّانًا", "Écouter le Coran, gratuit et sans compte", "Luister naar de Koran, gratis en zonder account", "Listen to the Quran, free, no account", "Escuchar el Corán, gratis y sin cuenta"],
+    freeQuranSub: ["تلاوات كبار القرّاء", "Récitations de grands récitateurs", "Recitaties van grote reciteurs", "Recitations by great reciters", "Recitaciones de grandes recitadores"],
+    reciter:      ["القارئ", "Récitateur", "Reciteur", "Reciter", "Recitador"],
+    ayah:         ["الآية", "Verset", "Vers", "Verse", "Versículo"],
+    stop:         ["إيقاف", "Arrêter", "Stoppen", "Stop", "Detener"],
+    offline:      ["التلاوة غير متوفرة الآن، تحقّق من الاتصال", "Récitation indisponible, vérifiez la connexion", "Recitatie niet beschikbaar, controleer de verbinding", "Recitation unavailable, check the connection", "Recitación no disponible, compruebe la conexión"],
+});
+let fqPlay = { token: 0, surah: null };
+function fqReciter() { const r = wlLoad("hourouf_reciter_free", "ar.husary"); return QURAN_RECITERS.some(x => x.id === r && x.id !== "teacher") ? r : "ar.husary"; }
+window.openFreeQuran = () => {
+    if (!RECITERS_ENABLED) return;
+    helpClose?.();
+    const m = document.createElement("div");
+    m.className = "help-sheet-bg"; m.id = "fq-bg";
+    m.onclick = e => { if (e.target === m) fqClose(); };
+    const cur = fqReciter(), rec = QURAN_RECITERS.find(x => x.id === cur);
+    m.innerHTML = `<div class="help-sheet fq-sheet" role="dialog" aria-modal="true">
+        <div class="help-grip"></div>
+        <div class="help-head"><h2>🎧 ${wlHtml("freeQuran", true)}</h2><button class="help-x" onclick="fqClose()" aria-label="✕">✕</button></div>
+        <div class="fq-reciter">
+            <label for="fq-reciter">🎙️ ${wlHtml("reciter")}</label>
+            <select id="fq-reciter" onchange="fqSetReciter(this.value)">${QURAN_RECITERS.filter(x => x.id !== "teacher").map(x =>
+                `<option value="${x.id}" ${x.id === cur ? "selected" : ""}>${x.ar} — ${x.name}</option>`).join("")}</select>
+        </div>
+        <div id="fq-now" class="fq-now hidden"></div>
+        <div class="fq-list">${SURAHS.map(s => `<button class="fq-surah" id="fq-${s.id}" onclick="fqPlaySurah('${s.id}')">
+            <span class="fq-num">${SURAH_INFO[s.id][0]}</span>
+            <span class="fq-name"><b>${s.name_ar}</b><small>${(currentUILang || wlLang) === "nl" ? s.name_nl : (currentUILang || wlLang) === "fr" ? s.name_fr : SURAH_INFO[s.id][1]}</small></span>
+            <span class="fq-play">▶️</span></button>`).join("")}</div>
+        <p class="fq-credit">${rec.ar} · ${rec.name} — alquran.cloud</p>
+    </div>`;
+    document.body.appendChild(m);
+    requestAnimationFrame(() => m.classList.add("in"));
+};
+window.fqClose = () => { fqStop(); document.getElementById("fq-bg")?.remove(); };
+window.fqSetReciter = (id) => { wlStore("hourouf_reciter_free", id); const s = fqPlay.surah; fqStop(); const b = document.getElementById("fq-bg"); if (b) { b.remove(); openFreeQuran(); if (s) fqPlaySurah(s); } };
+function fqStop() {
+    fqPlay.token++; fqPlay.surah = null;
+    stopCurrentQuranAudio();
+    document.querySelectorAll(".fq-surah.on").forEach(b => { b.classList.remove("on"); b.querySelector(".fq-play").textContent = "▶️"; });
+    document.getElementById("fq-now")?.classList.add("hidden");
+}
+window.fqStopBtn = fqStop;
+window.fqPlaySurah = async (surahId) => {
+    if (fqPlay.surah === surahId) { fqStop(); return; } // 2e appui = arrêt
+    fqStop();
+    const token = fqPlay.token, s = SURAHS.find(x => x.id === surahId), rec = fqReciter();
+    fqPlay.surah = surahId;
+    const btn = document.getElementById("fq-" + surahId);
+    btn?.classList.add("on"); if (btn) btn.querySelector(".fq-play").textContent = "⏹️";
+    const now = document.getElementById("fq-now");
+    const show = (html) => { if (now && token === fqPlay.token) { now.innerHTML = html; now.classList.remove("hidden"); } };
+    show(`⏳ ${s.name_ar}`);
+    let urls;
+    try { urls = await reciterUrls(surahId, rec); } catch (e) { urls = null; }
+    if (token !== fqPlay.token) return;
+    if (!urls) { show(`⚠️ ${wlHtml("offline")}`); fqPlay.surah = null; btn?.classList.remove("on"); if (btn) btn.querySelector(".fq-play").textContent = "▶️"; return; }
+    if (surahId !== "fatiha") { show(`🎧 ${s.name_ar} — بسم الله`); await playUrlAudio(`https://cdn.islamic.network/quran/audio/128/${rec}/1.mp3`); }
+    for (let n = 1; n <= s.ayahs; n++) {
+        if (token !== fqPlay.token) return;
+        show(`🎧 <b>${s.name_ar}</b> — ${wlHtml("ayah")} ${n} / ${s.ayahs} <button class="fq-stop" onclick="fqStopBtn()">⏹️ ${wlHtml("stop")}</button>
+              <span class="fq-bar"><i style="width:${Math.round(n / s.ayahs * 100)}%"></i></span>`);
+        const ok = await playUrlAudio(urls[n]);
+        if (!ok && token === fqPlay.token) { show(`⚠️ ${wlHtml("offline")}`); fqPlay.surah = null; btn?.classList.remove("on"); if (btn) btn.querySelector(".fq-play").textContent = "▶️"; return; }
+    }
+    if (token === fqPlay.token) fqStop();
+};
+
+// ============================================================
+//  📱 QR CODE DE L'ÉCOLE — ouvre l'appli avec le code de l'école déjà rempli
+//  Adresse : <site>?ecole=ECO-1234  (le code est lu à l'ouverture, puis retiré de l'adresse)
+// ============================================================
+const APP_URL = "https://seddikyakoubi-png.github.io/houroufapp/";
+function schoolQrUrl(code) { return code && code !== "—" ? `${APP_URL}?ecole=${encodeURIComponent(code)}` : APP_URL; }
+function renderSchoolQr(code) {
+    const box = document.getElementById("sa-qr-box"); if (!box) return;
+    box.innerHTML = "";
+    if (typeof QRCode === "undefined") { box.textContent = schoolQrUrl(code); return; }
+    new QRCode(box, { text: schoolQrUrl(code), width: 180, height: 180, colorDark: "#2B2560", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
+}
+window.printSchoolQr = () => {
+    const code = document.getElementById("sa-school-code-display")?.textContent.trim();
+    const img = document.querySelector("#sa-qr-box canvas, #sa-qr-box img");
+    const src = img ? (img.tagName === "CANVAS" ? img.toDataURL() : img.src) : "";
+    const name = (document.getElementById("schooladmin-title")?.textContent || "").replace(/^[^\p{L}]+/u, "");
+    const w = window.open("", "_blank");
+    if (!w) { alert("Autorisez les fenêtres pop-up pour imprimer l'affiche."); return; }
+    w.document.write(`<!doctype html><html lang="fr" dir="ltr"><head><meta charset="utf-8"><title>حروفي — ${name}</title>
+        <style>body{font-family:Arial,sans-serif;text-align:center;color:#2B2560;padding:40px}h1{font-size:64px;margin:0}h2{margin:6px 0 24px}
+        img{width:320px;height:320px}.code{font-size:30px;font-weight:900;letter-spacing:3px;margin:18px 0}p{font-size:18px;color:#333}</style></head>
+        <body><h1>حروفي</h1><h2>${name}</h2><img src="${src}" alt="QR"><div class="code">${code}</div>
+        <p>امسح الرمز بكاميرا الهاتف لفتح التطبيق<br>Scannez avec l'appareil photo du téléphone pour ouvrir l'appli</p>
+        <p style="font-size:14px;color:#777">${schoolQrUrl(code)}</p>
+        <script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script></body></html>`);
+    w.document.close();
+};
+// À l'ouverture : si l'adresse contient ?ecole=…, on prépare la connexion élève / parent
+function wlApplyUrlSchool() {
+    let code = "";
+    try { code = (new URLSearchParams(location.search).get("ecole") || "").trim().toUpperCase(); } catch (e) {}
+    if (!code) return;
+    window._wlPendingSchool = code;
+    try { history.replaceState(null, "", location.pathname); } catch (e) {} // le code ne reste pas dans l'adresse
+}
 
 // ============================================================
 //  🎤 ÉCOUTE-TOI ET COMPARE — enregistrement 100 % LOCAL
@@ -7462,15 +7720,15 @@ window.showQuranHome = () => {
 function renderSurahList() {
   const el = document.getElementById("quran-surah-list");
   if (!el) return;
-  el.innerHTML = SURAHS.map(s => {
+  el.innerHTML = quranNamesHtml({ quranMemorized }, true) + SURAHS.map(s => {
     const memorized = (quranMemorized[s.id] || []).length;
     const pct = Math.round((memorized / s.ayahs) * 100);
     return `
-      <div class="surah-card" onclick="openSurah('${s.id}')" style="border-left: 4px solid ${s.color}">
+      <div class="surah-card ${memorized >= s.ayahs ? "surah-done" : ""}" onclick="openSurah('${s.id}')" style="border-left: 4px solid ${s.color}">
         <div class="surah-card-info">
           <div class="surah-name-ar" style="color:${s.color}">${s.name_ar}</div>
           <div class="surah-name-fr">${s.name_fr} — ${s.name_nl}</div>
-          <div class="surah-ayahs">${s.ayahs} آيات</div>
+          <div class="surah-ayahs">${s.ayahs} آيات ${memorized >= s.ayahs ? `<span class="surah-done-tag">✅ ${bi("محفوظة", "qMemorized")}</span>` : ""}</div>
         </div>
         <div class="surah-card-progress">
           <div class="surah-progress-bar">
@@ -7500,6 +7758,7 @@ window.openSurah = async (surahId) => {
   document.getElementById("qsv-name-ar").textContent = currentSurah.name_ar;
   document.getElementById("qsv-name-fr").textContent = currentSurah.name_fr + " — " + currentSurah.name_nl;
   updateQuranProgress();
+  renderReciterPicker();
   document.querySelectorAll(".quran-mode-btn").forEach(b => b.classList.remove("active"));
   document.getElementById("qmode-listen").classList.add("active");
   renderListenMode();
@@ -7610,6 +7869,12 @@ function loadNormalizedBuffer(path) {
 // nouveau verset, AVANT même de commencer à charger son fichier audio. Sinon, la coupure
 // n'intervenait qu'après le téléchargement/décodage du fichier suivant (donc avec retard).
 function stopCurrentQuranAudio() {
+    if (window._reciterAudio) {
+        const a = window._reciterAudio, r = window._reciterResolve;
+        window._reciterAudio = null; window._reciterResolve = null;
+        try { a.pause(); } catch (e) {}
+        if (r) r(true);
+    }
     if (window._currentQuranSource) {
         try { window._currentQuranSource.onended = null; window._currentQuranSource.stop(); } catch (e) {}
         window._currentQuranSource = null;
@@ -7645,8 +7910,7 @@ window.speakAyah = async () => {
   if (!currentSurahData) return;
   stopCurrentQuranAudio(); // coupe l'ancien verset SANS ATTENDRE le chargement du nouveau
   const ayah = currentSurahData.ayahs[currentAyahIndex];
-  const mp3Path = `quran/audio/${currentSurah.id}_${ayah.number}.mp3`;
-  const ok = await window.playNormalizedAudio(mp3Path);
+  const ok = await playQuranAyah(ayah.number);
   if (!ok) window.speakArabic(ayah.arabic); // Fichier MP3 non trouvé → synthèse vocale
 };
 
@@ -7659,13 +7923,12 @@ window.repeatAyah = async () => {
   const REPEAT_COUNT = 3;
   const PAUSE_MS = 500;
   const ayah = currentSurahData.ayahs[currentAyahIndex];
-  const mp3Path = `quran/audio/${currentSurah.id}_${ayah.number}.mp3`;
 
   const repeatBtn = document.querySelector(".q-btn-repeat");
   if (repeatBtn) { repeatBtn.disabled = true; repeatBtn.textContent = "🔁 ..."; }
 
   for (let i = 0; i < REPEAT_COUNT; i++) {
-    const ok = await window.playNormalizedAudio(mp3Path);
+    const ok = await playQuranAyah(ayah.number);
     if (!ok) {
       window.speakArabic(ayah.arabic);
       await new Promise((resolve) => setTimeout(resolve, 1800));
@@ -7739,6 +8002,7 @@ window.togglePauseFullSurah = () => {
   window.fullSurahPlayback.paused = !window.fullSurahPlayback.paused;
   const ctx = window._houroufAudioCtx;
   if (ctx) { window.fullSurahPlayback.paused ? ctx.suspend() : ctx.resume(); }
+  if (window._reciterAudio) { window.fullSurahPlayback.paused ? window._reciterAudio.pause() : window._reciterAudio.play(); }
   const label = document.getElementById("btn-speak-full-surah-label");
   if (label) label.textContent = window.fullSurahPlayback.paused ? bi("متابعة","resumeReading") : bi("إيقاف مؤقت","pauseReading");
   const btn = document.getElementById("btn-speak-full-surah");
@@ -7752,15 +8016,20 @@ window.stopFullSurah = () => {
   const ctx = window._houroufAudioCtx;
   if (ctx) ctx.resume();
   if (window._currentQuranSource) { try { window._currentQuranSource.stop(); } catch(e) {} }
+  stopCurrentQuranAudio();
 };
 
 window.speakFullSurah = async () => {
   window.fullSurahPlayback = { paused: false, stopped: false, playing: true };
   renderFullSurahControls(true);
 
+  const rec = quranReciter();
   // Charger + jouer la Bassmala (MP3 dédié si présent, sinon synthèse vocale)
-  const basmalaLoaded = await loadNormalizedBuffer(`quran/audio/basmala.mp3`);
-  if (basmalaLoaded) {
+  // Avec un récitateur : sa propre Bassmala (1er verset du Coran), sauf pour Al-Fatiha qui la contient déjà
+  const basmalaLoaded = rec === "teacher" ? await loadNormalizedBuffer(`quran/audio/basmala.mp3`) : null;
+  if (rec !== "teacher") {
+    if (currentSurah.id !== "fatiha") await playUrlAudio(`https://cdn.islamic.network/quran/audio/128/${rec}/1.mp3`);
+  } else if (basmalaLoaded) {
     await playLoadedBuffer(basmalaLoaded);
   } else {
     window.speakArabic("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ");
@@ -7771,7 +8040,7 @@ window.speakFullSurah = async () => {
 
   const ayahs = currentSurahData.ayahs;
   // 🚀 Précharger le 1er verset pendant que la Bassmala vient de se terminer
-  let nextBufferPromise = loadNormalizedBuffer(`quran/audio/${currentSurah.id}_${ayahs[0].number}.mp3`);
+  let nextBufferPromise = rec === "teacher" ? loadNormalizedBuffer(`quran/audio/${currentSurah.id}_${ayahs[0].number}.mp3`) : null;
 
   for (let i = 0; i < ayahs.length; i++) {
     if (window.fullSurahPlayback.stopped) break;
@@ -7788,6 +8057,14 @@ window.speakFullSurah = async () => {
       ayahEl.scrollIntoView({ behavior: "smooth", block: "center" });
     }
 
+    if (rec !== "teacher") {
+      if (!(await playQuranAyah(ayahs[i].number))) { window.speakArabic(ayahs[i].arabic); await new Promise(r => setTimeout(r, 2000)); }
+      if (ayahEl) { ayahEl.classList.remove("now-playing"); ayahEl.style.background = ""; }
+      if (window.fullSurahPlayback.stopped) break;
+      await new Promise(r => setTimeout(r, 400));
+      await waitWhilePausedFullSurah();
+      continue;
+    }
     const loaded = await nextBufferPromise;
     // 🚀 Lancer dès maintenant le préchargement du verset SUIVANT, pendant que celui-ci joue
     if (i + 1 < ayahs.length) {
