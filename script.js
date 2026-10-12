@@ -4058,56 +4058,57 @@ function renderDemoNews() {
     let box = document.getElementById("demo-news");
     if (!box) { box = document.createElement("div"); box.id = "demo-news"; screen.querySelector(".admin-tabs")?.before(box); }
     if (!isDemoMode) { box.innerHTML = ""; return; }
-    const L = currentUILang || "fr"; // la démo est toujours présentée avec une langue de traduction
-    const N = (e, ar, t, d) => [e, ar, t[L] || t.fr, d[L] || d.fr];
+    const L = currentUILang || "ar"; // "ar" = présentation en arabe seulement
+    const N = (e, ar, t, d) => [e, ar, L === "ar" ? "" : (t[L] || t.fr), d[L] || d.fr];
     const pupil = [
         N("🔤", "الحركات بصوت المعلم", { fr:"Harakat avec la voix de l'enseignant", nl:"Harakat met de stem van de leerkracht", en:"Harakat in the teacher's voice", es:"Harakat con la voz del profesor" },
-               { fr:"303 syllabes : voyelles brèves, soukoun, madd, chadda, tanwin", nl:"303 lettergrepen: korte klinkers, soekoen, madd, sjadda, tanwien", en:"303 syllables: short vowels, sukun, madd, shadda, tanwin", es:"303 sílabas: vocales breves, sukún, madd, shadda, tanwín" }),
+               { ar:"٣٠٣ مقاطع: الحركات القصيرة والسكون والمدّ والشدّة والتنوين", fr:"303 syllabes : voyelles brèves, soukoun, madd, chadda, tanwin", nl:"303 lettergrepen: korte klinkers, soekoen, madd, sjadda, tanwien", en:"303 syllables: short vowels, sukun, madd, shadda, tanwin", es:"303 sílabas: vocales breves, sukún, madd, shadda, tanwín" }),
         N("🎵", "سلاسل المقاطع وتكوين الكلمات", { fr:"Séries de syllabes et mots", nl:"Lettergreepreeksen en woorden", en:"Syllable series and words", es:"Series de sílabas y palabras" },
-               { fr:"Lecture en série à la vitesse choisie, puis l'élève compose ses mots et les entend lus d'un trait", nl:"Reeksen op het gekozen tempo; daarna maakt de leerling woorden en hoort ze vloeiend gelezen", en:"Series at the chosen speed; then the pupil builds words and hears them read smoothly", es:"Series a la velocidad elegida; luego el alumno forma palabras y las oye leídas de corrido" }),
+               { ar:"قراءة متتالية بالسرعة المختارة، ثمّ يكوّن التلميذ كلماته ويسمعها مقروءةً موصولة", fr:"Lecture en série à la vitesse choisie, puis l'élève compose ses mots et les entend lus d'un trait", nl:"Reeksen op het gekozen tempo; daarna maakt de leerling woorden en hoort ze vloeiend gelezen", en:"Series at the chosen speed; then the pupil builds words and hears them read smoothly", es:"Series a la velocidad elegida; luego el alumno forma palabras y las oye leídas de corrido" }),
         N("🎤", "استمع إلى نفسك وقارن", { fr:"Écoute-toi et compare", nl:"Luister naar jezelf en vergelijk", en:"Listen to yourself and compare", es:"Escúchate y compara" },
-               { fr:"Enregistrement 100 % local : rien n'est envoyé ni stocké", nl:"100 % lokale opname: niets wordt verzonden of bewaard", en:"100% local recording: nothing is sent or stored", es:"Grabación 100 % local: nada se envía ni se guarda" }),
+               { ar:"تسجيل على الجهاز فقط: لا يُرسَل شيء ولا يُحفَظ", fr:"Enregistrement 100 % local : rien n'est envoyé ni stocké", nl:"100 % lokale opname: niets wordt verzonden of bewaard", en:"100% local recording: nothing is sent or stored", es:"Grabación 100 % local: nada se envía ni se guarda" }),
         N("🎮", "مغامرة حروفي", { fr:"Hourouf Aventure", nl:"Hourouf Avontuur", en:"Hourouf Adventure", es:"Aventura Hourouf" },
-               { fr:"Étoiles, compagnon qui grandit, série de jours 🔥, défi du jour, badges", nl:"Sterren, een maatje dat groeit, dagenreeks 🔥, dagelijkse uitdaging, badges", en:"Stars, a growing buddy, day streak 🔥, daily challenge, badges", es:"Estrellas, un compañero que crece, racha de días 🔥, reto del día, insignias" }),
+               { ar:"نجوم، ورفيق يكبر، وسلسلة أيّام 🔥، وتحدٍّ يوميّ، وأوسمة", fr:"Étoiles, compagnon qui grandit, série de jours 🔥, défi du jour, badges", nl:"Sterren, een maatje dat groeit, dagenreeks 🔥, dagelijkse uitdaging, badges", en:"Stars, a growing buddy, day streak 🔥, daily challenge, badges", es:"Estrellas, un compañero que crece, racha de días 🔥, reto del día, insignias" }),
         N("📖", "القرآن آيةً بعد آية", { fr:"Le Coran, verset par verset", nl:"De Koran, vers na vers", en:"The Quran, verse by verse", es:"El Corán, versículo a versículo" },
-               { fr:"Texte et récitation alignés, traduction FR · NL · EN · ES, lien vers d'autres récitateurs", nl:"Tekst en recitatie op elkaar afgestemd, vertaling FR · NL · EN · ES, link naar andere reciteurs", en:"Text and recitation aligned, FR · NL · EN · ES translation, link to other reciters", es:"Texto y recitación alineados, traducción FR · NL · EN · ES, enlace a otros recitadores" }),
+               { ar:"النصّ والتلاوة متطابقان، مع ترجمة بالفرنسية والهولندية والإنجليزية والإسبانية، ورابط لقرّاء آخرين", fr:"Texte et récitation alignés, traduction FR · NL · EN · ES, lien vers d'autres récitateurs", nl:"Tekst en recitatie op elkaar afgestemd, vertaling FR · NL · EN · ES, link naar andere reciteurs", en:"Text and recitation aligned, FR · NL · EN · ES translation, link to other reciters", es:"Texto y recitación alineados, traducción FR · NL · EN · ES, enlace a otros recitadores" }),
     ];
     const school = [
         N("📊", "متابعة دقيقة", { fr:"Un suivi précis", nl:"Nauwkeurige opvolging", en:"Detailed tracking", es:"Seguimiento detallado" },
-               { fr:"Lettres, harakat, quiz et noms des sourates mémorisées, par élève et par classe", nl:"Letters, harakat, quizzen en namen van de gememoriseerde soera's, per leerling en per klas", en:"Letters, harakat, quizzes and names of memorised surahs, per pupil and per class", es:"Letras, harakat, cuestionarios y nombres de las suras memorizadas, por alumno y por clase" }),
+               { ar:"الحروف والحركات والاختبارات وأسماء السور المحفوظة، لكلّ تلميذ ولكلّ قسم", fr:"Lettres, harakat, quiz et noms des sourates mémorisées, par élève et par classe", nl:"Letters, harakat, quizzen en namen van de gememoriseerde soera's, per leerling en per klas", en:"Letters, harakat, quizzes and names of memorised surahs, per pupil and per class", es:"Letras, harakat, cuestionarios y nombres de las suras memorizadas, por alumno y por clase" }),
         N("📱", "دخول سهل ورمز QR", { fr:"Connexion simple + QR code", nl:"Eenvoudig aanmelden + QR-code", en:"Easy sign-in + QR code", es:"Acceso fácil + código QR" },
-               { fr:"Accueil rassurant, connexion en 3 étapes ; le QR de l'école remplit le code tout seul", nl:"Geruststellend onthaal, aanmelden in 3 stappen; de QR-code vult de schoolcode zelf in", en:"Friendly welcome, 3-step sign-in; the school QR fills in the code", es:"Bienvenida tranquilizadora, acceso en 3 pasos; el QR rellena el código" }),
+               { ar:"استقبال مطمئن، ودخول في ٣ خطوات، ورمز QR يكتب رمز المدرسة تلقائيًا", fr:"Accueil rassurant, connexion en 3 étapes ; le QR de l'école remplit le code tout seul", nl:"Geruststellend onthaal, aanmelden in 3 stappen; de QR-code vult de schoolcode zelf in", en:"Friendly welcome, 3-step sign-in; the school QR fills in the code", es:"Bienvenida tranquilizadora, acceso en 3 pasos; el QR rellena el código" }),
         N("🧭", "مساعد دائم وجولات", { fr:"Assistant ❓ et visites animées", nl:"Assistent ❓ en rondleidingen", en:"❓ Assistant and animated tours", es:"Asistente ❓ y visitas animadas" },
-               { fr:"Sur chaque écran : quoi faire, les nouveautés, et une visite commentée à voix haute", nl:"Op elk scherm: wat te doen, het nieuws en een rondleiding met stem", en:"On every screen: what to do, what's new, and a spoken tour", es:"En cada pantalla: qué hacer, novedades y una visita narrada" }),
+               { ar:"في كلّ شاشة: ماذا أفعل، وما الجديد، وجولة مشروحة بالصوت", fr:"Sur chaque écran : quoi faire, les nouveautés, et une visite commentée à voix haute", nl:"Op elk scherm: wat te doen, het nieuws en een rondleiding met stem", en:"On every screen: what to do, what's new, and a spoken tour", es:"En cada pantalla: qué hacer, novedades y una visita narrada" }),
         N("🌍", "أربع لغات", { fr:"4 langues à côté de l'arabe", nl:"4 talen naast het Arabisch", en:"4 languages alongside Arabic", es:"4 idiomas junto al árabe" },
-               { fr:"Français, néerlandais, anglais, espagnol : élèves, parents, professeurs, direction", nl:"Frans, Nederlands, Engels, Spaans: leerlingen, ouders, leerkrachten, directie", en:"French, Dutch, English, Spanish: pupils, parents, teachers, principal", es:"Francés, neerlandés, inglés, español: alumnos, padres, profesores, dirección" }),
+               { ar:"الفرنسية والهولندية والإنجليزية والإسبانية: للتلاميذ والأولياء والمعلّمين والإدارة", fr:"Français, néerlandais, anglais, espagnol : élèves, parents, professeurs, direction", nl:"Frans, Nederlands, Engels, Spaans: leerlingen, ouders, leerkrachten, directie", en:"French, Dutch, English, Spanish: pupils, parents, teachers, principal", es:"Francés, neerlandés, inglés, español: alumnos, padres, profesores, dirección" }),
         N("👪", "التسجيلات عبر الوالدين", { fr:"Enregistrements via les parents", nl:"Opnames via de ouders", en:"Recordings via the parents", es:"Grabaciones a través de los padres" },
-               { fr:"La voix de l'élève va d'abord aux parents, qui choisissent quoi transmettre au professeur", nl:"De stem van de leerling gaat eerst naar de ouders, die kiezen wat naar de leerkracht gaat", en:"The pupil's voice goes to the parents first, who choose what to pass on to the teacher", es:"La voz del alumno va primero a los padres, que eligen qué enviar al profesor" }),
+               { ar:"يصل صوت التلميذ أوّلًا إلى الوالدين، فيختاران ما يُرسَل إلى المعلّم", fr:"La voix de l'élève va d'abord aux parents, qui choisissent quoi transmettre au professeur", nl:"De stem van de leerling gaat eerst naar de ouders, die kiezen wat naar de leerkracht gaat", en:"The pupil's voice goes to the parents first, who choose what to pass on to the teacher", es:"La voz del alumno va primero a los padres, que eligen qué enviar al profesor" }),
         N("📷", "النسخة العائلية", { fr:"Version famille", nl:"Gezinsversie", en:"Family version", es:"Versión familiar" },
-               { fr:"Chaque enfant a sa photo comme logo et son propre parcours", nl:"Elk kind heeft zijn foto als logo en zijn eigen traject", en:"Each child has their photo as a logo and their own path", es:"Cada niño tiene su foto como logo y su propio recorrido" }),
+               { ar:"لكلّ طفل صورته شعارًا ومساره الخاصّ", fr:"Chaque enfant a sa photo comme logo et son propre parcours", nl:"Elk kind heeft zijn foto als logo en zijn eigen traject", en:"Each child has their photo as a logo and their own path", es:"Cada niño tiene su foto como logo y su propio recorrido" }),
     ];
     const tx = (o) => o[L] || o.fr;
-    const card = ([e, ar, t, d]) => `<div class="demo-news-card"><div class="dn-e">${e}</div><div class="dn-ar">${ar}</div><div class="dn-fr"><bdi>${t}</bdi></div><div class="dn-txt"><bdi>${d}</bdi></div></div>`;
-    const flags = { fr:"🇫🇷 FR", nl:"🇧🇪 NL", en:"🇬🇧 EN", es:"🇪🇸 ES" };
-    box.innerHTML = `<div class="demo-news" dir="ltr">
-        <div class="demo-news-title">✨ الجديد في حروفي / <bdi>${tx({ fr:"Nouveautés", nl:"Nieuw", en:"What's new", es:"Novedades" })}</bdi></div>
-        <div class="demo-langs"><span>${tx({ fr:"Langue de présentation :", nl:"Taal van de voorstelling:", en:"Presentation language:", es:"Idioma de la presentación:" })}</span>
-            ${WL_LANGS.map(l => `<button class="demo-lang${l === L ? " on" : ""}" onclick="demoSetLang('${l}')">${flags[l]}</button>`).join("")}</div>
+    const card = ([e, ar, t, d]) => `<div class="demo-news-card"><div class="dn-e">${e}</div><div class="dn-ar">${ar}</div>${t ? `<div class="dn-fr"><bdi>${t}</bdi></div>` : ""}<div class="dn-txt"><bdi>${d}</bdi></div></div>`;
+    const flags = { ar:"ع العربية", fr:"🇫🇷 FR", nl:"🇧🇪 NL", en:"🇬🇧 EN", es:"🇪🇸 ES" };
+    box.innerHTML = `<div class="demo-news" dir="${L === "ar" ? "rtl" : "ltr"}">
+        <div class="demo-news-title">✨ الجديد في حروفي${L === "ar" ? "" : ` / <bdi>${tx({ fr:"Nouveautés", nl:"Nieuw", en:"What's new", es:"Novedades" })}</bdi>`}</div>
+        <div class="demo-langs"><span>${tx({ ar:"لغة العرض:", fr:"Langue de présentation :", nl:"Taal van de voorstelling:", en:"Presentation language:", es:"Idioma de la presentación:" })}</span>
+            ${["ar", ...WL_LANGS].map(l => `<button class="demo-lang${l === L ? " on" : ""}" onclick="demoSetLang('${l}')">${flags[l]}</button>`).join("")}</div>
         <div class="demo-actions">
-            <button class="demo-tour-btn" onclick="startTour('director')">🎬 ${tx({ fr:"Présentation guidée (2 min)", nl:"Begeleide voorstelling (2 min)", en:"Guided presentation (2 min)", es:"Presentación guiada (2 min)" })}</button>
-            <button class="demo-try-btn" onclick="demoTryStudent()">👦 جرّب فضاء التلميذ / <bdi>${tx({ fr:"Essayer l'espace élève", nl:"Het leerlingenportaal proberen", en:"Try the pupil space", es:"Probar el espacio del alumno" })}</bdi></button>
+            <button class="demo-tour-btn" onclick="startTour('director')">🎬 ${tx({ ar:"عرض مشروح (دقيقتان)", fr:"Présentation guidée (2 min)", nl:"Begeleide voorstelling (2 min)", en:"Guided presentation (2 min)", es:"Presentación guiada (2 min)" })}</button>
+            <button class="demo-try-btn" onclick="demoTryStudent()">👦 جرّب فضاء التلميذ${L === "ar" ? "" : ` / <bdi>${tx({ fr:"Essayer l'espace élève", nl:"Het leerlingenportaal proberen", en:"Try the pupil space", es:"Probar el espacio del alumno" })}</bdi>`}</button>
         </div>
-        <div class="demo-news-group">👦 ${tx({ fr:"Pour l'élève", nl:"Voor de leerling", en:"For the pupil", es:"Para el alumno" })}</div>
+        <div class="demo-news-group">👦 ${tx({ ar:"للتلميذ", fr:"Pour l'élève", nl:"Voor de leerling", en:"For the pupil", es:"Para el alumno" })}</div>
         <div class="demo-news-grid">${pupil.map(card).join("")}</div>
-        <div class="demo-news-group">🏫 ${tx({ fr:"Pour l'école et les familles", nl:"Voor de school en de gezinnen", en:"For the school and families", es:"Para la escuela y las familias" })}</div>
+        <div class="demo-news-group">🏫 ${tx({ ar:"للمدرسة والأسر", fr:"Pour l'école et les familles", nl:"Voor de school en de gezinnen", en:"For the school and families", es:"Para la escuela y las familias" })}</div>
         <div class="demo-news-grid">${school.map(card).join("")}</div>
     </div>`;
 }
 // Démo : change la langue de présentation sans quitter la démo
 window.demoSetLang = (lang) => {
     if (!isDemoMode || !window._demoData) return;
-    window._demoData.school.uiLang = lang;
-    applyFeatureTranslations(lang);
+    const ui = lang === "ar" ? "" : lang; // "ar" : arabe seul, sans langue à côté
+    window._demoData.school.uiLang = ui;
+    applyFeatureTranslations(ui);
     loadDemoDashboard(window._demoData);
     renderDemoNews();
 };
@@ -4315,6 +4316,18 @@ TOURS.director = { icon: "🏫", title: T("جولة المدير", "Présentatio
   { sel: null, ...T("المساعد ❓ في كلّ شاشة", "Sur chaque écran, le bouton ❓ explique quoi faire et présente les nouveautés, aux élèves, aux parents et aux professeurs.", "Op elk scherm legt de knop ❓ uit wat te doen en toont het nieuws, voor leerlingen, ouders en leerkrachten.", "On every screen, the ❓ button explains what to do and shows what's new, for pupils, parents and teachers.", "En cada pantalla, el botón ❓ explica qué hacer y muestra las novedades, para alumnos, padres y profesores.") },
   { sel: "#demo-news .demo-try-btn", ...T("جرّب فضاء التلميذ", "Et maintenant, essayez vous-même l'espace élève : une visite animée vous y attend.", "Probeer nu zelf het leerlingenportaal: er wacht een geanimeerde rondleiding.", "Now try the pupil space yourself: an animated tour is waiting for you.", "Ahora pruebe usted mismo el espacio del alumno: le espera una visita animada.") },
 ]};
+[
+  "مرحبًا! هذه حروفي في دقيقتين: ما يعيشه التلاميذ، وما تراه المدرسة.",
+  "للتلميذ: الحروف، والحركات بصوت معلّمه، وقراءة الكلمات، والقرآن آيةً بعد آية، ولعبة تشجّعه على العودة كلّ يوم.",
+  "تعطي الإحصائيات نظرة شاملة على المدرسة: التلاميذ، وتقدّم الحروف، والاختبارات، والقرآن، والحركات.",
+  "يبيّن هذا الرسم الحروف الأكثر صعوبة، لنعرف ما يجب مراجعته في القسم.",
+  "وهنا حفظ القرآن، قسمًا بعد قسم.",
+  "لكلّ تلميذ، تُظهر نقرة واحدة أسماء السور التي حفظها.",
+  "رمز QR الخاصّ بالمدرسة: تمسحه الأسر بالهاتف فيُفتح التطبيق ورمز المدرسة مكتوب. ويمكن طباعته على ملصق.",
+  "تبقى العربية ظاهرة دائمًا، وتختار المدرسة بجانبها الفرنسية أو الهولندية أو الإنجليزية أو الإسبانية.",
+  "في كلّ شاشة، يشرح زرّ ❓ ما يجب فعله ويعرض الجديد، للتلاميذ والأولياء والمعلّمين.",
+  "والآن جرّبوا بأنفسكم فضاء التلميذ: تنتظركم جولة متحرّكة.",
+].forEach((t, i) => { TOURS.director.steps[i].arLong = t; });
 Object.assign(DYNAMIC_I18N, {
   statQuranAvg: { fr:"Coran moyen", nl:"Koran gemiddeld", en:"Quran average", es:"Corán promedio" },
   tourHelp:  { fr:"Comment ça marche ?", nl:"Hoe werkt het?", en:"How does it work?", es:"¿Cómo funciona?" },
@@ -4326,7 +4339,8 @@ Object.assign(DYNAMIC_I18N, {
 
 let _tour = null; // { steps, i, paused, token }
 window._tourRunning = false;
-const tourTxt = s => (currentUILang && s.tr[currentUILang]) || null;
+// Sous-titre : la langue choisie ; sans langue (arabe seul), l'explication arabe complète si elle existe
+const tourTxt = s => currentUILang ? (s.tr[currentUILang] || null) : (s.arLong || null);
 
 function tourComposeDemo() {
   hkSeriesStop();
@@ -4705,6 +4719,7 @@ const helpStaff = () => ["teacher", "schooladmin", "superadmin"].includes(curren
 // Élève, parent, accueil : arabe + langue · Équipe : la langue seule (base française, comme le reste de l'espace équipe)
 function hTx(x, stack) {
     const l = helpLang(), t = x.tr[l];
+    if (helpStaff() && !l && x.ar) return x.ar; // équipe d'une école en arabe seul : l'aide en arabe
     if (helpStaff() || !x.ar) return `<bdi dir="auto">${t || x.tr.fr}</bdi>`;
     if (!t) return x.ar;
     return stack ? `<span class="h-ar">${x.ar}</span><bdi class="h-tr" dir="auto">${t}</bdi>` : `${x.ar} / <bdi>${t}</bdi>`;
@@ -4749,23 +4764,23 @@ const HELP_ROUTINE = {
         HL("💡", "ساعده على مراجعة نقطة ضعفه", "Aidez-le à réviser son point faible indiqué ici", "Help het zijn zwakke punt te herhalen", "Help them review their weak point", "Ayúdele a repasar su punto débil"),
         HL("🏅", "شجّعه على كلّ وسام جديد", "Félicitez-le pour chaque nouveau badge", "Feliciteer het bij elke nieuwe badge", "Praise them for every new badge", "Felicítele por cada nueva insignia") ] },
     teacher: { seq: false, title: HL("🗓️", "روتين المعلّم كلّ أسبوع", "Ma routine de la semaine", "Mijn weekroutine", "My weekly routine", "Mi rutina semanal"), steps: [
-        HL("👥", "", "Regardez le tableau « Élèves » : progression, harakat, points faibles de la classe", "Bekijk het overzicht « Leerlingen »: voortgang, harakat, zwakke punten", "Check the « Pupils » table: progress, harakat, class weak points", "Mire la tabla « Alumnos »: progreso, harakat, puntos débiles"),
-        HL("🎙️", "", "Écoutez les enregistrements transmis par les parents et marquez-les « écoutés »", "Beluister de opnames van de ouders en markeer ze als beluisterd", "Listen to recordings sent by parents and mark them as heard", "Escuche las grabaciones enviadas por los padres y márquelas"),
-        HL("📬", "", "Corrigez les travaux rendus", "Verbeter het ingeleverde werk", "Correct the submitted work", "Corrija los trabajos entregados"),
-        HL("✏️", "", "Publiez un exercice adapté au point faible de la classe", "Publiceer een oefening voor het zwakke punt van de klas", "Publish an exercise for the class weak point", "Publique un ejercicio para el punto débil de la clase"),
-        HL("📅", "", "Faites l'appel au début du cours", "Neem de aanwezigheden aan het begin van de les", "Take attendance at the start of class", "Pase lista al inicio de la clase"),
-        HL("✉️", "", "Envoyez un mot aux parents (félicitation, absence…)", "Stuur een bericht naar de ouders (felicitatie, afwezigheid…)", "Send a note to parents (praise, absence…)", "Envíe un mensaje a los padres (felicitación, ausencia…)") ] },
-    schooladmin: { seq: true, title: HL("🏫", "", "Mettre l'école en route", "De school opstarten", "Setting up the school", "Poner en marcha la escuela"), steps: [
-        HL("📚", "", "Créez les classes (chaque classe reçoit son code CLS-…)", "Maak de klassen aan (elke klas krijgt een code CLS-…)", "Create the classes (each gets a CLS-… code)", "Cree las clases (cada una recibe un código CLS-…)"),
-        HL("👩‍🏫", "", "Ajoutez les professeurs et donnez-leur leur code d'activation", "Voeg de leerkrachten toe en geef hun activatiecode", "Add the teachers and give them their activation code", "Añada los profesores y deles su código de activación"),
-        HL("👥", "", "Ajoutez les élèves (un par un ou par Excel) : codes élève et parent créés automatiquement", "Voeg de leerlingen toe (één voor één of via Excel): leerling- en oudercodes automatisch", "Add pupils (one by one or by Excel): pupil and parent codes are created automatically", "Añada los alumnos (uno a uno o por Excel): códigos de alumno y padres automáticos"),
-        HL("📋", "", "Imprimez le « Registre » et distribuez les codes aux familles", "Druk het « Register » af en geef de codes aan de gezinnen", "Print the « Register » and hand out the codes to families", "Imprima el « Registro » y entregue los códigos a las familias"),
-        HL("⚙️", "", "Ajoutez le logo de l'école dans Paramètres", "Voeg het logo van de school toe in Instellingen", "Add the school logo in Settings", "Añada el logo de la escuela en Ajustes"),
-        HL("📊", "", "Suivez chaque semaine les Statistiques et la Communication", "Volg elke week de Statistieken en de Communicatie", "Check Statistics and Communication each week", "Consulte cada semana Estadísticas y Comunicación") ] },
-    superadmin: { seq: false, title: HL("👑", "", "Gestion de la plateforme", "Beheer van het platform", "Platform management", "Gestión de la plataforma"), steps: [
-        HL("🏫", "", "Créez une école ou une famille, choisissez sa langue et générez son code ECO-…", "Maak een school of gezin aan, kies de taal en maak de code ECO-…", "Create a school or family, choose its language and generate its ECO-… code", "Cree una escuela o familia, elija su idioma y genere su código ECO-…"),
-        HL("⚙️", "", "« Fonctionnalités » : options premium et dates d'abonnement", "« Functies »: premium-opties en abonnementsdata", "« Features »: premium options and subscription dates", "« Funciones »: opciones premium y fechas de suscripción"),
-        HL("📊", "", "Suivez les statistiques de toutes les écoles", "Volg de statistieken van alle scholen", "Follow the statistics of all schools", "Siga las estadísticas de todas las escuelas") ] },
+        HL("👥", "اطّلع على جدول «التلاميذ»: التقدّم، والحركات، ونقاط ضعف القسم", "Regardez le tableau « Élèves » : progression, harakat, points faibles de la classe", "Bekijk het overzicht « Leerlingen »: voortgang, harakat, zwakke punten", "Check the « Pupils » table: progress, harakat, class weak points", "Mire la tabla « Alumnos »: progreso, harakat, puntos débiles"),
+        HL("🎙️", "استمع إلى التسجيلات التي أرسلها الأولياء وعلّمها «تمّ الاستماع»", "Écoutez les enregistrements transmis par les parents et marquez-les « écoutés »", "Beluister de opnames van de ouders en markeer ze als beluisterd", "Listen to recordings sent by parents and mark them as heard", "Escuche las grabaciones enviadas por los padres y márquelas"),
+        HL("📬", "صحّح الأعمال المُسلَّمة", "Corrigez les travaux rendus", "Verbeter het ingeleverde werk", "Correct the submitted work", "Corrija los trabajos entregados"),
+        HL("✏️", "انشر تمرينًا يناسب نقطة ضعف القسم", "Publiez un exercice adapté au point faible de la classe", "Publiceer een oefening voor het zwakke punt van de klas", "Publish an exercise for the class weak point", "Publique un ejercicio para el punto débil de la clase"),
+        HL("📅", "سجّل الحضور في بداية الدرس", "Faites l'appel au début du cours", "Neem de aanwezigheden aan het begin van de les", "Take attendance at the start of class", "Pase lista al inicio de la clase"),
+        HL("✉️", "أرسل كلمة إلى الأولياء (تهنئة، غياب…)", "Envoyez un mot aux parents (félicitation, absence…)", "Stuur een bericht naar de ouders (felicitatie, afwezigheid…)", "Send a note to parents (praise, absence…)", "Envíe un mensaje a los padres (felicitación, ausencia…)") ] },
+    schooladmin: { seq: true, title: HL("🏫", "انطلاق المدرسة", "Mettre l'école en route", "De school opstarten", "Setting up the school", "Poner en marcha la escuela"), steps: [
+        HL("📚", "أنشئ الأقسام، ولكلّ قسم رمز يبدأ بـ CLS", "Créez les classes (chaque classe reçoit son code CLS-…)", "Maak de klassen aan (elke klas krijgt een code CLS-…)", "Create the classes (each gets a CLS-… code)", "Cree las clases (cada una recibe un código CLS-…)"),
+        HL("👩‍🏫", "أضف المعلّمين وأعطهم رمز التفعيل", "Ajoutez les professeurs et donnez-leur leur code d'activation", "Voeg de leerkrachten toe en geef hun activatiecode", "Add the teachers and give them their activation code", "Añada los profesores y deles su código de activación"),
+        HL("👥", "أضف التلاميذ واحدًا واحدًا أو بملف Excel، فتُنشأ رموز التلاميذ والأولياء تلقائيًا", "Ajoutez les élèves (un par un ou par Excel) : codes élève et parent créés automatiquement", "Voeg de leerlingen toe (één voor één of via Excel): leerling- en oudercodes automatisch", "Add pupils (one by one or by Excel): pupil and parent codes are created automatically", "Añada los alumnos (uno a uno o por Excel): códigos de alumno y padres automáticos"),
+        HL("📋", "اطبع «السجلّ» ووزّع الرموز على الأسر", "Imprimez le « Registre » et distribuez les codes aux familles", "Druk het « Register » af en geef de codes aan de gezinnen", "Print the « Register » and hand out the codes to families", "Imprima el « Registro » y entregue los códigos a las familias"),
+        HL("⚙️", "أضف شعار المدرسة في «الإعدادات»", "Ajoutez le logo de l'école dans Paramètres", "Voeg het logo van de school toe in Instellingen", "Add the school logo in Settings", "Añada el logo de la escuela en Ajustes"),
+        HL("📊", "تابع كلّ أسبوع «الإحصائيات» و«التواصل»", "Suivez chaque semaine les Statistiques et la Communication", "Volg elke week de Statistieken en de Communicatie", "Check Statistics and Communication each week", "Consulte cada semana Estadísticas y Comunicación") ] },
+    superadmin: { seq: false, title: HL("👑", "إدارة المنصّة", "Gestion de la plateforme", "Beheer van het platform", "Platform management", "Gestión de la plataforma"), steps: [
+        HL("🏫", "أنشئ مدرسة أو عائلة، واختر لغتها، وولّد رمزها الذي يبدأ بـ ECO", "Créez une école ou une famille, choisissez sa langue et générez son code ECO-…", "Maak een school of gezin aan, kies de taal en maak de code ECO-…", "Create a school or family, choose its language and generate its ECO-… code", "Cree una escuela o familia, elija su idioma y genere su código ECO-…"),
+        HL("⚙️", "«الخصائص»: الخيارات المميّزة وتواريخ الاشتراك", "« Fonctionnalités » : options premium et dates d'abonnement", "« Functies »: premium-opties en abonnementsdata", "« Features »: premium options and subscription dates", "« Funciones »: opciones premium y fechas de suscripción"),
+        HL("📊", "تابع إحصائيات جميع المدارس", "Suivez les statistiques de toutes les écoles", "Volg de statistieken van alle scholen", "Follow the statistics of all schools", "Siga las estadísticas de todas las escuelas") ] },
     login: { seq: true, title: HL("🔑", "كيف أدخل؟", "Comment se connecter ?", "Hoe meld ik me aan?", "How do I sign in?", "¿Cómo entro?"), steps: [
         HL("🏫", "رمز المدرسة (ECO-1234) تعطيه المدرسة", "Le code de l'école (ECO-…) est donné par l'école", "De schoolcode (ECO-…) krijg je van de school", "The school code (ECO-…) comes from the school", "El código de la escuela (ECO-…) lo da la escuela"),
         HL("📚", "رمز القسم (CLS-AB12C) يعطيه المعلّم", "Le code de classe (CLS-…) est donné par le professeur", "De klascode (CLS-…) krijg je van de leerkracht", "The class code (CLS-…) comes from the teacher", "El código de clase (CLS-…) lo da el profesor"),
@@ -4785,19 +4800,19 @@ const HELP_HERE = {
     "vocab":           HL("📖", "تعلّم كلمات جديدة بالصور والصوت", "Apprends de nouveaux mots avec images et sons", "Leer nieuwe woorden met beeld en geluid", "Learn new words with pictures and sounds", "Aprende palabras nuevas con imágenes y sonidos"),
     "quran":           HL("🕌", "اختر سورة: استمع، ردّد، ثم احفظ آية بعد آية", "Choisis une sourate : écoute, répète, puis mémorise verset après verset", "Kies een soera: luister, herhaal en leer vers per vers", "Pick a surah: listen, repeat, then memorise verse by verse", "Elige una sura: escucha, repite y memoriza versículo a versículo"),
     "parent":          HL("👪", "تابع تقدّم طفلك وتسجيلاته ورسائل المدرسة", "Suivez la progression, les enregistrements et les messages de l'école", "Volg de voortgang, de opnames en de berichten van de school", "Follow progress, recordings and school messages", "Siga el progreso, las grabaciones y los mensajes de la escuela"),
-    "t-students":      HL("👥", "", "La progression de chaque élève ; ⚠️ signale un point faible", "De voortgang van elke leerling; ⚠️ toont een zwak punt", "Each pupil's progress; ⚠️ flags a weak point", "El progreso de cada alumno; ⚠️ indica un punto débil"),
-    "t-classlist":     HL("📋", "", "La liste de la classe, à imprimer", "De klaslijst, om af te drukken", "The class list, ready to print", "La lista de la clase, para imprimir"),
-    "t-attendance":    HL("📅", "", "Chargez la date, cochez présents et absents, enregistrez", "Laad de datum, vink aanwezig/afwezig aan en sla op", "Load the date, tick present/absent and save", "Cargue la fecha, marque presentes/ausentes y guarde"),
-    "t-exercises":     HL("✏️", "", "Créez un exercice (lettre, mot, formes, libre) pour toute la classe ou un élève", "Maak een oefening voor de hele klas of één leerling", "Create an exercise for the whole class or one pupil", "Cree un ejercicio para toda la clase o un alumno"),
-    "t-submissions":   HL("📬", "", "Les dessins envoyés par les élèves", "De tekeningen die leerlingen opstuurden", "Drawings sent by pupils", "Los dibujos enviados por los alumnos"),
-    "t-recordings":    HL("🎙️", "", "Seuls les enregistrements transmis par les parents apparaissent ici", "Alleen opnames die ouders doorstuurden verschijnen hier", "Only recordings forwarded by parents appear here", "Solo aparecen las grabaciones enviadas por los padres"),
-    "t-comms":         HL("📢", "", "Échangez avec la direction et lisez les annonces", "Wissel berichten uit met de directie en lees de aankondigingen", "Talk with the principal and read announcements", "Hable con la dirección y lea los anuncios"),
-    "sa-classes":      HL("📚", "", "Créez les classes et ajoutez les élèves (👥)", "Maak klassen aan en voeg leerlingen toe (👥)", "Create classes and add pupils (👥)", "Cree clases y añada alumnos (👥)"),
-    "sa-teachers":     HL("👩‍🏫", "", "Ajoutez un professeur et donnez-lui son code d'activation", "Voeg een leerkracht toe en geef de activatiecode", "Add a teacher and give the activation code", "Añada un profesor y dele el código de activación"),
-    "sa-absences":     HL("📅", "", "Suivez les absences et exportez-les en Excel", "Volg de afwezigheden en exporteer naar Excel", "Track absences and export to Excel", "Siga las ausencias y expórtelas a Excel"),
-    "sa-stats":        HL("📊", "", "Vue d'ensemble : lettres, harakat, Coran, par classe et par élève", "Overzicht: letters, harakat, Koran, per klas en per leerling", "Overview: letters, harakat, Quran, by class and pupil", "Vista general: letras, harakat, Corán, por clase y alumno"),
-    "sa-settings":     HL("⚙️", "", "Logo de l'école et code à communiquer aux familles", "Logo van de school en code voor de gezinnen", "School logo and code for families", "Logo de la escuela y código para las familias"),
-    "sa-comms":        HL("📢", "", "Annonces aux professeurs ou aux parents, et messages directs", "Aankondigingen voor leerkrachten of ouders en directe berichten", "Announcements to teachers or parents, and direct messages", "Anuncios a profesores o padres y mensajes directos"),
+    "t-students":      HL("👥", "تقدّم كلّ تلميذ؛ وتشير ⚠️ إلى نقطة ضعف", "La progression de chaque élève ; ⚠️ signale un point faible", "De voortgang van elke leerling; ⚠️ toont een zwak punt", "Each pupil's progress; ⚠️ flags a weak point", "El progreso de cada alumno; ⚠️ indica un punto débil"),
+    "t-classlist":     HL("📋", "قائمة القسم، جاهزة للطباعة", "La liste de la classe, à imprimer", "De klaslijst, om af te drukken", "The class list, ready to print", "La lista de la clase, para imprimir"),
+    "t-attendance":    HL("📅", "اختر التاريخ، وحدّد الحاضرين والغائبين، ثمّ احفظ", "Chargez la date, cochez présents et absents, enregistrez", "Laad de datum, vink aanwezig/afwezig aan en sla op", "Load the date, tick present/absent and save", "Cargue la fecha, marque presentes/ausentes y guarde"),
+    "t-exercises":     HL("✏️", "أنشئ تمرينًا للقسم كلّه أو لتلميذ واحد: حرف، أو كلمة، أو أشكال، أو تمرين حرّ", "Créez un exercice (lettre, mot, formes, libre) pour toute la classe ou un élève", "Maak een oefening voor de hele klas of één leerling", "Create an exercise for the whole class or one pupil", "Cree un ejercicio para toda la clase o un alumno"),
+    "t-submissions":   HL("📬", "الرسوم التي أرسلها التلاميذ", "Les dessins envoyés par les élèves", "De tekeningen die leerlingen opstuurden", "Drawings sent by pupils", "Los dibujos enviados por los alumnos"),
+    "t-recordings":    HL("🎙️", "لا تظهر هنا إلّا التسجيلات التي أرسلها الأولياء", "Seuls les enregistrements transmis par les parents apparaissent ici", "Alleen opnames die ouders doorstuurden verschijnen hier", "Only recordings forwarded by parents appear here", "Solo aparecen las grabaciones enviadas por los padres"),
+    "t-comms":         HL("📢", "تواصل مع الإدارة واقرأ الإعلانات", "Échangez avec la direction et lisez les annonces", "Wissel berichten uit met de directie en lees de aankondigingen", "Talk with the principal and read announcements", "Hable con la dirección y lea los anuncios"),
+    "sa-classes":      HL("📚", "أنشئ الأقسام وأضف التلاميذ (👥)", "Créez les classes et ajoutez les élèves (👥)", "Maak klassen aan en voeg leerlingen toe (👥)", "Create classes and add pupils (👥)", "Cree clases y añada alumnos (👥)"),
+    "sa-teachers":     HL("👩‍🏫", "أضف معلّمًا وأعطه رمز التفعيل", "Ajoutez un professeur et donnez-lui son code d'activation", "Voeg een leerkracht toe en geef de activatiecode", "Add a teacher and give the activation code", "Añada un profesor y dele el código de activación"),
+    "sa-absences":     HL("📅", "تابع الغيابات وصدّرها إلى Excel", "Suivez les absences et exportez-les en Excel", "Volg de afwezigheden en exporteer naar Excel", "Track absences and export to Excel", "Siga las ausencias y expórtelas a Excel"),
+    "sa-stats":        HL("📊", "نظرة شاملة: الحروف، والحركات، والقرآن، حسب القسم وحسب التلميذ", "Vue d'ensemble : lettres, harakat, Coran, par classe et par élève", "Overzicht: letters, harakat, Koran, per klas en per leerling", "Overview: letters, harakat, Quran, by class and pupil", "Vista general: letras, harakat, Corán, por clase y alumno"),
+    "sa-settings":     HL("⚙️", "شعار المدرسة والرمز الذي يُعطى للأسر", "Logo de l'école et code à communiquer aux familles", "Logo van de school en code voor de gezinnen", "School logo and code for families", "Logo de la escuela y código para las familias"),
+    "sa-comms":        HL("📢", "إعلانات للمعلّمين أو للأولياء، ورسائل مباشرة", "Annonces aux professeurs ou aux parents, et messages directs", "Aankondigingen voor leerkrachten of ouders en directe berichten", "Announcements to teachers or parents, and direct messages", "Anuncios a profesores o padres y mensajes directos"),
 };
 
 // « Un souci ? » — les problèmes les plus fréquents
@@ -4888,14 +4903,14 @@ async function helpSuggestions() {
                 out.push({ ...HL("💡", `ساعده على مراجعة ${c.ar}`, `Aidez-le à réviser : ${DYNAMIC_I18N[c.i18n].fr}`, `Help het herhalen: ${DYNAMIC_I18N[c.i18n].nl}`, `Help them review: ${DYNAMIC_I18N[c.i18n].en}`, `Ayúdele a repasar: ${DYNAMIC_I18N[c.i18n].es}`) }); }
         } else if (role === "teacher") {
             const n = id => { const b = document.getElementById(id); return b && !b.classList.contains("hidden") ? (+b.textContent || 1) : 0; };
-            if (n("recordings-badge")) out.push({ ...HL("🎙️", "", `${n("recordings-badge")} enregistrement(s) à écouter`, `${n("recordings-badge")} opname(s) te beluisteren`, `${n("recordings-badge")} recording(s) to listen to`, `${n("recordings-badge")} grabación(es) por escuchar`), act: "teacher:t-recordings" });
-            if (n("submissions-badge")) out.push({ ...HL("📬", "", "Des travaux rendus attendent votre correction", "Ingeleverd werk wacht op verbetering", "Submitted work is waiting for correction", "Hay trabajos entregados por corregir"), act: "teacher:t-submissions" });
-            if (n("teacher-comms-badge")) out.push({ ...HL("📢", "", "Nouveau message de la direction", "Nieuw bericht van de directie", "New message from the principal", "Nuevo mensaje de la dirección"), act: "teacher:t-comms" });
+            if (n("recordings-badge")) out.push({ ...HL("🎙️", `تسجيلات للاستماع: ${n("recordings-badge")}`, `${n("recordings-badge")} enregistrement(s) à écouter`, `${n("recordings-badge")} opname(s) te beluisteren`, `${n("recordings-badge")} recording(s) to listen to`, `${n("recordings-badge")} grabación(es) por escuchar`), act: "teacher:t-recordings" });
+            if (n("submissions-badge")) out.push({ ...HL("📬", "أعمال مُسلَّمة تنتظر تصحيحك", "Des travaux rendus attendent votre correction", "Ingeleverd werk wacht op verbetering", "Submitted work is waiting for correction", "Hay trabajos entregados por corregir"), act: "teacher:t-submissions" });
+            if (n("teacher-comms-badge")) out.push({ ...HL("📢", "رسالة جديدة من الإدارة", "Nouveau message de la direction", "Nieuw bericht van de directie", "New message from the principal", "Nuevo mensaje de la dirección"), act: "teacher:t-comms" });
             const weak = document.getElementById("teacher-harakat-weak")?.textContent.trim();
             if (weak) out.push({ icon: "💡", ar: "", tr: { fr: weak, nl: weak, en: weak, es: weak }, act: "teacher:t-exercises" });
         } else if (role === "schooladmin") {
             const n = id => { const b = document.getElementById(id); return b && !b.classList.contains("hidden"); };
-            if (n("dir-comms-badge")) out.push({ ...HL("📢", "", "Nouveau message dans Communication", "Nieuw bericht in Communicatie", "New message in Communication", "Nuevo mensaje en Comunicación"), act: "admin:sa-comms" });
+            if (n("dir-comms-badge")) out.push({ ...HL("📢", "رسالة جديدة في «التواصل»", "Nouveau message dans Communication", "Nieuw bericht in Communicatie", "New message in Communication", "Nuevo mensaje en Comunicación"), act: "admin:sa-comms" });
         }
     } catch (e) { console.warn("help", e); }
     return out.slice(0, 4);
@@ -4935,7 +4950,7 @@ window.openHelp = async () => {
     const line = (x) => `<span class="help-i">${x.icon}</span><span class="help-t">${hTx(x, true)}</span>`;
     const allDone = role === "student" && routine.steps.every(s => s.k.some(doneToday));
     const tours = role === "student" ? ["general", "harakat", "quiz", "quran", "game"] : role === "parent" ? ["parent"] : role === "schooladmin" ? ["director"] : [];
-    bg.innerHTML = `<div class="help-sheet" role="dialog" aria-modal="true" dir="${helpStaff() ? "ltr" : "rtl"}">
+    bg.innerHTML = `<div class="help-sheet" role="dialog" aria-modal="true" dir="${helpStaff() && helpLang() ? "ltr" : "rtl"}">
         <div class="help-grip"></div>
         <div class="help-head"><h2>${hTx(adult ? HELP_UI.titleA : HELP_UI.title, true)}</h2><button class="help-x" onclick="helpClose()" aria-label="✕">✕</button></div>
 
