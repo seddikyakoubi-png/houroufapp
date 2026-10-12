@@ -1852,12 +1852,12 @@ function generateDemoData(){
     ];
     const school = {
         name: "École Al Ihssane (Démo)",
-        city: "Casablanca",
+        city: "Bruxelles",
         classes: Object.fromEntries(classDefs.map(c => [c.id, {name:c.name, code:c.code, createdAt:new Date().toISOString()}]))
     };
 
     const teachers = classDefs.map((c,i) => ({
-        email: `demo.prof${i+1}@ecole-demo.ma`,
+        email: `demo.prof${i+1}@ecole-demo.be`,
         name: DEMO_TEACHER_NAMES[i],
         classId: c.id,
         password: "demo",
@@ -1991,10 +1991,11 @@ window.startDemoMode = () => {
     currentSchoolId = "demo_school";
     currentUser = "demo_admin";
     showScreen("screen-schooladmin");
-    document.getElementById("schooladmin-title").textContent = "🎬 École Démo — Mode Démonstration";
+    document.getElementById("schooladmin-title").textContent = "🎬 École Démo";
     const demo = generateDemoData();
     demo.school.logoUrl = "https://api.dicebear.com/7.x/icons/svg?seed=EcoleDemo&backgroundColor=667eea";
-    demo.school.uiLang = "en"; // Démo : montre la traduction (anglais) pour vos présentations
+    // Démo : présentée dans la langue choisie sur l'écran d'accueil (français par défaut) ; modifiable ensuite
+    demo.school.uiLang = WL_LANGS.includes(wlLang) ? wlLang : "fr";
     applySchoolBranding(demo.school);
     applyFeatureTranslations(demo.school.uiLang);
     window._demoData = demo;
@@ -2040,7 +2041,7 @@ function loadDemoDashboard({school, teachers, students}){
         <div class="summary-card"><div class="s-num">${avg}%</div><div class="s-label">${bi("التقدم المتوسط","statAvgProgress")}</div></div>
         <div class="summary-card"><div class="s-num">${finished}</div><div class="s-label">${bi("المكتملون","statFinished")}</div></div>
         <div class="summary-card"><div class="s-num">${totalQuiz}</div><div class="s-label">${bi("اختبارات","statQuiz")}</div></div>
-        <div class="summary-card"><div class="s-num">${quranAvg}%</div><div class="s-label">📖 Coran moyen</div></div>
+        <div class="summary-card"><div class="s-num">${quranAvg}%</div><div class="s-label">📖 ${bi("القرآن","statQuranAvg")}</div></div>
         <div class="summary-card"><div class="s-num">${hkAvg}%</div><div class="s-label">🔤 ${bi("الحركات","statHarakat")}</div></div>`;
 
     document.getElementById("sa-tbody").innerHTML = students.map(([id,data]) => {
@@ -2141,7 +2142,7 @@ async function saLoadStats(){
         <div class="summary-card"><div class="s-num">${avg}%</div><div class="s-label">${bi("التقدم المتوسط","statAvgProgress")}</div></div>
         <div class="summary-card"><div class="s-num">${finished}</div><div class="s-label">${bi("المكتملون","statFinished")}</div></div>
         <div class="summary-card"><div class="s-num">${totalQuiz}</div><div class="s-label">${bi("اختبارات","statQuiz")}</div></div>
-        <div class="summary-card"><div class="s-num">${quranAvg}%</div><div class="s-label">📖 Coran moyen</div></div>
+        <div class="summary-card"><div class="s-num">${quranAvg}%</div><div class="s-label">📖 ${bi("القرآن","statQuranAvg")}</div></div>
         <div class="summary-card"><div class="s-num">${hkAvg}%</div><div class="s-label">🔤 ${bi("الحركات","statHarakat")}</div></div>`;
 
     document.getElementById("sa-tbody").innerHTML=mine.length===0
@@ -4058,28 +4059,58 @@ function renderDemoNews() {
     if (!box) { box = document.createElement("div"); box.id = "demo-news"; screen.querySelector(".admin-tabs")?.before(box); }
     if (!isDemoMode) { box.innerHTML = ""; return; }
     const L = currentUILang || "fr"; // la démo est toujours présentée avec une langue de traduction
-    const items = [
-        ["🔤", "الحركات بصوت المعلم", { fr:"Harakat avec la voix de l'enseignant", nl:"Harakat met de stem van de leerkracht", en:"Harakat in the teacher's voice", es:"Harakat con la voz del profesor" },
-               { fr:"303 syllabes : voyelles brèves, soukoun, madd, chadda, tanwin", nl:"303 lettergrepen: korte klinkers, soekoen, madd, sjadda, tanwien", en:"303 syllables: short vowels, sukun, madd, shadda, tanwin", es:"303 sílabas: vocales breves, sukún, madd, shadda, tanwín" }],
-        ["🎵", "سلسلة المقاطع", { fr:"Lecture en série (premium)", nl:"Reeks afspelen (premium)", en:"Syllable series (premium)", es:"Lectura en serie (premium)" },
-               { fr:"بَ بُ بِ ‹ تَ تُ تِ … à la vitesse choisie, mode « répète après moi »", nl:"بَ بُ بِ ‹ تَ تُ تِ … op het gekozen tempo, modus « zeg het na »", en:"بَ بُ بِ ‹ تَ تُ تِ … at the chosen speed, « repeat after me » mode", es:"بَ بُ بِ ‹ تَ تُ تِ … a la velocidad elegida, modo « repite después de mí »" }],
-        ["✏️", "أكوّن كلماتي", { fr:"Composer des mots", nl:"Woorden samenstellen", en:"Build words", es:"Formar palabras" },
-               { fr:"L'élève assemble des syllabes et entend le mot, lettres liées", nl:"De leerling voegt lettergrepen samen en hoort het woord, met verbonden letters", en:"The pupil joins syllables and hears the word, letters connected", es:"El alumno une sílabas y oye la palabra, con las letras ligadas" }],
-        ["🎤", "استمع إلى نفسك", { fr:"Écoute-toi et compare", nl:"Luister naar jezelf en vergelijk", en:"Listen to yourself and compare", es:"Escúchate y compara" },
-               { fr:"Enregistrement 100 % local : rien n'est envoyé ni stocké", nl:"100 % lokale opname: niets wordt verzonden of bewaard", en:"100% local recording: nothing is sent or stored", es:"Grabación 100 % local: nada se envía ni se guarda" }],
-        ["🔊", "اختبار المقاطع", { fr:"Quiz « Quelle syllabe ? »", nl:"Quiz « Welke lettergreep? »", en:"« Which syllable? » quiz", es:"Cuestionario « ¿Qué sílaba? »" },
-               { fr:"3 niveaux, suivi des points faibles par élève et par classe", nl:"3 niveaus, opvolging van zwakke punten per leerling en per klas", en:"3 levels, weak points tracked per pupil and per class", es:"3 niveles, seguimiento de los puntos débiles por alumno y por clase" }],
-        ["🎮", "مغامرة حروفي", { fr:"Hourouf Aventure", nl:"Hourouf Avontuur", en:"Hourouf Adventure", es:"Aventura Hourouf" },
-               { fr:"Étoiles, compagnon qui grandit, série de jours 🔥, défi du jour, 16 badges", nl:"Sterren, een maatje dat groeit, dagenreeks 🔥, dagelijkse uitdaging, 16 badges", en:"Stars, a growing buddy, day streak 🔥, daily challenge, 16 badges", es:"Estrellas, un compañero que crece, racha de días 🔥, reto del día, 16 insignias" }],
-        ["👪", "التسجيلات عبر الوالدين", { fr:"Enregistrements via les parents", nl:"Opnames via de ouders", en:"Recordings via the parents", es:"Grabaciones a través de los padres" },
-               { fr:"La voix de l'élève va d'abord aux parents, qui la transmettent au professeur", nl:"De stem van de leerling gaat eerst naar de ouders, die ze doorsturen naar de leerkracht", en:"The pupil's voice goes to the parents first, who pass it on to the teacher", es:"La voz del alumno va primero a los padres, que la envían al profesor" }],
-    ].map(([e, ar, t, d]) => [e, ar, t[L] || t.fr, d[L] || d.fr]);
-    box.innerHTML = `<div class="demo-news">
-        <div class="demo-news-title">✨ الجديد في حروفي / ${({ fr:"Nouveautés", nl:"Nieuw", en:"What's new", es:"Novedades" })[L] || "Nouveautés"}</div>
-        <div class="demo-news-grid">${items.map(([e, ar, fr, txt]) => `<div class="demo-news-card"><div class="dn-e">${e}</div><div class="dn-ar">${ar}</div><div class="dn-fr">${fr}</div><div class="dn-txt">${txt}</div></div>`).join("")}</div>
-        <button class="demo-try-btn" onclick="demoTryStudent()">👦 جرّب فضاء التلميذ / ${({ fr:"Essayer l'espace élève", nl:"Het leerlingenportaal proberen", en:"Try the pupil space", es:"Probar el espacio del alumno" })[L] || "Essayer l'espace élève"}</button>
+    const N = (e, ar, t, d) => [e, ar, t[L] || t.fr, d[L] || d.fr];
+    const pupil = [
+        N("🔤", "الحركات بصوت المعلم", { fr:"Harakat avec la voix de l'enseignant", nl:"Harakat met de stem van de leerkracht", en:"Harakat in the teacher's voice", es:"Harakat con la voz del profesor" },
+               { fr:"303 syllabes : voyelles brèves, soukoun, madd, chadda, tanwin", nl:"303 lettergrepen: korte klinkers, soekoen, madd, sjadda, tanwien", en:"303 syllables: short vowels, sukun, madd, shadda, tanwin", es:"303 sílabas: vocales breves, sukún, madd, shadda, tanwín" }),
+        N("🎵", "سلاسل المقاطع وتكوين الكلمات", { fr:"Séries de syllabes et mots", nl:"Lettergreepreeksen en woorden", en:"Syllable series and words", es:"Series de sílabas y palabras" },
+               { fr:"Lecture en série à la vitesse choisie, puis l'élève compose ses mots et les entend lus d'un trait", nl:"Reeksen op het gekozen tempo; daarna maakt de leerling woorden en hoort ze vloeiend gelezen", en:"Series at the chosen speed; then the pupil builds words and hears them read smoothly", es:"Series a la velocidad elegida; luego el alumno forma palabras y las oye leídas de corrido" }),
+        N("🎤", "استمع إلى نفسك وقارن", { fr:"Écoute-toi et compare", nl:"Luister naar jezelf en vergelijk", en:"Listen to yourself and compare", es:"Escúchate y compara" },
+               { fr:"Enregistrement 100 % local : rien n'est envoyé ni stocké", nl:"100 % lokale opname: niets wordt verzonden of bewaard", en:"100% local recording: nothing is sent or stored", es:"Grabación 100 % local: nada se envía ni se guarda" }),
+        N("🎮", "مغامرة حروفي", { fr:"Hourouf Aventure", nl:"Hourouf Avontuur", en:"Hourouf Adventure", es:"Aventura Hourouf" },
+               { fr:"Étoiles, compagnon qui grandit, série de jours 🔥, défi du jour, badges", nl:"Sterren, een maatje dat groeit, dagenreeks 🔥, dagelijkse uitdaging, badges", en:"Stars, a growing buddy, day streak 🔥, daily challenge, badges", es:"Estrellas, un compañero que crece, racha de días 🔥, reto del día, insignias" }),
+        N("📖", "القرآن آيةً بعد آية", { fr:"Le Coran, verset par verset", nl:"De Koran, vers na vers", en:"The Quran, verse by verse", es:"El Corán, versículo a versículo" },
+               { fr:"Texte et récitation alignés, traduction FR · NL · EN · ES, lien vers d'autres récitateurs", nl:"Tekst en recitatie op elkaar afgestemd, vertaling FR · NL · EN · ES, link naar andere reciteurs", en:"Text and recitation aligned, FR · NL · EN · ES translation, link to other reciters", es:"Texto y recitación alineados, traducción FR · NL · EN · ES, enlace a otros recitadores" }),
+    ];
+    const school = [
+        N("📊", "متابعة دقيقة", { fr:"Un suivi précis", nl:"Nauwkeurige opvolging", en:"Detailed tracking", es:"Seguimiento detallado" },
+               { fr:"Lettres, harakat, quiz et noms des sourates mémorisées, par élève et par classe", nl:"Letters, harakat, quizzen en namen van de gememoriseerde soera's, per leerling en per klas", en:"Letters, harakat, quizzes and names of memorised surahs, per pupil and per class", es:"Letras, harakat, cuestionarios y nombres de las suras memorizadas, por alumno y por clase" }),
+        N("📱", "دخول سهل ورمز QR", { fr:"Connexion simple + QR code", nl:"Eenvoudig aanmelden + QR-code", en:"Easy sign-in + QR code", es:"Acceso fácil + código QR" },
+               { fr:"Accueil rassurant, connexion en 3 étapes ; le QR de l'école remplit le code tout seul", nl:"Geruststellend onthaal, aanmelden in 3 stappen; de QR-code vult de schoolcode zelf in", en:"Friendly welcome, 3-step sign-in; the school QR fills in the code", es:"Bienvenida tranquilizadora, acceso en 3 pasos; el QR rellena el código" }),
+        N("🧭", "مساعد دائم وجولات", { fr:"Assistant ❓ et visites animées", nl:"Assistent ❓ en rondleidingen", en:"❓ Assistant and animated tours", es:"Asistente ❓ y visitas animadas" },
+               { fr:"Sur chaque écran : quoi faire, les nouveautés, et une visite commentée à voix haute", nl:"Op elk scherm: wat te doen, het nieuws en een rondleiding met stem", en:"On every screen: what to do, what's new, and a spoken tour", es:"En cada pantalla: qué hacer, novedades y una visita narrada" }),
+        N("🌍", "أربع لغات", { fr:"4 langues à côté de l'arabe", nl:"4 talen naast het Arabisch", en:"4 languages alongside Arabic", es:"4 idiomas junto al árabe" },
+               { fr:"Français, néerlandais, anglais, espagnol : élèves, parents, professeurs, direction", nl:"Frans, Nederlands, Engels, Spaans: leerlingen, ouders, leerkrachten, directie", en:"French, Dutch, English, Spanish: pupils, parents, teachers, principal", es:"Francés, neerlandés, inglés, español: alumnos, padres, profesores, dirección" }),
+        N("👪", "التسجيلات عبر الوالدين", { fr:"Enregistrements via les parents", nl:"Opnames via de ouders", en:"Recordings via the parents", es:"Grabaciones a través de los padres" },
+               { fr:"La voix de l'élève va d'abord aux parents, qui choisissent quoi transmettre au professeur", nl:"De stem van de leerling gaat eerst naar de ouders, die kiezen wat naar de leerkracht gaat", en:"The pupil's voice goes to the parents first, who choose what to pass on to the teacher", es:"La voz del alumno va primero a los padres, que eligen qué enviar al profesor" }),
+        N("📷", "النسخة العائلية", { fr:"Version famille", nl:"Gezinsversie", en:"Family version", es:"Versión familiar" },
+               { fr:"Chaque enfant a sa photo comme logo et son propre parcours", nl:"Elk kind heeft zijn foto als logo en zijn eigen traject", en:"Each child has their photo as a logo and their own path", es:"Cada niño tiene su foto como logo y su propio recorrido" }),
+    ];
+    const tx = (o) => o[L] || o.fr;
+    const card = ([e, ar, t, d]) => `<div class="demo-news-card"><div class="dn-e">${e}</div><div class="dn-ar">${ar}</div><div class="dn-fr"><bdi>${t}</bdi></div><div class="dn-txt"><bdi>${d}</bdi></div></div>`;
+    const flags = { fr:"🇫🇷 FR", nl:"🇧🇪 NL", en:"🇬🇧 EN", es:"🇪🇸 ES" };
+    box.innerHTML = `<div class="demo-news" dir="ltr">
+        <div class="demo-news-title">✨ الجديد في حروفي / <bdi>${tx({ fr:"Nouveautés", nl:"Nieuw", en:"What's new", es:"Novedades" })}</bdi></div>
+        <div class="demo-langs"><span>${tx({ fr:"Langue de présentation :", nl:"Taal van de voorstelling:", en:"Presentation language:", es:"Idioma de la presentación:" })}</span>
+            ${WL_LANGS.map(l => `<button class="demo-lang${l === L ? " on" : ""}" onclick="demoSetLang('${l}')">${flags[l]}</button>`).join("")}</div>
+        <div class="demo-actions">
+            <button class="demo-tour-btn" onclick="startTour('director')">🎬 ${tx({ fr:"Présentation guidée (2 min)", nl:"Begeleide voorstelling (2 min)", en:"Guided presentation (2 min)", es:"Presentación guiada (2 min)" })}</button>
+            <button class="demo-try-btn" onclick="demoTryStudent()">👦 جرّب فضاء التلميذ / <bdi>${tx({ fr:"Essayer l'espace élève", nl:"Het leerlingenportaal proberen", en:"Try the pupil space", es:"Probar el espacio del alumno" })}</bdi></button>
+        </div>
+        <div class="demo-news-group">👦 ${tx({ fr:"Pour l'élève", nl:"Voor de leerling", en:"For the pupil", es:"Para el alumno" })}</div>
+        <div class="demo-news-grid">${pupil.map(card).join("")}</div>
+        <div class="demo-news-group">🏫 ${tx({ fr:"Pour l'école et les familles", nl:"Voor de school en de gezinnen", en:"For the school and families", es:"Para la escuela y las familias" })}</div>
+        <div class="demo-news-grid">${school.map(card).join("")}</div>
     </div>`;
 }
+// Démo : change la langue de présentation sans quitter la démo
+window.demoSetLang = (lang) => {
+    if (!isDemoMode || !window._demoData) return;
+    window._demoData.school.uiLang = lang;
+    applyFeatureTranslations(lang);
+    loadDemoDashboard(window._demoData);
+    renderDemoNews();
+};
 window.demoTryStudent = async () => {
     if (!isDemoMode) return;
     window._demoStudent = window._demoStudent || demoStudentData();
@@ -4270,7 +4301,22 @@ const TOURS = {
     { sel: "#parent-recordings", ...T("استمع إلى تسجيلاته وأرسلها إلى المعلم", "Écoutez ses enregistrements et choisissez ceux à transmettre au professeur.", "Beluister zijn/haar opnames en kies welke u doorstuurt naar de leerkracht.", "Listen to their recordings and choose which to send to the teacher.", "Escuche sus grabaciones y elija cuáles enviar al profesor.") },
   ]},
 };
+// 🎬 Présentation guidée pour le directeur (démo et vrai compte : les zones absentes sont sautées)
+const saTab = (name) => () => { const b = document.getElementById("sa-tab-btn-" + name.replace("sa-", "")); if (b) window.switchAdminTab(name, b); };
+TOURS.director = { icon: "🏫", title: T("جولة المدير", "Présentation pour la direction", "Voorstelling voor de directie", "Presentation for the principal", "Presentación para la dirección"), steps: [
+  { sel: null, ...T("مرحبًا! هذه حروفي في دقيقتين", "Bienvenue ! Voici حروفي en deux minutes : ce que vivent les élèves, et ce que voit l'école.", "Welkom! Dit is حروفي in twee minuten: wat de leerlingen beleven en wat de school ziet.", "Welcome! Here is حروفي in two minutes: what pupils experience, and what the school sees.", "¡Bienvenido! Esto es حروفي en dos minutos: lo que viven los alumnos y lo que ve la escuela.") },
+  { sel: "#demo-news .demo-news-grid", ...T("ما يتعلّمه التلميذ", "Pour l'élève : les lettres, les voyelles avec la voix du professeur, la lecture de mots, le Coran verset par verset, et un jeu qui donne envie de revenir chaque jour.", "Voor de leerling: letters, klinkers met de stem van de leerkracht, woorden lezen, de Koran vers na vers, en een spel dat elke dag doet terugkomen.", "For the pupil: letters, vowels in the teacher's voice, reading words, the Quran verse by verse, and a game that brings them back every day.", "Para el alumno: letras, vocales con la voz del profesor, lectura de palabras, el Corán versículo a versículo y un juego que invita a volver cada día.") },
+  { do: saTab("sa-stats"), sel: "#sa-summary", ...T("نظرة عامّة على المدرسة", "Les statistiques donnent la vue d'ensemble de l'école : élèves, progression des lettres, quiz, Coran et voyelles.", "De statistieken geven een overzicht van de school: leerlingen, voortgang van de letters, quizzen, Koran en klinkers.", "The statistics give an overview of the school: pupils, letter progress, quizzes, Quran and vowels.", "Las estadísticas dan una visión general de la escuela: alumnos, progreso de letras, cuestionarios, Corán y vocales.") },
+  { sel: "#chart-letters-hard", ...T("الحروف الصعبة", "Ce graphique montre les lettres qui posent le plus de difficultés, pour savoir quoi revoir en classe.", "Deze grafiek toont de moeilijkste letters, zodat u weet wat in de klas herhaald moet worden.", "This chart shows the hardest letters, so you know what to review in class.", "Este gráfico muestra las letras más difíciles, para saber qué repasar en clase.") },
+  { sel: "#chart-classes-quran", ...T("القرآن حسب القسم", "Ici, la mémorisation du Coran, classe par classe.", "Hier: het memoriseren van de Koran, klas per klas.", "Here: Quran memorisation, class by class.", "Aquí: la memorización del Corán, clase por clase.") },
+  { sel: "#sa-tbody tr:first-child .qn-open", ...T("أسماء السور المحفوظة", "Pour chaque élève, un clic affiche les noms des sourates qu'il a mémorisées.", "Per leerling toont één klik de namen van de soera's die hij of zij kent.", "For each pupil, one click shows the names of the surahs they have memorised.", "Para cada alumno, un clic muestra los nombres de las suras que ha memorizado.") },
+  { do: saTab("sa-settings"), sel: ".sa-qr", ...T("رمز QR للمدرسة", "Le QR code de l'école : les familles le scannent, et l'appli s'ouvre avec le code déjà rempli. On peut l'imprimer en affiche.", "De QR-code van de school: gezinnen scannen hem en de app opent met de code al ingevuld. U kunt hem als affiche afdrukken.", "The school QR code: families scan it and the app opens with the code filled in. It can be printed as a poster.", "El código QR de la escuela: las familias lo escanean y la app se abre con el código ya puesto. Se puede imprimir como cartel.") },
+  { do: saTab("sa-stats"), sel: "#demo-news .demo-langs", ...T("أربع لغات بجانب العربية", "L'arabe reste toujours affiché ; à côté, l'école choisit le français, le néerlandais, l'anglais ou l'espagnol.", "Het Arabisch blijft altijd zichtbaar; daarnaast kiest de school Frans, Nederlands, Engels of Spaans.", "Arabic is always shown; alongside it, the school chooses French, Dutch, English or Spanish.", "El árabe siempre se muestra; a su lado, la escuela elige francés, neerlandés, inglés o español.") },
+  { sel: null, ...T("المساعد ❓ في كلّ شاشة", "Sur chaque écran, le bouton ❓ explique quoi faire et présente les nouveautés, aux élèves, aux parents et aux professeurs.", "Op elk scherm legt de knop ❓ uit wat te doen en toont het nieuws, voor leerlingen, ouders en leerkrachten.", "On every screen, the ❓ button explains what to do and shows what's new, for pupils, parents and teachers.", "En cada pantalla, el botón ❓ explica qué hacer y muestra las novedades, para alumnos, padres y profesores.") },
+  { sel: "#demo-news .demo-try-btn", ...T("جرّب فضاء التلميذ", "Et maintenant, essayez vous-même l'espace élève : une visite animée vous y attend.", "Probeer nu zelf het leerlingenportaal: er wacht een geanimeerde rondleiding.", "Now try the pupil space yourself: an animated tour is waiting for you.", "Ahora pruebe usted mismo el espacio del alumno: le espera una visita animada.") },
+]};
 Object.assign(DYNAMIC_I18N, {
+  statQuranAvg: { fr:"Coran moyen", nl:"Koran gemiddeld", en:"Quran average", es:"Corán promedio" },
   tourHelp:  { fr:"Comment ça marche ?", nl:"Hoe werkt het?", en:"How does it work?", es:"¿Cómo funciona?" },
   tourPick:  { fr:"Choisis une visite", nl:"Kies een rondleiding", en:"Choose a tour", es:"Elige una visita" },
   tourSkip:  { fr:"Passer", nl:"Overslaan", en:"Skip", es:"Saltar" },
@@ -4352,7 +4398,7 @@ async function tourRunStep(token) {
   tourPlace(el);
   o.querySelector(".tour-ar").textContent = step.ar;
   const tr = tourTxt(step);
-  o.querySelector(".tour-tr").textContent = tr || "";
+  const trEl = o.querySelector(".tour-tr"); trEl.textContent = tr || ""; trEl.dir = "auto"; // le français s'écrit de gauche à droite
   o.querySelector(".tour-progress span").style.width = ((t.i + 1) / t.steps.length * 100) + "%";
   const card = o.querySelector(".tour-card"); card.classList.remove("in"); void card.offsetWidth; card.classList.add("in");
   if (step.tap && el) {
@@ -4417,7 +4463,7 @@ window.tourStop = (silent) => { if (!_tour) return; _tour.token++; tourCleanup()
 function tourFinish() {
   const key = _tour?.key;
   tourStop();
-  if (key === "parent") return;
+  if (key === "parent" || key === "director") return;
   if (window._game) { window._game.toursSeen = [...new Set([...(window._game.toursSeen || []), key])]; gameSave(); }
   gameConfetti(); gameSay?.("🎉 " + bi("انتهت الجولة!", "tourEnd"));
 }
@@ -4666,6 +4712,7 @@ function hTx(x, stack) {
 
 const HELP_NEWS = [
     { date: "2026-10-11", items: [
+        HL("🏫", "جولة مصوّرة للمدير", "Une présentation guidée pour la direction (bouton 🎬 dans la démo et dans l'aide ❓)", "Een begeleide voorstelling voor de directie", "A guided presentation for the principal", "Una presentación guiada para la dirección"),
         HL("📖", "أسماء السور المحفوظة", "Les noms des sourates mémorisées (élève, parent, professeur, directeur)", "De namen van de gememoriseerde soera's", "The names of memorised surahs", "Los nombres de las suras memorizadas"),
         HL("📱", "رمز QR للمدرسة يفتح التطبيق مع رمزها", "Un QR code par école : il ouvre l'appli avec le code de l'école déjà rempli", "Een QR-code per school: opent de app met de schoolcode al ingevuld", "A QR code per school: opens the app with the school code filled in", "Un código QR por escuela: abre la app con el código ya rellenado"),
         HL("🔗", "رابط للاستماع إلى قرّاء آخرين", "Un lien pour écouter d'autres récitateurs sur Quran.com", "Een link om naar andere reciteurs te luisteren op Quran.com", "A link to hear other reciters on Quran.com", "Un enlace para escuchar a otros recitadores en Quran.com") ] },
@@ -4887,7 +4934,7 @@ window.openHelp = async () => {
     bg.onclick = e => { if (e.target === bg) helpClose(); };
     const line = (x) => `<span class="help-i">${x.icon}</span><span class="help-t">${hTx(x, true)}</span>`;
     const allDone = role === "student" && routine.steps.every(s => s.k.some(doneToday));
-    const tours = role === "student" ? ["general", "harakat", "quiz", "quran", "game"] : role === "parent" ? ["parent"] : [];
+    const tours = role === "student" ? ["general", "harakat", "quiz", "quran", "game"] : role === "parent" ? ["parent"] : role === "schooladmin" ? ["director"] : [];
     bg.innerHTML = `<div class="help-sheet" role="dialog" aria-modal="true" dir="${helpStaff() ? "ltr" : "rtl"}">
         <div class="help-grip"></div>
         <div class="help-head"><h2>${hTx(adult ? HELP_UI.titleA : HELP_UI.title, true)}</h2><button class="help-x" onclick="helpClose()" aria-label="✕">✕</button></div>

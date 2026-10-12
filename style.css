@@ -2538,3 +2538,15 @@ body.tour-on .help-fab { display: none; }
 .sa-qr-box { background: #fff; padding: 12px; border-radius: 16px; border: 2px solid #e5def7; min-height: 180px; min-width: 180px; display: flex; align-items: center; justify-content: center; word-break: break-all; font-size: 12px; }
 .sa-qr-box img, .sa-qr-box canvas { display: block; }
 .sa-qr-text { font-size: 14px; color: #3d4245; max-width: 360px; margin: 0; }
+
+/* ===== 🎬 Démo directeur : langues, actions, groupes ===== */
+.demo-langs { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 6px; margin: 4px 0 10px; font-size: 15px; font-weight: 700; color: #3d3566; }
+.demo-lang { border: 2px solid #d9cff7; background: #fff; color: #3d3566; border-radius: 16px; padding: 5px 12px; font-size: 15px; font-weight: 800; cursor: pointer; font-family: inherit; }
+.demo-lang.on { background: #764ba2; border-color: #764ba2; color: #fff; }
+.demo-actions { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; margin-bottom: 6px; }
+.demo-actions .demo-try-btn { margin: 0; }
+.demo-tour-btn { padding: 14px 24px; border: none; border-radius: 28px; cursor: pointer; background: linear-gradient(135deg, #667eea, #764ba2); color: #fff; font-family: 'Tajawal', sans-serif; font-size: 17px; font-weight: 900; box-shadow: 0 8px 20px rgba(118,75,162,.3); }
+.demo-news-group { font-size: 16px; font-weight: 900; color: #3d3566; margin: 14px 4px 6px; }
+.demo-news .dn-ar { direction: rtl; }
+.demo-news .dn-fr { font-size: 15px; color: #5b3a8c; }
+.demo-news .dn-txt { font-size: 14px; color: #3f3f4a; }
