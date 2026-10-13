@@ -1075,6 +1075,7 @@ window.loginSuperAdmin = async () => {
     const pwd=document.getElementById("superadmin-pwd").value;
     if(pwd!==SUPER_ADMIN_PASSWORD){showError("Mot de passe incorrect");return;}
     currentRole="superadmin";
+    try { helpRenderFab(); } catch (e) {} // pastille « nouveautés » réservée au Super Admin
     showScreen("screen-superadmin"); await loadSuperAdminDashboard();
 };
 
@@ -1110,7 +1111,7 @@ window.logout = ()=>{
     if(window.speechSynthesis) window.speechSynthesis.cancel();
     currentUser=null;currentRole=null;currentSchoolId=null;currentClassId=null;selectedRole="student";isDemoMode=false;
     try { tourStop(); } catch (e) {}
-    _game = window._game = null; childWelcomeShown = false; try { renderGameBar(); renderDemoNews(); } catch (e) {}
+    _game = window._game = null; childWelcomeShown = false; try { renderGameBar(); renderDemoNews(); helpRenderFab(); } catch (e) {}
     document.getElementById("header-logo-img")?.classList.remove("child-photo-header");
     applyFeatureTranslations(""); // reset : évite qu'une langue d'école reste affichée pour le prochain utilisateur
     const mainLogo = document.getElementById("login-logo-main");
@@ -2348,6 +2349,27 @@ async function supLoadStats(){
 // Export du "registre" complet de l'école : tous les codes de connexion (prof, classe, élève, parent)
 // dans un seul tableau — pour que le directeur n'ait plus besoin de tenir ce suivi à la main dans un
 // fichier Excel séparé, dès la création de l'école.
+// ============================================================
+//  📥 EXPORTS : un vrai fichier Excel (.xlsx) qui s'ouvre directement en colonnes,
+//  avec les accents et l'arabe intacts. Repli en CSV (UTF-8, « ; ») si la librairie manque.
+// ============================================================
+function downloadTable(rows, baseName, sheetName) {
+    if (typeof XLSX !== "undefined") {
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        ws["!cols"] = rows[0].map((_, c) => ({ wch: Math.min(40, Math.max(10, ...rows.map(r => String(r[c] ?? "").length + 2))) }));
+        ws["!autofilter"] = { ref: ws["!ref"] };
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, (sheetName || "Registre").slice(0, 31));
+        XLSX.writeFile(wb, baseName + ".xlsx");
+        return;
+    }
+    const csv = "\uFEFF" + rows.map(r => r.map(c => `"${String(c ?? "").replace(/"/g, '""')}"`).join(";")).join("\r\n");
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+    a.download = baseName + ".csv";
+    a.click();
+}
+
 window.exportSchoolRegistry = async () => {
     if (isDemoMode) { alert("🎬 Mode démo : export désactivé.\nCette action serait possible avec un vrai compte école."); return; }
     const school = (await getDoc(doc(db, "ecoles", currentSchoolId))).data();
@@ -2357,7 +2379,7 @@ window.exportSchoolRegistry = async () => {
     myTeachers.forEach(([, d]) => { teacherByClass[d.classId] = d; });
 
     const BOM = "\uFEFF";
-    const header = ["École", "Code École", "Classe", "Code Classe", "Professeur", "Email Professeur", "Code Activation Prof", "Élève", "Code Élève 🔒", "Code Parent"];
+    const header = ["École", "Code École", "Classe", "Code Classe", "Professeur", "Email Professeur", "Code Activation Prof", "Élève", "Code Élève", "Code Parent"];
     const rows = [header];
 
     const classes = school.classes || {};
@@ -2376,11 +2398,7 @@ window.exportSchoolRegistry = async () => {
         }
     }
 
-    const blob = new Blob([BOM + rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(";")).join("\n")], { type: "text/csv;charset=utf-8;" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "registre_" + (school.name || "ecole").replace(/[^a-zA-Z0-9]/g, "_") + "_" + new Date().toISOString().slice(0, 10) + ".csv";
-    a.click();
+    downloadTable(rows, "registre_" + (school.name || "ecole").replace(/[^a-zA-Z0-9]/g, "_") + "_" + new Date().toISOString().slice(0, 10), "Registre");
 };
 
 window.exportData=async role=>{
@@ -2397,8 +2415,7 @@ window.exportData=async role=>{
         if(role==="super")return[name,school?.name||"?",cls,pct,sc.length,avg,date];
         return[name,cls,pct,sc.length,avg,date];
     })];
-    const blob=new Blob([BOM+rows.map(r=>r.join(";")).join("\n")],{type:"text/csv;charset=utf-8;"});
-    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="rapport_hourouf_"+new Date().toISOString().slice(0,10)+".csv";a.click();
+    downloadTable(rows, "rapport_hourouf_"+new Date().toISOString().slice(0,10), "Rapport");
 };
 
 const BADGE_TRANSLATIONS = {
@@ -4942,7 +4959,10 @@ window.helpAct = (act) => {
     if (kind === "admin") { const b = document.querySelector(`.admin-tab[onclick*="'${arg}'"]`); if (b) window.switchAdminTab(arg, b); }
 };
 
-function helpNewsUnseen() { return wlLoad("hourouf_news_seen", "") < HELP_NEWS[0].date; }
+// Le journal des nouveautés est un outil de suivi pour le Super Admin : élèves, parents, professeurs
+// et directeurs ne le voient pas (ni la pastille rouge sur le bouton d'aide).
+const helpShowNews = () => currentRole === "superadmin";
+function helpNewsUnseen() { return helpShowNews() && wlLoad("hourouf_news_seen", "") < HELP_NEWS[0].date; }
 function helpRenderFab() {
     let b = document.getElementById("help-fab");
     if (!b) {
@@ -4991,14 +5011,14 @@ window.openHelp = async () => {
             ${HELP_FAQ.map(f => `<details class="help-faq"><summary>${line(f.q)}</summary><p>${hTx(f.a)}</p></details>`).join("")}
         </section>
 
-        <section class="help-sec help-news"><h3>${hTx(HELP_UI.news, true)} ${helpNewsUnseen() ? `<span class="help-new-tag">NEW</span>` : ""}</h3>
+        ${helpShowNews() ? `<section class="help-sec help-news"><h3>${hTx(HELP_UI.news, true)} ${helpNewsUnseen() ? `<span class="help-new-tag">NEW</span>` : ""}</h3>
             ${HELP_NEWS.slice(0, 3).map(n => `<div class="help-news-day"><span class="help-news-date">${isoToFr(n.date)}</span>
                 <ul>${n.items.map(i => `<li>${line(i)}</li>`).join("")}</ul></div>`).join("")}
-        </section>
+        </section>` : ""}
     </div>`;
     document.body.appendChild(bg);
     requestAnimationFrame(() => bg.classList.add("in"));
-    wlStore("hourouf_news_seen", HELP_NEWS[0].date);
+    if (helpShowNews()) wlStore("hourouf_news_seen", HELP_NEWS[0].date);
     helpRenderFab();
     // suggestions calculées après l'ouverture (lecture des données)
     const sugg = await helpSuggestions();
@@ -7134,12 +7154,7 @@ window.exportAbsences = async () => {
         rows.push([r.studentName, cls, new Date(r.date).toLocaleDateString("fr-FR"), "Absent"]);
     });
 
-    const csv = BOM + rows.map(r => r.join(";")).join("\n");
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = `absences_${month}.csv`;
-    a.click();
+    downloadTable(rows, `absences_${month}`, "Absences");
 };
 
 // ============================================
