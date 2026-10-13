@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حروفي - تعلم الأبجدية العربية</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20260983">
+    <link rel="stylesheet" href="style.css?v=20260984">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -777,9 +777,17 @@
         <div class="admin-section">
             <h3>➕ Ajouter une école</h3>
             <div class="admin-form">
-                <select id="sup-org-type" class="admin-input" style="flex-basis:100%;min-width:0" onchange="document.getElementById('sup-school-name').placeholder = this.value==='family' ? 'Nom de famille' : 'Nom de l\'école'">
+                <select id="sup-org-type" class="admin-input" style="flex-basis:100%;min-width:0" onchange="document.getElementById('sup-school-name').placeholder = this.value==='family' ? 'Nom de famille' : 'Nom de l\'école'; document.getElementById('sup-family-max').classList.toggle('hidden', this.value!=='family')">
                     <option value="school">🏫 École (classes, plusieurs profs)</option>
                     <option value="family">👨‍👩‍👧 Famille (usage à la maison)</option>
+                </select>
+                <!-- 👨‍👩‍👧 Formule famille : nombre maximum d'enfants (au-delà de 5 : version école) -->
+                <select id="sup-family-max" class="admin-input hidden" style="flex-basis:100%;min-width:0">
+                    <option value="1">👦 Formule 1 enfant</option>
+                    <option value="2">👦👧 Formule 2 enfants</option>
+                    <option value="3">Formule 3 enfants</option>
+                    <option value="4">Formule 4 enfants</option>
+                    <option value="5">Formule 5 enfants</option>
                 </select>
                 <input type="text" id="sup-school-name" placeholder="Nom de l'école" class="admin-input">
                 <input type="text" id="sup-school-city" placeholder="Ville" class="admin-input">
@@ -893,6 +901,6 @@
     </div>
 </div>
 
-<script type="module" src="script.js?v=20260983"></script>
+<script type="module" src="script.js?v=20260984"></script>
 </body>
 </html>

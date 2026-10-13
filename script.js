@@ -2181,7 +2181,7 @@ async function supLoadSchools(){
         const classes=s.classes?Object.keys(s.classes).length:0;
         const langBadge = {fr:"🇫🇷",nl:"🇳🇱",en:"🇬🇧",es:"🇪🇸"}[s.uiLang] || "🇸🇦";
         const orgBadge = s.orgType === "family"
-            ? `<span class="school-city" style="background:#eee7fb;color:#764ba2;padding:2px 8px;border-radius:8px">👨‍👩‍👧 Famille</span>`
+            ? `<span class="school-city" style="background:#eee7fb;color:#764ba2;padding:2px 8px;border-radius:8px">👨‍👩‍👧 Famille · ${familyCount(s)}/${familyMax(s)} enfant${familyMax(s)>1?"s":""}</span>`
             : `<span class="school-city" style="background:#e7f3fb;color:#2980b9;padding:2px 8px;border-radius:8px">🏫 École</span>`;
         const expiryBadge = subscriptionBadgeHtml(s); // toujours affiché, même sans date d'expiration
         return `<div class="school-card"><div class="school-card-header">
@@ -2242,6 +2242,20 @@ window.supEditFeatures = async (schoolId) => {
         return;
     }
 
+    // 👨‍👩‍👧 Formule famille (1 à 5 enfants) — au-delà de 5, c'est la version école
+    let maxChildren = school.maxChildren;
+    if (school.orgType === "family") {
+        while (true) {
+            const ans = prompt(`Formule famille pour "${school.name}" : nombre maximum d'enfants (1 à 5).\nActuellement : ${familyMax(school)} — inscrits : ${familyCount(school)}\n(Au-delà de 5 enfants : version école)`, String(familyMax(school)));
+            if (ans === null) return;
+            const n = Number(String(ans).trim());
+            if (Number.isInteger(n) && n >= 1 && n <= FAMILY_MAX_LIMIT) {
+                if (n < familyCount(school) && !confirm(`⚠️ ${familyCount(school)} enfants sont déjà inscrits, plus que la formule ${n}.\nIls gardent leur accès, mais aucun enfant ne pourra être ajouté.\nContinuer ?`)) continue;
+                maxChildren = n; break;
+            }
+            alert("❌ Entrez un nombre entre 1 et 5.");
+        }
+    }
     const features = { ...current, customWelcomeMessage: newMsg.trim() || null, syllableSeries: seriesOn || null };
     // Nettoyer les clés vides pour garder le document propre
     Object.keys(features).forEach(k => { if (!features[k]) delete features[k]; });
@@ -2249,7 +2263,8 @@ window.supEditFeatures = async (schoolId) => {
     await setDoc(doc(db, "ecoles", schoolId), {
         features,
         accessStart: startResult.iso,
-        accessExpiry: expiryResult.iso
+        accessExpiry: expiryResult.iso,
+        ...(school.orgType === "family" ? { maxChildren } : {})
     }, { merge: true });
     alert("✅ Fonctionnalités et dates mises à jour pour " + school.name);
 };
@@ -2270,6 +2285,7 @@ window.supAddSchool=async()=>{
     const pwd=document.getElementById("sup-admin-pwd").value;
     const uiLang=document.getElementById("sup-school-lang").value; // "" | "fr" | "nl" | "en" | "es" — figé à la création
     const orgType=document.getElementById("sup-org-type").value; // "school" | "family" — figé à la création, comme la langue
+    const maxChildren = orgType === "family" ? Number(document.getElementById("sup-family-max").value) || FAMILY_MAX_DEFAULT : null; // formule famille
     const accessStart = document.getElementById("sup-school-start").value || null;   // "YYYY-MM-DD" ou null = pas de restriction de début
     const accessExpiry = document.getElementById("sup-school-expiry").value || null; // "YYYY-MM-DD" ou null = pas d'expiration
     if(!name||!city||!email||!pwd){alert("Tous les champs sont requis");return;}
@@ -2280,11 +2296,11 @@ window.supAddSchool=async()=>{
     const existingCodes = new Set(Object.values(existingSchools).map(s => (s.code || "").toUpperCase()));
     let schoolCode;
     do { schoolCode = "ECO-" + Math.floor(1000 + Math.random() * 9000); } while (existingCodes.has(schoolCode));
-    await setDoc(doc(db,"ecoles",schoolId),{name,city,code:schoolCode,uiLang,orgType,accessStart,accessExpiry,adminEmail:email,classes:{},createdAt:new Date().toISOString()});
+    await setDoc(doc(db,"ecoles",schoolId),{name,city,code:schoolCode,uiLang,orgType,...(maxChildren?{maxChildren}:{}),accessStart,accessExpiry,adminEmail:email,classes:{},createdAt:new Date().toISOString()});
     await setDoc(doc(db,"school_admins",email),{email,schoolId,password:btoa(pwd),createdAt:new Date().toISOString()});
     const langLabel = {fr:"🇫🇷 Français",nl:"🇳🇱 Néerlandais",en:"🇬🇧 Anglais",es:"🇪🇸 Espagnol"}[uiLang] || "🇸🇦 Arabe uniquement";
     const res=document.getElementById("sup-school-result");
-    res.innerHTML=`✅ École créée !<br>🏫 <strong>${name}</strong> - ${city}<br>🔑 Code école (à donner aux élèves) : <strong style="color:#e67e22;font-size:18px">${schoolCode}</strong><br>🌐 Langue : <strong>${langLabel}</strong><br>📧 Admin: <strong>${email}</strong><br>🔑 Mot de passe: <strong>${pwd}</strong>`;
+    res.innerHTML=`✅ ${orgType==="family"?`Famille créée ! (formule ${maxChildren} enfant${maxChildren>1?"s":""})`:"École créée !"}<br>🏫 <strong>${name}</strong> - ${city}<br>🔑 Code école (à donner aux élèves) : <strong style="color:#e67e22;font-size:18px">${schoolCode}</strong><br>🌐 Langue : <strong>${langLabel}</strong><br>📧 Admin: <strong>${email}</strong><br>🔑 Mot de passe: <strong>${pwd}</strong>`;
     res.classList.remove("hidden");
     ["sup-school-name","sup-school-city","sup-admin-email","sup-admin-pwd"].forEach(id=>document.getElementById(id).value="");
     document.getElementById("sup-school-lang").value="";
@@ -4329,6 +4345,7 @@ TOURS.director = { icon: "🏫", title: T("جولة المدير", "Présentatio
   "والآن جرّبوا بأنفسكم فضاء التلميذ: تنتظركم جولة متحرّكة.",
 ].forEach((t, i) => { TOURS.director.steps[i].arLong = t; });
 Object.assign(DYNAMIC_I18N, {
+  famPlan: { fr:"Formule famille (enfants)", nl:"Gezinsformule (kinderen)", en:"Family plan (children)", es:"Fórmula familiar (niños)" },
   statQuranAvg: { fr:"Coran moyen", nl:"Koran gemiddeld", en:"Quran average", es:"Corán promedio" },
   tourHelp:  { fr:"Comment ça marche ?", nl:"Hoe werkt het?", en:"How does it work?", es:"¿Cómo funciona?" },
   tourPick:  { fr:"Choisis une visite", nl:"Kies een rondleiding", en:"Choose a tour", es:"Elige una visita" },
@@ -5792,6 +5809,7 @@ async function loadStudentsList(classId) {
     const cl = school?.classes?.[classId];
     const students = cl?.students || [];
     const el = document.getElementById("sa-students-list");
+    window._famSchool = school; // pour afficher la formule famille (x / max enfants)
 
     if (students.length === 0) {
         el.innerHTML = `<p style="color:#777;text-align:center;padding:20px">${bi("لا يوجد تلاميذ — أضيفوهم أعلاه","noStudentsYet")}</p>`;
@@ -5824,7 +5842,45 @@ async function loadStudentsList(classId) {
             </tbody>
         </table>
         <p style="color:#888;font-size:13px;margin-top:10px;text-align:center">${students.length} élève(s) inscrit(s) — le code élève et le code parent sont différents, communiquez chacun à la bonne personne</p>
+        ${currentOrgType === "family" && window._famSchool ? `<p class="fam-plan">👨‍👩‍👧 ${bi("الصيغة العائلية", "famPlan")} : <b>${familyCount(window._famSchool)} / ${familyMax(window._famSchool)}</b></p>` : ""}
     `;
+}
+
+// ============================================================
+//  👨‍👩‍👧 FORMULES FAMILLE : 1 à 5 enfants (au-delà : version école)
+// ============================================================
+const FAMILY_MAX_LIMIT = 5;          // plus de 5 enfants → version école
+const FAMILY_MAX_DEFAULT = 5;        // anciennes familles créées avant les formules
+function familyMax(school) {
+    const n = Number(school?.maxChildren);
+    return Number.isInteger(n) && n >= 1 ? Math.min(n, FAMILY_MAX_LIMIT) : FAMILY_MAX_DEFAULT;
+}
+function familyCount(school) {
+    return Object.values(school?.classes || {}).reduce((a, c) => a + ((c && c.students) ? c.students.length : 0), 0);
+}
+// Combien d'enfants peut-on encore ajouter ? (Infinity pour une école)
+function familyRoom(school) {
+    if ((school?.orgType || "school") !== "family") return Infinity;
+    return Math.max(0, familyMax(school) - familyCount(school));
+}
+const arKids = n => n === 1 ? "طفل واحد" : n === 2 ? "طفلين" : `${n} أطفال`;
+function familyLimitMessage(school) {
+    const max = familyMax(school), next = max + 1, L = currentUILang;
+    const ar = max >= FAMILY_MAX_LIMIT
+        ? `بلغتم الحدّ الأقصى للنسخة العائلية (${FAMILY_MAX_LIMIT} أطفال). لأكثر من ذلك، اتّصلوا بنا للانتقال إلى نسخة المدرسة`
+        : `صيغتكم العائلية تسمح بـ${arKids(max)}. لإضافة طفل آخر، اتّصلوا بنا للانتقال إلى صيغة ${arKids(next)}`;
+    const tr = max >= FAMILY_MAX_LIMIT ? {
+        fr: `Vous avez atteint le maximum de la version famille (${FAMILY_MAX_LIMIT} enfants). Au-delà, contactez-nous pour passer à la version école.`,
+        nl: `U hebt het maximum van de gezinsversie bereikt (${FAMILY_MAX_LIMIT} kinderen). Voor meer kinderen: contacteer ons voor de schoolversie.`,
+        en: `You have reached the family version maximum (${FAMILY_MAX_LIMIT} children). For more, contact us to switch to the school version.`,
+        es: `Ha alcanzado el máximo de la versión familiar (${FAMILY_MAX_LIMIT} niños). Para más, contáctenos para pasar a la versión escuela.`,
+    } : {
+        fr: `Votre formule famille permet ${max} enfant${max > 1 ? "s" : ""}. Pour ajouter un enfant, contactez-nous pour passer à la formule ${next} enfants.`,
+        nl: `Uw gezinsformule laat ${max} ${max > 1 ? "kinderen" : "kind"} toe. Om een kind toe te voegen: contacteer ons voor de formule met ${next} kinderen.`,
+        en: `Your family plan allows ${max} child${max > 1 ? "ren" : ""}. To add a child, contact us to upgrade to the ${next}-children plan.`,
+        es: `Su fórmula familiar permite ${max} niño${max > 1 ? "s" : ""}. Para añadir uno, contáctenos para pasar a la fórmula de ${next} niños.`,
+    };
+    return "👨‍👩‍👧 " + ar + "\n\n" + (tr[L] || tr.fr);
 }
 
 window.saAddStudent = async () => {
@@ -5837,6 +5893,9 @@ window.saAddStudent = async () => {
     const snap = await getDoc(doc(db, "ecoles", currentSchoolId));
     const school = snap.data();
     school.classes[currentClassForStudents].students = school.classes[currentClassForStudents].students || [];
+
+    // 👨‍👩‍👧 Version famille : pas plus d'enfants que la formule choisie
+    if (familyRoom(school) <= 0) { alert(familyLimitMessage(school)); return; }
 
     const fullName = firstname + " " + lastname;
     // Check duplicate
@@ -5913,10 +5972,13 @@ window.importExcel = async () => {
             const existing = school.classes[currentClassForStudents].students || [];
 
             // Add only new ones
-            let added = 0;
+            let added = 0, overLimit = 0;
             const newlyAdded = [];
+            let room = familyRoom(school); // version famille : limite de la formule
             students.forEach(name => {
                 if (!existing.find(e => e.toLowerCase() === name.toLowerCase())) {
+                    if (room <= 0) { overLimit++; return; }
+                    room--;
                     existing.push(name); added++; newlyAdded.push(name);
                 }
             });
@@ -5935,7 +5997,7 @@ window.importExcel = async () => {
                 await saveStudentData(studentId, studentData);
             }
 
-            alert(`✅ ${added} élève(s) importé(s), chacun avec ses 2 codes (élève + parent) générés automatiquement !\n${students.length - added} doublon(s) ignoré(s).`);
+            alert(`✅ ${added} élève(s) importé(s), chacun avec ses 2 codes (élève + parent) générés automatiquement !\n${students.length - added - overLimit} doublon(s) ignoré(s).` + (overLimit ? `\n\n⚠️ ${overLimit} non ajouté(s) :\n` + familyLimitMessage(school) : ""));
             document.getElementById("excel-import").value = "";
             await loadStudentsList(currentClassForStudents);
             await saLoadClasses(school);

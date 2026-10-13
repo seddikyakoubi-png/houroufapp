@@ -2550,3 +2550,6 @@ body.tour-on .help-fab { display: none; }
 .demo-news .dn-ar { direction: rtl; }
 .demo-news .dn-fr { font-size: 15px; color: #5b3a8c; }
 .demo-news .dn-txt { font-size: 14px; color: #3f3f4a; }
+
+/* ===== 👨‍👩‍👧 Formule famille ===== */
+.fam-plan { text-align: center; margin: 8px auto 0; padding: 8px 16px; width: fit-content; border-radius: 16px; background: #f1effb; color: #3d3566; font-size: 16px; font-weight: 700; }
