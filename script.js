@@ -3,7 +3,7 @@
 // ============================================
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs, addDoc, updateDoc, deleteField } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, signInAnonymously, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyAqAf5DBg6MudvVcajvWM514OYHp9IGPL8",
@@ -34,7 +34,7 @@ onAuthStateChanged(auth, user => {
     else signInAnonymously(auth).catch(err => console.error("Connexion anonyme échouée :", err));
 });
 
-const SUPER_ADMIN_PASSWORD = "Hourouf@SuperAdmin2025";
+// 🔐 Le Super Admin se connecte avec un vrai compte Firebase (Authentication › Users) : aucun mot de passe dans ce fichier.
 
 // ✅ PRONONCIATION ARABE
 // ✅ speakArabic : utilise les MP3 existants, fallback sur synthèse vocale
@@ -1072,8 +1072,18 @@ window.loginSchoolAdmin = async () => {
 };
 
 window.loginSuperAdmin = async () => {
+    const email=(document.getElementById("superadmin-email")?.value||"").trim().toLowerCase();
     const pwd=document.getElementById("superadmin-pwd").value;
-    if(pwd!==SUPER_ADMIN_PASSWORD){showError("Mot de passe incorrect");return;}
+    if(!email||!pwd){showError("Entrez l'e-mail et le mot de passe du compte Super Admin");return;}
+    try {
+        await signInWithEmailAndPassword(auth, email, pwd); // vérifié par Firebase, pas par l'appli
+    } catch (e) {
+        const c = e?.code || "";
+        showError(c.includes("too-many-requests") ? "Trop d'essais : réessayez dans quelques minutes"
+                : c.includes("network") ? "Pas de connexion internet"
+                : "E-mail ou mot de passe incorrect");
+        return;
+    }
     currentRole="superadmin";
     try { helpRenderFab(); } catch (e) {} // pastille « nouveautés » réservée au Super Admin
     showScreen("screen-superadmin"); await loadSuperAdminDashboard();
@@ -1107,6 +1117,8 @@ function showError(msg){
 }
 
 window.logout = ()=>{
+    // Super Admin : on ferme sa session Firebase (une session anonyme reprend aussitôt pour les autres)
+    try { if (auth.currentUser && !auth.currentUser.isAnonymous) signOut(auth); } catch (e) {}
     // Arrêter toute synthèse vocale en cours
     if(window.speechSynthesis) window.speechSynthesis.cancel();
     currentUser=null;currentRole=null;currentSchoolId=null;currentClassId=null;selectedRole="student";isDemoMode=false;
@@ -1116,7 +1128,7 @@ window.logout = ()=>{
     applyFeatureTranslations(""); // reset : évite qu'une langue d'école reste affichée pour le prochain utilisateur
     const mainLogo = document.getElementById("login-logo-main");
     if (mainLogo) mainLogo.innerHTML = "🌙"; // revient à l'icône par défaut pour le prochain utilisateur (appareil partagé)
-    ["student-code","teacher-email","teacher-pwd","schooladmin-email","schooladmin-pwd","superadmin-pwd"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
+    ["student-code","teacher-email","teacher-pwd","schooladmin-email","schooladmin-pwd","superadmin-email","superadmin-pwd"].forEach(id=>{const el=document.getElementById(id);if(el)el.value="";});
     document.querySelectorAll(".role-btn, .role-card").forEach(b=>b.classList.remove("active"));
     const stuBtn = document.querySelector(".role-btn[data-role='student'], .role-card[data-role='student']");
     if(stuBtn) stuBtn.classList.add("active");
@@ -4391,6 +4403,15 @@ function tourSpeak(step) {
     const lang = currentUILang || "ar";
     const voices = syn.getVoices().filter(v => v.lang && v.lang.toLowerCase().startsWith(lang));
     const v = lang === "ar" ? bestArabicVoice() : (voices.find(x => /natural|online|google/i.test(x.name)) || voices[0]);
+    // Pas de voix pour cette langue dans ce navigateur (cas fréquent de l'arabe dans Chrome) : on le dit, une fois
+    const nv = document.querySelector("#tour-overlay .tour-novoice");
+    if (nv) {
+        const noVoice = !v && syn.getVoices().length > 0;
+        nv.classList.toggle("hidden", !noVoice);
+        if (noVoice) nv.innerHTML = lang === "ar"
+            ? `🔇 لا يوجد صوت عربي في هذا المتصفّح — افتحوا التطبيق في <b>Microsoft Edge</b> أو على الهاتف لسماع الشرح<br><bdi dir="ltr">Pas de voix arabe dans ce navigateur : ouvrez l'appli dans Microsoft Edge ou sur un téléphone.</bdi>`
+            : `🔇 <bdi dir="auto">${({ fr:"Pas de voix pour cette langue dans ce navigateur : essayez Microsoft Edge.", nl:"Geen stem voor deze taal in deze browser: probeer Microsoft Edge.", en:"No voice for this language in this browser: try Microsoft Edge.", es:"No hay voz para este idioma en este navegador: pruebe Microsoft Edge." })[lang] || ""}</bdi>`;
+    }
     if (!v) return setTimeout(resolve, minMs);
     const u = new SpeechSynthesisUtterance(text);
     u.voice = v; u.lang = v.lang; u.rate = 0.95;
@@ -4410,6 +4431,7 @@ function tourEls() {
     <div class="tour-card">
       <div class="tour-progress"><span></span></div>
       <div class="tour-ar"></div><div class="tour-tr"></div>
+      <div class="tour-novoice hidden"></div>
       <div class="tour-ctrl">
         <button onclick="tourPrev()">⏮</button>
         <button class="tour-pp" onclick="tourTogglePause()">⏸</button>
