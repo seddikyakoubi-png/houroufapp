@@ -1,0 +1,17 @@
+{
+  "name": "حروفي — HouroufApp",
+  "short_name": "حروفي",
+  "description": "Apprendre à lire l'arabe et le Coran",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#2A2361",
+  "theme_color": "#2A2361",
+  "icons": [
+    { "src": "icons/hourouf-rond-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/hourouf-rond-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
