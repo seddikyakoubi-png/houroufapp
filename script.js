@@ -394,6 +394,8 @@ const FEATURE_I18N = {
     "rec-modal-title":  { emoji:"🎙️", ar:"سجّل صوتك", fr:"Enregistre ta voix", nl:"Neem je stem op", en:"Record your voice", es:"Graba tu voz" },
     "rec-start-btn":    { emoji:"🔴", ar:"ابدأ التسجيل", fr:"Démarrer", nl:"Starten", en:"Start", es:"Empezar" },
     "rec-stop-btn":     { emoji:"⏹️", ar:"إيقاف", fr:"Arrêter", nl:"Stoppen", en:"Stop", es:"Detener" },
+    "rec-close-btn":    { emoji:"", ar:"إغلاق", fr:"Fermer", nl:"Sluiten", en:"Close", es:"Cerrar" },
+    "quran-header-sub": { emoji:"", ar:"تعلّم القرآن الكريم", fr:"Apprendre le Coran", nl:"De Koran leren", en:"Learning the Quran", es:"Aprender el Corán" },
     "rec-send-btn":     { emoji:"📤", ar:"إرسال إلى والديّ", fr:"Envoyer à mes parents", nl:"Naar mijn ouders sturen", en:"Send to my parents", es:"Enviar a mis padres" },
     "btn-autowrite-play": { emoji:"▶️", ar:"عرض الكتابة", fr:"Voir l'écriture", nl:"Schrijven tonen", en:"Show writing", es:"Ver la escritura" },
     "autowrite-help":     { emoji:"", ar:"اختر حرفًا وشكلاً، ثم اضغط \"عرض الكتابة\" لمشاهدة الحرف يُكتب تلقائيًا", fr:"Choisis une lettre et une forme, puis appuie sur \"Voir l'écriture\" pour regarder la lettre s'écrire automatiquement", nl:"Kies een letter en een vorm, druk dan op \"Schrijven tonen\" om de letter automatisch te zien schrijven", en:"Choose a letter and a shape, then press \"Show writing\" to watch the letter write itself", es:"Elige una letra y una forma, luego pulsa \"Ver la escritura\" para ver cómo se escribe la letra automáticamente" },
@@ -466,6 +468,7 @@ const DYNAMIC_I18N = {
     pPhotoRemove:     { fr:"Retirer la photo", nl:"Foto verwijderen", en:"Remove photo", es:"Quitar la foto" },
     pPhotoSaved:      { fr:"Photo enregistrée !", nl:"Foto opgeslagen!", en:"Photo saved!", es:"¡Foto guardada!" },
     welcomeChild:     { fr:"Bienvenue", nl:"Welkom", en:"Welcome", es:"Bienvenido/a" },
+    surahLoadError:   { fr:"Impossible de charger la sourate", nl:"De soera kon niet geladen worden", en:"The surah could not be loaded", es:"No se pudo cargar la sura" },
     prTitle:          { fr:"Enregistrements de votre enfant", nl:"Opnames van uw kind", en:"Your child's recordings", es:"Grabaciones de su hijo/a" },
     prIntro:          { fr:"Écoutez les enregistrements, puis choisissez ceux à transmettre au professeur. Rien n'est envoyé au professeur sans votre accord.", nl:"Beluister de opnames en kies welke u naar de leerkracht doorstuurt. Niets gaat naar de leerkracht zonder uw akkoord.", en:"Listen to the recordings, then choose which ones to pass on to the teacher. Nothing reaches the teacher without your consent.", es:"Escuche las grabaciones y elija cuáles enviar al profesor. Nada llega al profesor sin su consentimiento." },
     prForward:        { fr:"Transmettre au professeur", nl:"Doorsturen naar de leerkracht", en:"Send to the teacher", es:"Enviar al profesor" },
@@ -4020,6 +4023,7 @@ function gameNextCelebration() {
     document.body.appendChild(m);
 }
 window.gameNextCelebration = gameNextCelebration;
+window.gameSay = gameSay; window.gameChallengeText = gameChallengeText; // appelés depuis la barre de jeu
 function gameConfetti() {
     const colors = ["#FF6B6B", "#FFE66D", "#4ECDC4", "#764ba2", "#6BCB77", "#f5a623"];
     for (let i = 0; i < 70; i++) {
@@ -4997,6 +5001,7 @@ function helpRenderFab() {
     b.setAttribute("aria-label", "مساعدة / Aide / Hulp / Help / Ayuda");
 }
 function helpClose() { document.getElementById("help-sheet-bg")?.remove(); }
+window.helpClose = helpClose; // appelé par la croix ✕ et les boutons de l'aide
 
 window.openHelp = async () => {
     helpClose();
@@ -5072,8 +5077,11 @@ const SURAH_INFO = {
     masad:[111,"Al-Masad"], ikhlas:[112,"Al-Ikhlas"], falaq:[113,"Al-Falaq"], nas:[114,"An-Nas"],
 };
 // Nom de la sourate : arabe + nom dans la langue de l'école
+function surahTr(s, lang = currentUILang) {
+    return lang === "nl" ? s.name_nl : lang === "fr" ? s.name_fr : lang ? (SURAH_INFO[s.id]?.[1] || "") : "";
+}
 function surahLabel(s) {
-    const t = currentUILang === "nl" ? s.name_nl : currentUILang === "fr" ? s.name_fr : currentUILang ? SURAH_INFO[s.id]?.[1] : "";
+    const t = surahTr(s);
     return t ? `${s.name_ar} <bdi class="sl-tr">${t}</bdi>` : s.name_ar;
 }
 // Sourates terminées et en cours, dans l'ordre de la liste
@@ -7610,6 +7618,8 @@ function getVocabEmoji(id) {
     return emojiMap[id] || "📖";
 }
 
+window.getVocabEmoji = getVocabEmoji; // utilisé quand une image de mot est introuvable
+
 const vocabulaire = [
     // ===== LETTRES (28 mots existants) =====
     { id:"v01", cat:"letters", mot:"أَسَد",    trad_fr:"Lion",       trad_nl:"Leeuw",      img:"images/lion.jpg",     son:"sons/alif.mp3",  lettre:"ا" },
@@ -7672,6 +7682,28 @@ const vocabulaire = [
     { id:"v50", cat:"house", mot:"سَرِير",   trad_fr:"Lit",        trad_nl:"Bed",        img:"images/vocab/sarir.png",  son:"sons/vocab/sarir.mp3",  lettre:"" },
 ];
 
+// Traductions anglaise et espagnole des 50 mots (le français et le néerlandais sont dans la liste)
+const VOCAB_EN_ES = {
+    v01:["Lion","León"], v02:["Duck","Pato"], v03:["Apple","Manzana"], v04:["Fox","Zorro"], v05:["Camel","Camello"],
+    v06:["Horse","Caballo"], v07:["Sheep","Oveja"], v08:["Bear","Oso"], v09:["Wolf","Lobo"], v10:["Pomegranate","Granada"],
+    v11:["Giraffe","Jirafa"], v12:["Fish","Pez"], v13:["Sun","Sol"], v14:["Falcon","Halcón"], v15:["Frog","Rana"],
+    v16:["Airplane","Avión"], v17:["Envelope","Sobre"], v18:["Grapes","Uvas"], v19:["Gazelle","Gacela"], v20:["Elephant","Elefante"],
+    v21:["Pen","Bolígrafo"], v22:["Book","Libro"], v23:["Lemon","Limón"], v24:["Banana","Plátano"], v25:["Tiger","Tigre"],
+    v26:["Hoopoe","Abubilla"], v27:["Rose","Rosa"], v28:["Hand","Mano"], v29:["Father","Padre"], v30:["Mother","Madre"],
+    v31:["Brother","Hermano"], v32:["Sister","Hermana"], v33:["Grandfather","Abuelo"], v34:["Grandmother","Abuela"], v35:["Red","Rojo"],
+    v36:["Blue","Azul"], v37:["Green","Verde"], v38:["Yellow","Amarillo"], v39:["White","Blanco"], v40:["Black","Negro"],
+    v41:["Head","Cabeza"], v42:["Eye","Ojo"], v43:["Nose","Nariz"], v44:["Mouth","Boca"], v45:["Leg","Pierna"],
+    v46:["Door","Puerta"], v47:["Chair","Silla"], v48:["Table","Mesa"], v49:["Window","Ventana"], v50:["Bed","Cama"],
+};
+const VOCAB_FLAGS = { fr:"🇫🇷", nl:"🇧🇪", en:"🇬🇧", es:"🇪🇸" };
+function vocabTr(word, lang = currentUILang) {
+    if (lang === "fr") return word.trad_fr;
+    if (lang === "nl") return word.trad_nl;
+    if (lang === "en") return VOCAB_EN_ES[word.id]?.[0] || "";
+    if (lang === "es") return VOCAB_EN_ES[word.id]?.[1] || "";
+    return ""; // école en arabe seul
+}
+
 const catLabels = {
     all: "🌟 الكل", letters: "🔤 الحروف",
     family: "👨‍👩‍👧 العائلة", colors: "🎨 الألوان",
@@ -7710,7 +7742,7 @@ function renderVocab(filter, learnedVocab) {
                 }
             </div>
             <div class="vocab-word">${word.mot}</div>
-            <div class="vocab-trad">${word.trad_fr} / ${word.trad_nl}</div>
+            ${vocabTr(word) ? `<div class="vocab-trad">${vocabTr(word)}</div>` : ""}
             ${word.lettre ? `<div class="vocab-lettre-badge">${word.lettre}</div>` : ""}
         </div>`;
     }).join("");
@@ -7760,8 +7792,7 @@ window.openVocabCard = async (id) => {
                         : `<div style="font-size:90px;margin-bottom:15px">${getVocabEmoji(word.id)}</div>`
                 }
                 <div style="font-size:52px;font-weight:900;color:var(--primary);font-family:Tajawal,Arial;margin-bottom:8px">${word.mot}</div>
-                <div style="font-size:18px;color:var(--text-light);margin-bottom:5px">🇫🇷 ${word.trad_fr}</div>
-                <div style="font-size:18px;color:var(--text-light);margin-bottom:20px">🇳🇱 ${word.trad_nl}</div>
+                ${vocabTr(word) ? `<div style="font-size:20px;color:var(--text);margin-bottom:20px">${VOCAB_FLAGS[currentUILang] || ""} ${vocabTr(word)}</div>` : `<div style="margin-bottom:12px"></div>`}
                 ${word.lettre ? `<div style="background:#f0eeff;color:var(--purple);padding:6px 16px;border-radius:20px;font-size:16px;display:inline-block;margin-bottom:15px">الحرف : ${word.lettre}</div>` : ""}
             </div>
             <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
@@ -7888,7 +7919,7 @@ function renderSurahList() {
       <div class="surah-card ${memorized >= s.ayahs ? "surah-done" : ""}" onclick="openSurah('${s.id}')" style="border-left: 4px solid ${s.color}">
         <div class="surah-card-info">
           <div class="surah-name-ar" style="color:${s.color}">${s.name_ar}</div>
-          <div class="surah-name-fr">${s.name_fr} — ${s.name_nl}</div>
+          ${surahTr(s) ? `<div class="surah-name-fr"><bdi>${surahTr(s)}</bdi></div>` : ""}
           <div class="surah-ayahs">${s.ayahs} آيات ${memorized >= s.ayahs ? `<span class="surah-done-tag">✅ ${bi("محفوظة", "qMemorized")}</span>` : ""}</div>
         </div>
         <div class="surah-card-progress">
@@ -7909,7 +7940,7 @@ window.openSurah = async (surahId) => {
     const res = await fetch(`quran/${surahId}.json`);
     currentSurahData = await res.json();
   } catch(e) {
-    alert("Erreur chargement sourate");
+    alert(bi("تعذّر تحميل السورة", "surahLoadError"));
     return;
   }
   currentAyahIndex = 0;
@@ -7917,7 +7948,7 @@ window.openSurah = async (surahId) => {
   document.getElementById("quran-home").classList.add("hidden");
   document.getElementById("quran-surah-view").classList.remove("hidden");
   document.getElementById("qsv-name-ar").textContent = currentSurah.name_ar;
-  document.getElementById("qsv-name-fr").textContent = currentSurah.name_fr + " — " + currentSurah.name_nl;
+  document.getElementById("qsv-name-fr").textContent = surahTr(currentSurah);
   updateQuranProgress();
   renderReciterPicker();
   document.querySelectorAll(".quran-mode-btn").forEach(b => b.classList.remove("active"));
