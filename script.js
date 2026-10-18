@@ -2220,8 +2220,9 @@ async function supLoadSchools(){
 // ============================================================
 const LANG_LABELS = { "": "Arabe uniquement", fr: "Arabe + français", nl: "Arabe + néerlandais", en: "Arabe + anglais", es: "Arabe + espagnol" };
 function schoolFileName(name) { return (name || "ecole").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]+/g, "_").slice(0, 40); }
-function downloadSchoolSheet(info, pwd, reason) {
-    const rows = [["Information", "Valeur"],
+function schoolSheetRows(info, pwd, reason) {
+    return [
+["Information", "Valeur"],
         ["Document", reason],
         ["Type", info.orgType === "family" ? `Famille (formule ${familyMax(info)} enfant${familyMax(info) > 1 ? "s" : ""})` : "École"],
         ["Nom", info.name || ""], ["Ville", info.city || ""],
@@ -2234,8 +2235,8 @@ function downloadSchoolSheet(info, pwd, reason) {
         ["Adresse de l'appli", APP_URL],
         ["Fiche créée le", new Date().toLocaleString("fr-BE")],
         ["⚠️", "Document confidentiel : à garder sur votre ordinateur ou à remettre au directeur. Ne pas le publier."]];
-    downloadTable(rows, `fiche_${schoolFileName(info.name)}_${todayLocalIso()}`, "Fiche");
 }
+function schoolSheetName(info) { return `fiche_${schoolFileName(info.name)}_${todayLocalIso()}`; }
 // Fenêtre « fiche » : le mot de passe s'affiche, et la fiche se télécharge par un CLIC
 // (un téléchargement automatique est souvent bloqué par le navigateur à partir du deuxième).
 function showSchoolSheetModal(info, pwd, reason) {
@@ -2250,15 +2251,42 @@ function showSchoolSheetModal(info, pwd, reason) {
         <p style="margin:0 0 14px;color:#555">${(info.name || "").replace(/</g, "&lt;")} — ${(info.adminEmail || "").replace(/</g, "&lt;")}</p>
         <div style="background:#f1effb;border-radius:14px;padding:12px;margin-bottom:16px"><div style="font-size:13px;color:#666">Mot de passe du directeur</div>
             <div style="font-size:24px;font-weight:900;letter-spacing:1px;color:#2A2361;user-select:all">${String(pwd).replace(/</g, "&lt;")}</div></div>
-        <button class="login-btn" style="margin:0 0 10px" onclick="downloadPendingSheet()">📥 Télécharger la fiche Excel</button>
+        <a id="sheet-dl-link" class="login-btn" style="display:block;margin:0 0 10px;text-decoration:none;box-sizing:border-box" href="#" onclick="sheetDownloadClicked()">📥 Télécharger la fiche Excel</a>
+        <button class="btn-secondary" style="width:100%;margin-bottom:10px" onclick="copyPendingSheet()">📋 Copier les informations</button>
         <button class="btn-secondary" style="width:100%" onclick="document.getElementById('sheet-modal').remove()">Fermer</button>
-        <p style="font-size:12px;color:#888;margin:10px 0 0">La fiche arrive dans votre dossier Téléchargements. Gardez-la sur votre ordinateur.</p>
+        <p id="sheet-msg" style="font-size:12px;color:#888;margin:10px 0 0">La fiche arrive dans votre dossier Téléchargements. Gardez-la sur votre ordinateur.</p>
     </div>`;
     document.body.appendChild(m);
+    // Lien de téléchargement préparé à l'avance : le clic de l'utilisateur télécharge directement le fichier
+    const rows = schoolSheetRows(info, pwd, reason), base = schoolSheetName(info), a = document.getElementById("sheet-dl-link");
+    try {
+        if (typeof XLSX === "undefined") throw new Error("no xlsx");
+        const ws = XLSX.utils.aoa_to_sheet(rows);
+        ws["!cols"] = [{ wch: 32 }, { wch: 60 }];
+        const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Fiche");
+        const buf = XLSX.write(wb, { bookType: "xlsx", type: "array" });
+        a.href = URL.createObjectURL(new Blob([buf], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
+        a.download = base + ".xlsx";
+    } catch (e) {
+        const csv = "\uFEFF" + rows.map(r => r.map(c => `"${String(c ?? "").replace(/"/g, '""')}"`).join(";")).join("\r\n");
+        a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8;" }));
+        a.download = base + ".csv";
+    }
 }
-window.downloadPendingSheet = () => {
+window.sheetDownloadClicked = () => {
+    const msg = document.getElementById("sheet-msg");
+    if (msg) msg.innerHTML = "✅ Téléchargement lancé. <b>Rien n'apparaît ?</b> Appuyez sur <b>Ctrl + J</b> pour voir vos téléchargements, ou utilisez « 📋 Copier les informations » puis collez dans le Bloc-notes.";
+};
+window.copyPendingSheet = async () => {
     const p = window._pendingSheet; if (!p) return;
-    downloadSchoolSheet(p.info, p.pwd, p.reason);
+    const text = schoolSheetRows(p.info, p.pwd, p.reason).slice(1).map(r => `${r[0]} : ${r[1]}`).join("\n");
+    const msg = document.getElementById("sheet-msg");
+    try { await navigator.clipboard.writeText(text); }
+    catch (e) {
+        const t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select();
+        try { document.execCommand("copy"); } catch (_) {} t.remove();
+    }
+    if (msg) msg.innerHTML = "📋 Informations copiées. Ouvrez le <b>Bloc-notes</b>, faites <b>Ctrl + V</b>, puis enregistrez le fichier.";
 };
 
 // Registre de toutes les écoles et familles (sans aucun mot de passe)
