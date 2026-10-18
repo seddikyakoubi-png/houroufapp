@@ -14,7 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حروفي - تعلم الأبجدية العربية</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20260992">
+    <link rel="stylesheet" href="style.css?v=20260993">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -775,7 +775,7 @@
     <header class="app-header superadmin-header">
         <div class="header-left"><button onclick="logout()" class="btn-logout">🚪</button></div>
         <div class="header-center"><span>👨‍💼 Super Admin</span></div>
-        <div class="header-right"><button onclick="exportData('super')" class="btn-export">📥 Export</button></div>
+        <div class="header-right" style="display:flex;gap:8px"><button onclick="exportSchoolsRegistry()" class="btn-export" title="Toutes les écoles et familles, sans mot de passe">🗂️ Écoles</button><button onclick="exportData('super')" class="btn-export" title="Progression de tous les élèves">📥 Élèves</button></div>
     </header>
     <div class="admin-tabs">
         <button class="admin-tab active" onclick="switchAdminTab('sup-schools',this)">🏫 Écoles</button>
@@ -911,6 +911,6 @@
     </div>
 </div>
 
-<script type="module" src="script.js?v=20260992"></script>
+<script type="module" src="script.js?v=20260993"></script>
 </body>
 </html>

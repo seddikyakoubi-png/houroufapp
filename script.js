@@ -2212,12 +2212,52 @@ async function supLoadSchools(){
 // ✅ Les directeurs n'ont pas de code d'activation permanent comme les profs — leur mot de passe
 // est fixé une fois à la création. Ce bouton comble ce manque : génère un nouveau mot de passe
 // et l'écrase directement, sans avoir besoin de connaître l'ancien.
+// ============================================================
+//  🗂️ SUPER ADMIN : fiches et registre des écoles
+//  Le mot de passe d'un directeur n'est JAMAIS gardé lisible dans la base :
+//  il figure seulement dans la « fiche » Excel téléchargée sur VOTRE ordinateur,
+//  au moment de la création ou d'une réinitialisation.
+// ============================================================
+const LANG_LABELS = { "": "Arabe uniquement", fr: "Arabe + français", nl: "Arabe + néerlandais", en: "Arabe + anglais", es: "Arabe + espagnol" };
+function schoolFileName(name) { return (name || "ecole").normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]+/g, "_").slice(0, 40); }
+function downloadSchoolSheet(info, pwd, reason) {
+    const rows = [["Information", "Valeur"],
+        ["Document", reason],
+        ["Type", info.orgType === "family" ? `Famille (formule ${familyMax(info)} enfant${familyMax(info) > 1 ? "s" : ""})` : "École"],
+        ["Nom", info.name || ""], ["Ville", info.city || ""],
+        ["Code école (élèves et parents)", info.code || ""],
+        ["Langue", LANG_LABELS[info.uiLang || ""] || ""],
+        ["E-mail du directeur", info.adminEmail || ""],
+        ["Mot de passe du directeur", pwd],
+        ["Début d'accès", isIsoDate(info.accessStart) ? isoToFr(info.accessStart) : "—"],
+        ["Fin d'abonnement", isIsoDate(info.accessExpiry) ? isoToFr(info.accessExpiry) : "—"],
+        ["Adresse de l'appli", APP_URL],
+        ["Fiche créée le", new Date().toLocaleString("fr-BE")],
+        ["⚠️", "Document confidentiel : à garder sur votre ordinateur ou à remettre au directeur. Ne pas le publier."]];
+    downloadTable(rows, `fiche_${schoolFileName(info.name)}_${todayLocalIso()}`, "Fiche");
+}
+// Registre de toutes les écoles et familles (sans aucun mot de passe)
+window.exportSchoolsRegistry = async () => {
+    const schools = await getSchools();
+    const rows = [["Nom", "Type", "Formule famille", "Ville", "Code école", "Langue", "E-mail directeur", "Classes", "Élèves", "Début d'accès", "Fin d'abonnement", "Créée le"]];
+    Object.values(schools).sort((a, b) => (a.name || "").localeCompare(b.name || "")).forEach(s => {
+        const fam = s.orgType === "family";
+        rows.push([s.name || "", fam ? "Famille" : "École", fam ? `${familyCount(s)} / ${familyMax(s)}` : "",
+            s.city || "", s.code || "", LANG_LABELS[s.uiLang || ""] || "", s.adminEmail || "",
+            Object.keys(s.classes || {}).length, familyCount(s),
+            isIsoDate(s.accessStart) ? isoToFr(s.accessStart) : "", isIsoDate(s.accessExpiry) ? isoToFr(s.accessExpiry) : "",
+            s.createdAt ? new Date(s.createdAt).toLocaleDateString("fr-BE") : ""]);
+    });
+    downloadTable(rows, `registre_ecoles_${todayLocalIso()}`, "Écoles");
+};
+
 window.supResetAdminPassword = async (schoolId, adminEmail) => {
     if (!adminEmail) { alert("Aucun email admin enregistré pour cette école."); return; }
     if (!confirm(`Réinitialiser le mot de passe de "${adminEmail}" ?\n\nL'ancien mot de passe ne fonctionnera plus.`)) return;
     const newPwd = "Reset-" + Math.random().toString(36).slice(-6);
     await setDoc(doc(db, "school_admins", adminEmail), { password: btoa(newPwd) }, { merge: true });
-    alert(`✅ Nouveau mot de passe pour ${adminEmail} :\n\n${newPwd}\n\nCommuniquez-le au directeur — il ne sera plus jamais affiché après cette fenêtre.`);
+    alert(`✅ Nouveau mot de passe pour ${adminEmail} :\n\n${newPwd}\n\nUne fiche Excel avec ce mot de passe va être téléchargée sur votre ordinateur.`);
+    try { const s = (await getDoc(doc(db, "ecoles", schoolId))).data() || {}; downloadSchoolSheet({ ...s, adminEmail }, newPwd, "Réinitialisation du mot de passe"); } catch (e) {}
 };
 
 window.supEditFeatures = async (schoolId) => {
@@ -2318,6 +2358,8 @@ window.supAddSchool=async()=>{
     const res=document.getElementById("sup-school-result");
     res.innerHTML=`✅ ${orgType==="family"?`Famille créée ! (formule ${maxChildren} enfant${maxChildren>1?"s":""})`:"École créée !"}<br>🏫 <strong>${name}</strong> - ${city}<br>🔑 Code école (à donner aux élèves) : <strong style="color:#e67e22;font-size:18px">${schoolCode}</strong><br>🌐 Langue : <strong>${langLabel}</strong><br>📧 Admin: <strong>${email}</strong><br>🔑 Mot de passe: <strong>${pwd}</strong>`;
     res.classList.remove("hidden");
+    // 🗂️ Fiche Excel téléchargée sur l'ordinateur du Super Admin (seul endroit où le mot de passe reste lisible)
+    try { downloadSchoolSheet({ name, city, code: schoolCode, uiLang, orgType, maxChildren, accessStart, accessExpiry, adminEmail: email }, pwd, orgType === "family" ? "Création d'une famille" : "Création d'une école"); } catch (e) {}
     ["sup-school-name","sup-school-city","sup-admin-email","sup-admin-pwd"].forEach(id=>document.getElementById(id).value="");
     document.getElementById("sup-school-lang").value="";
     await supLoadSchools();
