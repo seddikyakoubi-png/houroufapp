@@ -2236,6 +2236,31 @@ function downloadSchoolSheet(info, pwd, reason) {
         ["⚠️", "Document confidentiel : à garder sur votre ordinateur ou à remettre au directeur. Ne pas le publier."]];
     downloadTable(rows, `fiche_${schoolFileName(info.name)}_${todayLocalIso()}`, "Fiche");
 }
+// Fenêtre « fiche » : le mot de passe s'affiche, et la fiche se télécharge par un CLIC
+// (un téléchargement automatique est souvent bloqué par le navigateur à partir du deuxième).
+function showSchoolSheetModal(info, pwd, reason) {
+    window._pendingSheet = { info, pwd, reason };
+    document.getElementById("sheet-modal")?.remove();
+    const m = document.createElement("div");
+    m.id = "sheet-modal";
+    m.style.cssText = "position:fixed;inset:0;z-index:10050;background:rgba(20,16,50,.55);display:flex;align-items:center;justify-content:center;padding:16px";
+    m.innerHTML = `<div dir="ltr" style="background:#fff;border-radius:20px;max-width:420px;width:100%;padding:24px;text-align:center;font-family:Tajawal,sans-serif;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+        <div style="font-size:42px">🗂️</div>
+        <h3 style="margin:6px 0 4px;color:#2A2361">${reason}</h3>
+        <p style="margin:0 0 14px;color:#555">${(info.name || "").replace(/</g, "&lt;")} — ${(info.adminEmail || "").replace(/</g, "&lt;")}</p>
+        <div style="background:#f1effb;border-radius:14px;padding:12px;margin-bottom:16px"><div style="font-size:13px;color:#666">Mot de passe du directeur</div>
+            <div style="font-size:24px;font-weight:900;letter-spacing:1px;color:#2A2361;user-select:all">${String(pwd).replace(/</g, "&lt;")}</div></div>
+        <button class="login-btn" style="margin:0 0 10px" onclick="downloadPendingSheet()">📥 Télécharger la fiche Excel</button>
+        <button class="btn-secondary" style="width:100%" onclick="document.getElementById('sheet-modal').remove()">Fermer</button>
+        <p style="font-size:12px;color:#888;margin:10px 0 0">La fiche arrive dans votre dossier Téléchargements. Gardez-la sur votre ordinateur.</p>
+    </div>`;
+    document.body.appendChild(m);
+}
+window.downloadPendingSheet = () => {
+    const p = window._pendingSheet; if (!p) return;
+    downloadSchoolSheet(p.info, p.pwd, p.reason);
+};
+
 // Registre de toutes les écoles et familles (sans aucun mot de passe)
 window.exportSchoolsRegistry = async () => {
     const schools = await getSchools();
@@ -2256,8 +2281,9 @@ window.supResetAdminPassword = async (schoolId, adminEmail) => {
     if (!confirm(`Réinitialiser le mot de passe de "${adminEmail}" ?\n\nL'ancien mot de passe ne fonctionnera plus.`)) return;
     const newPwd = "Reset-" + Math.random().toString(36).slice(-6);
     await setDoc(doc(db, "school_admins", adminEmail), { password: btoa(newPwd) }, { merge: true });
-    alert(`✅ Nouveau mot de passe pour ${adminEmail} :\n\n${newPwd}\n\nUne fiche Excel avec ce mot de passe va être téléchargée sur votre ordinateur.`);
-    try { const s = (await getDoc(doc(db, "ecoles", schoolId))).data() || {}; downloadSchoolSheet({ ...s, adminEmail }, newPwd, "Réinitialisation du mot de passe"); } catch (e) {}
+    let info = { adminEmail };
+    try { info = { ...((await getDoc(doc(db, "ecoles", schoolId))).data() || {}), adminEmail }; } catch (e) {}
+    showSchoolSheetModal(info, newPwd, "Réinitialisation du mot de passe");
 };
 
 window.supEditFeatures = async (schoolId) => {
@@ -2359,7 +2385,7 @@ window.supAddSchool=async()=>{
     res.innerHTML=`✅ ${orgType==="family"?`Famille créée ! (formule ${maxChildren} enfant${maxChildren>1?"s":""})`:"École créée !"}<br>🏫 <strong>${name}</strong> - ${city}<br>🔑 Code école (à donner aux élèves) : <strong style="color:#e67e22;font-size:18px">${schoolCode}</strong><br>🌐 Langue : <strong>${langLabel}</strong><br>📧 Admin: <strong>${email}</strong><br>🔑 Mot de passe: <strong>${pwd}</strong>`;
     res.classList.remove("hidden");
     // 🗂️ Fiche Excel téléchargée sur l'ordinateur du Super Admin (seul endroit où le mot de passe reste lisible)
-    try { downloadSchoolSheet({ name, city, code: schoolCode, uiLang, orgType, maxChildren, accessStart, accessExpiry, adminEmail: email }, pwd, orgType === "family" ? "Création d'une famille" : "Création d'une école"); } catch (e) {}
+    showSchoolSheetModal({ name, city, code: schoolCode, uiLang, orgType, maxChildren, accessStart, accessExpiry, adminEmail: email }, pwd, orgType === "family" ? "Création d'une famille" : "Création d'une école");
     ["sup-school-name","sup-school-city","sup-admin-email","sup-admin-pwd"].forEach(id=>document.getElementById(id).value="");
     document.getElementById("sup-school-lang").value="";
     await supLoadSchools();
