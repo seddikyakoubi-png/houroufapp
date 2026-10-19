@@ -14,7 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حروفي - تعلم الأبجدية العربية</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20260995">
+    <link rel="stylesheet" href="style.css?v=20260996">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -424,7 +424,7 @@
             <span id="teacher-header-name">👩‍🏫 Mon tableau de bord</span>
         </div>
         <div class="header-right">
-            <button onclick="exportData('teacher')" class="btn-export">📥 Export</button>
+            <button onclick="exportData('teacher')" class="btn-export" id="btn-export-teacher"><span class="tab-label">📥 Export</span></button>
             <button onclick="resetAllStudents()" class="btn-reset-all">🗑️ Reset</button>
         </div>
     </header>
@@ -574,8 +574,8 @@
             <span id="schooladmin-title">🏫 Gestion École</span>
         </div>
         <div class="header-right" style="display:flex;gap:8px">
-            <button onclick="exportSchoolRegistry()" class="btn-export" title="Codes de connexion : profs, classes, élèves, parents">📋 Registre</button>
-            <button onclick="exportData('school')" class="btn-export">📥 Export</button>
+            <button onclick="exportSchoolRegistry()" class="btn-export" id="btn-registre-school"><span class="tab-label">📋 Registre</span></button>
+            <button onclick="exportData('school')" class="btn-export" id="btn-export-school"><span class="tab-label">📥 Export</span></button>
         </div>
     </header>
     <div class="admin-tabs">
@@ -617,7 +617,11 @@
                 <div style="background:#f8f8f8;border-radius:12px;padding:15px;margin-bottom:15px">
                     <p style="font-weight:700;margin-bottom:10px;color:var(--text)" id="sa-import-excel-title"><span class="tab-label">📊 Importer depuis Excel</span></p>
                     <p style="font-size:13px;color:#888;margin-bottom:10px" id="sa-import-excel-note"><span class="tab-label">الملف يجب أن يحتوي على عمودين: الاسم الأول واسم العائلة</span></p>
-                    <input type="file" id="excel-import" accept=".xlsx,.xls,.csv" class="admin-input" style="padding:8px">
+                    <input type="file" id="excel-import" accept=".xlsx,.xls,.csv" style="display:none" onchange="excelFileChosen(this)">
+                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                        <label for="excel-import" class="btn-admin-add" id="btn-pick-excel" style="cursor:pointer;background:#fff;color:var(--text);border:2px solid #ddd;margin:0"><span class="tab-label">📂 Choisir un fichier</span></label>
+                        <span id="excel-file-name" style="font-size:13px;color:#888"></span>
+                    </div>
                     <button onclick="importExcel()" class="btn-admin-add" style="margin-top:8px;background:var(--purple)" id="btn-import-excel"><span class="tab-label">📥 Importer</span></button>
                 </div>
 
@@ -911,6 +915,6 @@
     </div>
 </div>
 
-<script type="module" src="script.js?v=20260995"></script>
+<script type="module" src="script.js?v=20260996"></script>
 </body>
 </html>

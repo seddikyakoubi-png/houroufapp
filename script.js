@@ -367,6 +367,10 @@ const FEATURE_I18N = {
     "btn-close-stupanel":  { emoji:"✕", ar:"إغلاق", fr:"Fermer", nl:"Sluiten", en:"Close", es:"Cerrar" },
     "btn-add-student":     { emoji:"➕", ar:"إضافة", fr:"Ajouter", nl:"Toevoegen", en:"Add", es:"Añadir" },
     "sa-import-excel-title": { emoji:"📊", ar:"استيراد من Excel", fr:"Importer depuis Excel", nl:"Importeren vanuit Excel", en:"Import from Excel", es:"Importar desde Excel" },
+    "btn-export-teacher":  { emoji:"📥", ar:"تصدير", fr:"Export", nl:"Exporteren", en:"Export", es:"Exportar" },
+    "btn-export-school":   { emoji:"📥", ar:"تصدير", fr:"Export", nl:"Exporteren", en:"Export", es:"Exportar" },
+    "btn-registre-school": { emoji:"📋", ar:"السجلّ", fr:"Registre", nl:"Register", en:"Register", es:"Registro" },
+    "btn-pick-excel":      { emoji:"📂", ar:"اختيار ملف", fr:"Choisir un fichier", nl:"Bestand kiezen", en:"Choose a file", es:"Elegir un archivo" },
     "btn-import-excel":    { emoji:"📥", ar:"استيراد", fr:"Importer", nl:"Importeren", en:"Import", es:"Importar" },
     "sa-addteacher-title": { emoji:"➕", ar:"إضافة معلم", fr:"Ajouter un professeur", nl:"Leerkracht toevoegen", en:"Add a teacher", es:"Añadir un profesor" },
     "btn-add-teacher":     { emoji:"", ar:"إضافة 👩‍🏫", fr:"Ajouter 👩‍🏫", nl:"Toevoegen 👩‍🏫", en:"Add 👩‍🏫", es:"Añadir 👩‍🏫" },
@@ -2034,7 +2038,7 @@ function loadDemoDashboard({school, teachers, students}){
     // --- Classes ---
     document.getElementById("sa-classes-list").innerHTML = Object.entries(school.classes).map(([cid,cl]) => {
         const stuCount = students.filter(([,d]) => d.classId===cid).length;
-        return `<div class="school-card"><div class="school-card-header"><strong>📚 ${cl.name}</strong><div style="display:flex;align-items:center;gap:8px"><span class="code-badge">🔑 ${cl.code}</span><span class="btn-sm-add" style="background:var(--purple)">👥 ${stuCount} élève(s)</span></div></div><p style="color:#888;font-size:13px;margin:5px 0 0 0">Code à donner aux élèves : <strong style="color:#e67e22;font-size:16px">${cl.code}</strong></p></div>`;
+        return `<div class="school-card"><div class="school-card-header"><strong>📚 ${cl.name}</strong><div style="display:flex;align-items:center;gap:8px"><span class="code-badge">🔑 ${cl.code}</span><span class="btn-sm-add" style="background:var(--purple)">👥 ${stuCount} ${bi("تلميذ", "pupilsWord")}</span></div></div><p style="color:#888;font-size:13px;margin:5px 0 0 0">${bi("الرمز الذي يُعطى للتلاميذ", "codeForPupils")} : <strong style="color:#e67e22;font-size:16px">${cl.code}</strong></p></div>`;
     }).join("") + `<p style="color:#777;font-size:13px;padding:10px;text-align:center">🎬 Données fictives à titre d'exemple — la gestion (ajout/suppression) est désactivée en mode démo</p>`;
 
     // --- Professeurs ---
@@ -2087,7 +2091,7 @@ async function saLoadClasses(school){
     el.innerHTML=classes.length===0?`<p style="color:#777;padding:20px">${bi("لا يوجد فصل — أضيفوا واحدًا","noClasses")}</p>`:
     classes.map(([cid,cl])=>{
         const stuCount=cl.students?cl.students.length:0;
-        return `<div class="school-card"><div class="school-card-header"><strong>📚 ${cl.name}</strong><div style="display:flex;align-items:center;gap:8px"><span class="code-badge">🔑 ${cl.code||"N/A"}</span><button onclick="openStuPanel('${cid}','${cl.name}')" class="btn-sm-add" style="background:var(--purple)">👥 ${stuCount} élève(s)</button><button onclick="saDeleteClass('${cid}')" class="btn-delete">🗑️</button></div></div><p style="color:#888;font-size:13px;margin:5px 0 0 0">Code à donner aux élèves : <strong style="color:#e67e22;font-size:16px">${cl.code||"N/A"}</strong></p></div>`;
+        return `<div class="school-card"><div class="school-card-header"><strong>📚 ${cl.name}</strong><div style="display:flex;align-items:center;gap:8px"><span class="code-badge">🔑 ${cl.code||"N/A"}</span><button onclick="openStuPanel('${cid}','${cl.name}')" class="btn-sm-add" style="background:var(--purple)">👥 ${stuCount} ${bi("تلميذ", "pupilsWord")}</button><button onclick="saDeleteClass('${cid}')" class="btn-delete">🗑️</button></div></div><p style="color:#888;font-size:13px;margin:5px 0 0 0">${bi("الرمز الذي يُعطى للتلاميذ", "codeForPupils")} : <strong style="color:#e67e22;font-size:16px">${cl.code||"N/A"}</strong></p></div>`;
     }).join("");
     // Populate teacher class select
     const sel=document.getElementById("sa-teacher-class");
@@ -2273,6 +2277,10 @@ function showSchoolSheetModal(info, pwd, reason) {
         a.download = base + ".csv";
     }
 }
+window.excelFileChosen = (input) => {
+    const span = document.getElementById("excel-file-name");
+    if (span) span.textContent = input.files && input.files[0] ? "📄 " + input.files[0].name : bi("لم يُختر أيّ ملف", "noFileChosen");
+};
 window.sheetDownloadClicked = () => {
     const msg = document.getElementById("sheet-msg");
     if (msg) msg.innerHTML = "✅ Téléchargement lancé. <b>Rien n'apparaît ?</b> Appuyez sur <b>Ctrl + J</b> pour voir vos téléchargements, ou utilisez « 📋 Copier les informations » puis collez dans le Bloc-notes.";
@@ -4474,6 +4482,15 @@ TOURS.director = { icon: "🏫", title: T("جولة المدير", "Présentatio
   "والآن جرّبوا بأنفسكم فضاء التلميذ: تنتظركم جولة متحرّكة.",
 ].forEach((t, i) => { TOURS.director.steps[i].arLong = t; });
 Object.assign(DYNAMIC_I18N, {
+  pupilsWord:   { fr:"élève(s)", nl:"leerling(en)", en:"pupil(s)", es:"alumno(s)" },
+  pupilsTitle:  { fr:"Élèves", nl:"Leerlingen", en:"Pupils", es:"Alumnos" },
+  codeForPupils:{ fr:"Code à donner aux élèves", nl:"Code voor de leerlingen", en:"Code to give to the pupils", es:"Código para los alumnos" },
+  thFullName:   { fr:"Prénom + Nom", nl:"Voornaam + achternaam", en:"First + last name", es:"Nombre + apellido" },
+  thPupilCode:  { fr:"Code élève", nl:"Leerlingcode", en:"Pupil code", es:"Código alumno" },
+  thParentCode: { fr:"Code parent", nl:"Oudercode", en:"Parent code", es:"Código padres" },
+  pupilsFooter: { fr:"élève(s) inscrit(s) — le code élève et le code parent sont différents, communiquez chacun à la bonne personne", nl:"ingeschreven leerling(en) — de leerlingcode en de oudercode zijn verschillend, geef elke code aan de juiste persoon", en:"pupil(s) registered — the pupil code and the parent code are different, give each one to the right person", es:"alumno(s) inscrito(s) — el código del alumno y el de los padres son distintos, entregue cada uno a la persona correcta" },
+  btnGenerate:  { fr:"Générer", nl:"Aanmaken", en:"Generate", es:"Generar" },
+  noFileChosen: { fr:"Aucun fichier choisi", nl:"Geen bestand gekozen", en:"No file chosen", es:"Ningún archivo elegido" },
   famPlan: { fr:"Formule famille (enfants)", nl:"Gezinsformule (kinderen)", en:"Family plan (children)", es:"Fórmula familiar (niños)" },
   statQuranAvg: { fr:"Coran moyen", nl:"Koran gemiddeld", en:"Quran average", es:"Corán promedio" },
   tourHelp:  { fr:"Comment ça marche ?", nl:"Hoe werkt het?", en:"How does it work?", es:"¿Cómo funciona?" },
@@ -5927,7 +5944,8 @@ let currentClassForStudents = null;
 
 window.openStuPanel = async (classId, className) => {
     currentClassForStudents = classId;
-    document.getElementById("sa-students-title").textContent = "👥 Élèves — " + className;
+    try { window.excelFileChosen(document.getElementById("excel-import")); } catch (e) {}
+    document.getElementById("sa-students-title").textContent = "👥 " + bi("التلاميذ", "pupilsTitle") + " — " + className;
     document.getElementById("sa-students-panel").classList.remove("hidden");
     await loadStudentsList(classId);
 };
@@ -5968,7 +5986,7 @@ async function loadStudentsList(classId) {
 
     el.innerHTML = `
         <table class="teacher-table">
-            <thead><tr><th>#</th><th>👤 Prénom + Nom</th><th>🔐 Code élève</th><th>👪 Code parent</th><th>⚙️</th></tr></thead>
+            <thead><tr><th>#</th><th>👤 ${bi("الاسم واللقب", "thFullName")}</th><th>🔐 ${bi("رمز التلميذ", "thPupilCode")}</th><th>👪 ${bi("رمز الوليّ", "thParentCode")}</th><th>⚙️</th></tr></thead>
             <tbody>
                 ${students.map((name, i) => `
                     <tr>
@@ -5976,18 +5994,18 @@ async function loadStudentsList(classId) {
                         <td><strong>${name}</strong></td>
                         <td>${pins[i]?.pin
                             ? `<span class="code-badge">🔑 ${pins[i].pin}</span> <button class="btn-pin-student" onclick="setPinForStudent('${studentIds[i]}', '${name.replace(/'/g,"\\'")}')" title="Modifier le code élève">✏️</button>`
-                            : `<button class="btn-admin-add" style="padding:4px 10px;font-size:13px" onclick="setPinForStudent('${studentIds[i]}', '${name.replace(/'/g,"\\'")}')">🔐 Générer</button>`
+                            : `<button class="btn-admin-add" style="padding:4px 10px;font-size:13px" onclick="setPinForStudent('${studentIds[i]}', '${name.replace(/'/g,"\\'")}')">🔐 ${bi("إنشاء", "btnGenerate")}</button>`
                         }</td>
                         <td>${pins[i]?.parentPin
                             ? `<span class="code-badge" style="background:#f1effb;color:#5b4fc4">🔑 ${pins[i].parentPin}</span> <button class="btn-pin-student" onclick="setParentPinForStudent('${studentIds[i]}', '${name.replace(/'/g,"\\'")}')" title="Modifier le code parent">✏️</button>`
-                            : `<button class="btn-admin-add" style="padding:4px 10px;font-size:13px;background:#8e54e9" onclick="setParentPinForStudent('${studentIds[i]}', '${name.replace(/'/g,"\\'")}')">👪 Générer</button>`
+                            : `<button class="btn-admin-add" style="padding:4px 10px;font-size:13px;background:#8e54e9" onclick="setParentPinForStudent('${studentIds[i]}', '${name.replace(/'/g,"\\'")}')">👪 ${bi("إنشاء", "btnGenerate")}</button>`
                         }</td>
                         <td><button onclick="saRemoveStudent('${classId}', ${i})" class="btn-delete">🗑️</button></td>
                     </tr>
                 `).join("")}
             </tbody>
         </table>
-        <p style="color:#888;font-size:13px;margin-top:10px;text-align:center">${students.length} élève(s) inscrit(s) — le code élève et le code parent sont différents, communiquez chacun à la bonne personne</p>
+        <p style="color:#888;font-size:13px;margin-top:10px;text-align:center">${students.length} ${bi("تلميذ مسجَّل — رمز التلميذ ورمز الوليّ مختلفان، أعطِ كلّ رمز للشخص المناسب", "pupilsFooter")}</p>
         ${currentOrgType === "family" && window._famSchool ? `<p class="fam-plan">👨‍👩‍👧 ${bi("الصيغة العائلية", "famPlan")} : <b>${familyCount(window._famSchool)} / ${familyMax(window._famSchool)}</b></p>` : ""}
     `;
 }
@@ -6144,7 +6162,7 @@ window.importExcel = async () => {
             }
 
             alert(`✅ ${added} élève(s) importé(s), chacun avec ses 2 codes (élève + parent) générés automatiquement !\n${students.length - added - overLimit} doublon(s) ignoré(s).` + (overLimit ? `\n\n⚠️ ${overLimit} non ajouté(s) :\n` + familyLimitMessage(school) : ""));
-            document.getElementById("excel-import").value = "";
+            document.getElementById("excel-import").value = ""; window.excelFileChosen(document.getElementById("excel-import"));
             await loadStudentsList(currentClassForStudents);
             await saLoadClasses(school);
         } catch (err) {
@@ -6184,7 +6202,7 @@ async function loadTeacherClassList() {
 
     // Update title
     const title = document.getElementById("classlist-title");
-    if (title) title.textContent = "📋 " + className + " — " + registeredStudents.length + " élève(s)";
+    if (title) title.textContent = "📋 " + className + " — " + registeredStudents.length + " " + bi("تلميذ", "pupilsWord");
 
     if (registeredStudents.length === 0) {
         el.innerHTML = `
