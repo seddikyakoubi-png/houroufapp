@@ -1501,10 +1501,29 @@ window.markLearned=async()=>{
 };
 
 // QUIZ
+// 🔀 Barre de modes : l'élève passe d'un exercice à l'autre sans revenir à l'écran de départ
+let quizSession = 0; // change à chaque nouvelle partie : les minuteries d'une ancienne partie s'ignorent
+const QUIZ_MODES = [
+    { m:"image",   e:"🖼️", ar:"الصورة",  tr:{ fr:"Image",   nl:"Afbeelding", en:"Picture",  es:"Imagen" } },
+    { m:"letter",  e:"🔤", ar:"الحرف",   tr:{ fr:"Lettre",  nl:"Letter",     en:"Letter",   es:"Letra" } },
+    { m:"word",    e:"📝", ar:"الكلمة",  tr:{ fr:"Mot",     nl:"Woord",      en:"Word",     es:"Palabra" } },
+    { m:"harakat", e:"🔊", ar:"المقطع",  tr:{ fr:"Syllabe", nl:"Lettergreep",en:"Syllable", es:"Sílaba" } },
+];
+function renderQuizModeBar() {
+    const html = QUIZ_MODES.map(x => `<button class="qmb-btn${quizMode === x.m ? " on" : ""}" onclick="quizSwitchMode('${x.m}')">
+        <span class="qmb-e">${x.e}</span><span class="qmb-ar">${x.ar}</span>${currentUILang && x.tr[currentUILang] ? `<span class="qmb-tr">${x.tr[currentUILang]}</span>` : ""}</button>`).join("");
+    document.querySelectorAll(".quiz-mode-bar").forEach(el => el.innerHTML = html);
+    document.querySelectorAll(".qmb-hint").forEach(el => el.textContent = "🔀 " + bi("أو اختر تمرينًا آخر", "quizOther"));
+}
+window.quizSwitchMode = (m) => {
+    try { window.speechSynthesis && speechSynthesis.cancel(); } catch (e) {}
+    if (m === "harakat") window.startHarakatQuizMenu(); else window.startQuiz(m);
+};
 window.startQuiz=mode=>{
+    quizSession++;
     quizMode=mode;quizCurrent=0;quizCorrect=0;quizWrong=0;
     quizQuestions=[...lettres].sort(()=>Math.random()-0.5).slice(0,10).map(item=>({item,choices:[...lettres.filter(l=>l.l!==item.l).sort(()=>Math.random()-0.5).slice(0,3),item].sort(()=>Math.random()-0.5)}));
-    document.getElementById("quiz-intro").classList.add("hidden");document.getElementById("quiz-game").classList.remove("hidden");document.getElementById("quiz-result").classList.add("hidden");showQuestion();
+    document.getElementById("quiz-intro").classList.add("hidden");document.getElementById("quiz-game").classList.remove("hidden");document.getElementById("quiz-result").classList.add("hidden");renderQuizModeBar();showQuestion();
 };
 function showQuestion(){
     if(quizCurrent>=quizQuestions.length){showQuizResult();return;}
@@ -1519,11 +1538,11 @@ function showQuestion(){
     const ce=document.getElementById("quiz-choices");ce.innerHTML="";
     q.choices.forEach(choice=>{const btn=document.createElement("button");btn.className="choice-btn";
         if(quizMode==="image"||quizMode==="word")btn.textContent=choice.l;
-        else btn.innerHTML=`<img src="${choice.img}" style="width:60px;height:60px;object-fit:contain;border-radius:8px">`;
-        btn.onclick=()=>{document.querySelectorAll(".choice-btn").forEach(b=>b.onclick=null);const ok=choice.l===q.item.l;btn.classList.add(ok?"correct":"wrong");if(ok){quizCorrect++;gameEvent("quizRight");}else{quizWrong++;document.querySelectorAll(".choice-btn").forEach(b=>{if((quizMode==="image"||quizMode==="word")&&b.textContent===q.item.l)b.classList.add("correct");});}quizCurrent++;setTimeout(showQuestion,900);};ce.appendChild(btn);});
+        else{btn.innerHTML=`<img src="${choice.img}" class="choice-img" alt="">`;btn.classList.add("choice-pic");}
+        btn.onclick=()=>{document.querySelectorAll(".choice-btn").forEach(b=>b.onclick=null);const ok=choice.l===q.item.l;btn.classList.add(ok?"correct":"wrong");if(ok){quizCorrect++;gameEvent("quizRight");}else{quizWrong++;document.querySelectorAll(".choice-btn").forEach(b=>{if((quizMode==="image"||quizMode==="word")&&b.textContent===q.item.l)b.classList.add("correct");});}quizCurrent++;const ss=quizSession;setTimeout(()=>{if(ss===quizSession)showQuestion();},900);};ce.appendChild(btn);});
 }
 async function showQuizResult(){
-    document.getElementById("quiz-game").classList.add("hidden");document.getElementById("quiz-result").classList.remove("hidden");
+    document.getElementById("quiz-game").classList.add("hidden");document.getElementById("quiz-result").classList.remove("hidden");renderQuizModeBar();
     const pct=Math.round(quizCorrect/quizQuestions.length*100);
     document.getElementById("result-emoji").textContent=pct>=80?"🏆":pct>=50?"😊":"💪";
     document.getElementById("result-title").textContent=pct>=80?"ممتاز!":pct>=50?"أحسنت!":"حاول مجدداً!";
@@ -3860,12 +3879,14 @@ function hqPlay(it) {
 }
 
 window.startHarakatQuizMenu = () => {
+    quizSession++; quizMode = "harakat";
     document.getElementById("quiz-intro").classList.add("hidden");
     document.getElementById("quiz-result").classList.add("hidden");
     document.getElementById("quiz-game").classList.remove("hidden");
     document.getElementById("quiz-q-count").textContent = "";
     document.getElementById("quiz-correct-count").textContent = "✓ 0";
     document.getElementById("quiz-wrong-count").textContent = "✗ 0";
+    renderQuizModeBar();
     document.getElementById("quiz-question").innerHTML = `<div class="hq-level-title">🔊 ${bi("ما هذا المقطع؟", "hqTitle")}<br><small>${bi("اختر مستواك", "hqLevel")}</small></div>`;
     document.getElementById("quiz-choices").innerHTML = [1, 2, 3].map(n =>
         `<button class="hq-level-btn hq-level-${n}" onclick="startHarakatQuiz(${n})">${"⭐".repeat(n)}<span>${bi(["", "بَ بُ بِ", "+ بْ بَا بُو بِي", "+ بَّ بً بٌ بٍ"][n], "hqLevel" + n)}</span></button>`).join("");
@@ -3894,7 +3915,7 @@ window.startHarakatQuiz = async (level) => {
         const uniq = [...new Map(choices.map(c => [c.text, c])).values()];
         return { target, choices: uniq.sort(() => Math.random() - .5) };
     });
-    quizMode = "harakat"; quizCurrent = 0; quizCorrect = 0; quizWrong = 0; hqResults = [];
+    quizSession++; quizMode = "harakat"; quizCurrent = 0; quizCorrect = 0; quizWrong = 0; hqResults = [];
     hqShowQuestion();
 };
 
@@ -3908,7 +3929,7 @@ function hqShowQuestion() {
         `<button class="hq-listen" onclick="hqReplay()">🔊<span>${bi("أعد الاستماع", "hqListen")}</span></button>`;
     document.getElementById("quiz-choices").innerHTML = q.choices.map((c, n) =>
         `<button class="choice-btn hq-choice" data-n="${n}" onclick="hqAnswer(${n})">${c.text}</button>`).join("");
-    setTimeout(() => hqPlay(q.target), 250);
+    const ss = quizSession; setTimeout(() => { if (ss === quizSession) hqPlay(q.target); }, 250);
 }
 window.hqReplay = () => hqPlay(quizQuestions[quizCurrent].target);
 window.hqAnswer = (n) => {
@@ -3922,7 +3943,7 @@ window.hqAnswer = (n) => {
     else { quizWrong++; document.querySelector(`.hq-choice[data-n="${n}"]`).classList.add("wrong"); hqPlay(q.target); }
     hqResults.push({ id: `${q.target.i}_${q.target.key}`, ok });
     quizCurrent++;
-    setTimeout(hqShowQuestion, ok ? 900 : 1700); // en cas d'erreur, on laisse le temps de réentendre la bonne réponse
+    const ss = quizSession; setTimeout(() => { if (ss === quizSession) hqShowQuestion(); }, ok ? 900 : 1700); // en cas d'erreur, on laisse le temps de réentendre la bonne réponse
 };
 // Ajoute les réponses de la partie à la fiche de l'élève
 function hqMergeResults(data) {
@@ -4585,6 +4606,7 @@ TOURS.director = { icon: "🏫", title: T("جولة المدير", "Présentatio
   "والآن جرّبوا بأنفسكم فضاء التلميذ: تنتظركم جولة متحرّكة.",
 ].forEach((t, i) => { TOURS.director.steps[i].arLong = t; });
 Object.assign(DYNAMIC_I18N, {
+  quizOther:    { fr:"ou choisis un autre exercice", nl:"of kies een andere oefening", en:"or choose another exercise", es:"o elige otro ejercicio" },
   soundSaved:   { fr:"Enregistré", nl:"Opgeslagen", en:"Saved", es:"Guardado" },
   pupilsWord:   { fr:"élève(s)", nl:"leerling(en)", en:"pupil(s)", es:"alumno(s)" },
   pupilsTitle:  { fr:"Élèves", nl:"Leerlingen", en:"Pupils", es:"Alumnos" },

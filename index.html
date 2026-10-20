@@ -14,7 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حروفي - تعلم الأبجدية العربية</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20260997">
+    <link rel="stylesheet" href="style.css?v=20260998">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -230,6 +230,7 @@
             </div>
         </div>
         <div id="quiz-game" class="hidden">
+            <div class="quiz-mode-bar"></div>
             <div class="quiz-score-bar">
                 <span id="quiz-q-count">1/10</span>
                 <div class="quiz-score-pills">
@@ -246,6 +247,8 @@
             <div class="result-box">
                 <div id="result-emoji" class="result-emoji"></div>
                 <h2 id="result-title"></h2><p id="result-score"></p>
+                <p class="qmb-hint">🔀</p>
+                <div class="quiz-mode-bar"></div>
                 <button onclick="resetQuiz()" class="btn-primary" id="btn-quiz-reset"><span class="tab-label">🔄 إعادة</span></button>
                 <button onclick="switchTab('learn',document.querySelectorAll('.tab-btn')[0])" class="btn-secondary" id="btn-quiz-gotolearn"><span class="tab-label">📖 تعلّم</span></button>
             </div>
@@ -918,6 +921,6 @@
     </div>
 </div>
 
-<script type="module" src="script.js?v=20260997"></script>
+<script type="module" src="script.js?v=20260998"></script>
 </body>
 </html>
