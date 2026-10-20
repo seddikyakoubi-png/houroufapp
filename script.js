@@ -387,6 +387,10 @@ const FEATURE_I18N = {
     "sa-th-activite":    { emoji:"📅", ar:"النشاط", fr:"Activité",nl:"Activiteit",en:"Activity", es:"Actividad" },
     "sa-th-harakat":     { emoji:"🔤", ar:"الحركات", fr:"Harakat", nl:"Harakat", en:"Harakat", es:"Harakat" },
     "sa-th-coran":       { emoji:"📖", ar:"القرآن", fr:"Coran",   nl:"Koran",     en:"Quran",    es:"Corán" },
+    "sa-logo-note": { emoji:"", ar:"أضيفوا شعار مدرستكم: سيظهر في التطبيق لتلاميذكم ومعلّميكم ولكم", fr:"Ajoutez le logo de votre école : il apparaîtra dans l'application pour vos élèves, vos professeurs et vous-même.", nl:"Voeg het logo van uw school toe: het verschijnt in de app voor uw leerlingen, uw leerkrachten en uzelf.", en:"Add your school's logo: it will appear in the app for your pupils, your teachers and yourself.", es:"Añada el logo de su escuela: aparecerá en la aplicación para sus alumnos, sus profesores y usted." },
+    "sa-code-note": { emoji:"", ar:"أعطوا هذا الرمز لتلاميذكم: يكتبونه عند الدخول للالتحاق بمدرستكم، دون أن يروا قائمة المدارس الأخرى", fr:"Communiquez ce code à vos élèves : ils le saisiront à la connexion pour rejoindre votre école, sans jamais voir la liste des autres écoles inscrites sur la plateforme.", nl:"Geef deze code aan uw leerlingen: ze voeren hem in bij het aanmelden om bij uw school te komen, zonder ooit de lijst van andere scholen te zien.", en:"Give this code to your pupils: they enter it when logging in to join your school, without ever seeing the list of other schools.", es:"Comunique este código a sus alumnos: lo introducirán al conectarse para unirse a su escuela, sin ver nunca la lista de las demás escuelas." },
+    "sa-sound-title": { emoji:"🔔", ar:"صوت ظهور الشعار", fr:"Son à l'apparition du logo", nl:"Geluid bij het verschijnen van het logo", en:"Sound when the logo appears", es:"Sonido al aparecer el logo" },
+    "sa-sound-note":  { emoji:"", ar:"يُسمع عندما يُدخل التلميذ رمز المدرسة ويظهر الشعار. اضغط ▶ للاستماع، ثمّ اختر", fr:"Il retentit quand l'élève entre le code de l'école et que le logo apparaît. Touchez ▶ pour écouter, puis choisissez.", nl:"Het klinkt wanneer de leerling de schoolcode invoert en het logo verschijnt. Tik op ▶ om te luisteren en kies dan.", en:"It plays when the pupil enters the school code and the logo appears. Tap ▶ to listen, then choose.", es:"Suena cuando el alumno introduce el código de la escuela y aparece el logo. Toque ▶ para escuchar y luego elija." },
     "sa-settings-logo-title": { emoji:"🎨", ar:"تخصيص المدرسة", fr:"Personnalisation de l'école", nl:"Personalisatie van de school", en:"School customization", es:"Personalización de la escuela" },
     "btn-save-logo":     { emoji:"💾", ar:"حفظ الشعار", fr:"Enregistrer le logo", nl:"Logo opslaan", en:"Save the logo", es:"Guardar el logo" },
     "sa-settings-code-title": { emoji:"🔑", ar:"رمز مدرستك", fr:"Code de votre école", nl:"Code van uw school", en:"Your school code", es:"Código de su escuela" },
@@ -752,6 +756,103 @@ function logoWreathHtml(url, size) {
         <img src="${url}" alt="logo" class="wreath-img">
     </div>`;
 }
+
+// ============================================================
+//  🔔 SON DE RÉVÉLATION DU LOGO (surprise + élévation)
+//  Sons fabriqués directement par le navigateur (aucun fichier à télécharger).
+//  Le directeur choisit le son dans ⚙️ Paramètres ; il est enregistré dans l'école (revealSound).
+// ============================================================
+const REVEAL_SOUNDS = {
+    envol:      { e:"✨", ar:"تحليق سحري",  fr:"Envol magique",  nl:"Magische vlucht", en:"Magic lift-off", es:"Vuelo mágico" },
+    harpe:      { e:"🎼", ar:"قيثارة",      fr:"Harpe",          nl:"Harp",            en:"Harp",           es:"Arpa" },
+    fanfare:    { e:"🎺", ar:"احتفال",      fr:"Fanfare douce",  nl:"Zachte fanfare",  en:"Gentle fanfare", es:"Fanfarria suave" },
+    clochettes: { e:"🔔", ar:"أجراس صغيرة", fr:"Clochettes",     nl:"Belletjes",       en:"Little bells",   es:"Campanillas" },
+    darbouka:   { e:"🥁", ar:"دربوكة",      fr:"Darbouka",       nl:"Darboeka",        en:"Darbuka",        es:"Darbuka" },
+    aucun:      { e:"🔇", ar:"بدون صوت",    fr:"Sans son",       nl:"Geen geluid",     en:"No sound",       es:"Sin sonido" },
+};
+const REVEAL_SOUND_DEFAULT = "envol";
+
+function _tone(ctx, out, { f, f2, t, d, type = "sine", v = 0.25, a = 0.01 }) {
+    const o = ctx.createOscillator(), g = ctx.createGain();
+    o.type = type; o.frequency.setValueAtTime(f, t);
+    if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(v, t + a);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    o.connect(g); g.connect(out); o.start(t); o.stop(t + d + 0.05);
+}
+function _noise(ctx, out, { t, d, v = 0.3, freq = 1000, q = 1 }) {
+    const len = Math.floor(ctx.sampleRate * d), buf = ctx.createBuffer(1, len, ctx.sampleRate), data = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / len) ** 2;
+    const src = ctx.createBufferSource(), flt = ctx.createBiquadFilter(), g = ctx.createGain();
+    src.buffer = buf; flt.type = "bandpass"; flt.frequency.value = freq; flt.Q.value = q; g.gain.value = v;
+    src.connect(flt); flt.connect(g); g.connect(out); src.start(t);
+}
+const midi = n => 440 * Math.pow(2, (n - 69) / 12);
+
+function playRevealSound(name) {
+    name = name || REVEAL_SOUND_DEFAULT;
+    if (name === "aucun" || !REVEAL_SOUNDS[name]) return;
+    let ctx; try { ctx = getAudioCtx(); } catch (e) { return; }
+    const out = ctx.createGain(); out.gain.value = ({ envol: 1.4, harpe: 0.85, fanfare: 1.7, clochettes: 1.5, darbouka: 1.0 })[name] || 1; // volumes équilibrés
+    // petit écho pour donner de l'espace (effet « élévation »)
+    const dl = ctx.createDelay(), fb = ctx.createGain(); dl.delayTime.value = 0.16; fb.gain.value = 0.28;
+    out.connect(ctx.destination); out.connect(dl); dl.connect(fb); fb.connect(dl); dl.connect(ctx.destination);
+    const t0 = ctx.currentTime + 0.05;
+    if (name === "envol") {
+        // souffle qui monte + arpège scintillant
+        _tone(ctx, out, { f: 220, f2: 1320, t: t0, d: 0.9, type: "sine", v: 0.12, a: 0.3 });
+        _noise(ctx, out, { t: t0, d: 0.8, v: 0.08, freq: 2500, q: 0.7 });
+        [72, 76, 79, 84, 88].forEach((n, i) => _tone(ctx, out, { f: midi(n), t: t0 + 0.35 + i * 0.09, d: 0.9, type: "triangle", v: 0.2 }));
+        _tone(ctx, out, { f: midi(96), t: t0 + 0.85, d: 1.1, type: "sine", v: 0.08 });
+    } else if (name === "harpe") {
+        [60, 62, 64, 67, 69, 72, 74, 76, 79, 81, 84, 86].forEach((n, i) => _tone(ctx, out, { f: midi(n), t: t0 + i * 0.055, d: 1.1, type: "triangle", v: 0.18, a: 0.005 }));
+        [72, 76, 79].forEach(n => _tone(ctx, out, { f: midi(n), t: t0 + 0.75, d: 1.4, type: "sine", v: 0.12 }));
+    } else if (name === "fanfare") {
+        const brass = (n, t, d, v = 0.13) => { _tone(ctx, out, { f: midi(n), t, d, type: "sawtooth", v: v * 0.5, a: 0.03 }); _tone(ctx, out, { f: midi(n), t, d, type: "triangle", v, a: 0.03 }); };
+        brass(67, t0, 0.18); brass(72, t0 + 0.18, 0.18); brass(76, t0 + 0.36, 0.18);
+        [72, 76, 79].forEach(n => brass(n, t0 + 0.56, 1.0, 0.11));
+    } else if (name === "clochettes") {
+        [84, 88, 91, 86, 89, 93, 96].forEach((n, i) => {
+            const t = t0 + i * 0.1;
+            _tone(ctx, out, { f: midi(n), t, d: 0.7, type: "sine", v: 0.16, a: 0.003 });
+            _tone(ctx, out, { f: midi(n) * 2.76, t, d: 0.3, type: "sine", v: 0.04, a: 0.003 }); // harmonique de cloche
+        });
+    } else if (name === "darbouka") {
+        const dum = t => { _tone(ctx, out, { f: 140, f2: 60, t, d: 0.35, type: "sine", v: 0.5, a: 0.003 }); };
+        const tak = (t, v = 0.35) => _noise(ctx, out, { t, d: 0.09, v, freq: 3200, q: 1.2 });
+        dum(t0); tak(t0 + 0.2); tak(t0 + 0.3, 0.25); dum(t0 + 0.45); tak(t0 + 0.6);
+        [72, 76, 79, 84].forEach((n, i) => _tone(ctx, out, { f: midi(n), t: t0 + 0.75 + i * 0.07, d: 0.9, type: "triangle", v: 0.16 }));
+    }
+}
+window.playRevealSound = playRevealSound;
+
+function revealSoundLabel(key) {
+    const s = REVEAL_SOUNDS[key]; if (!s) return key;
+    return `${s.e} ${s.ar}` + (currentUILang && s[currentUILang] ? ` / ${s[currentUILang]}` : (currentUILang ? "" : ` · ${s.fr}`));
+}
+// Choix du son dans ⚙️ Paramètres (directeur)
+function saRenderSoundChoice(current) {
+    const box = document.getElementById("sa-sound-box"); if (!box) return;
+    window._saRevealSound = current || REVEAL_SOUND_DEFAULT;
+    box.innerHTML = Object.keys(REVEAL_SOUNDS).map(k => `
+        <div class="snd-row${k === window._saRevealSound ? " on" : ""}" onclick="saPickRevealSound('${k}')">
+            <span class="snd-radio"></span>
+            <span class="snd-name">${revealSoundLabel(k)}</span>
+            ${k !== "aucun" ? `<button class="snd-play" onclick="event.stopPropagation();playRevealSound('${k}')" title="▶">▶</button>` : ""}
+        </div>`).join("");
+}
+window.saPickRevealSound = async (k) => {
+    playRevealSound(k);
+    saRenderSoundChoice(k);
+    const st = document.getElementById("sa-sound-status");
+    if (isDemoMode) { if (st) st.textContent = "🎬"; return; }
+    try {
+        await setDoc(doc(db, "ecoles", currentSchoolId), { revealSound: k }, { merge: true });
+        if (st) st.textContent = "✅ " + bi("تمّ الحفظ", "soundSaved");
+    } catch (e) { if (st) st.textContent = "❌"; }
+};
+
 function showSchoolLogoReveal(school) {
     const url = school?.logoUrl?.trim();
     if (!url) return; // pas de logo configuré pour cette école, rien à révéler
@@ -770,6 +871,7 @@ function showSchoolLogoReveal(school) {
         <p style="margin-top:16px;font-size:22px;font-weight:900;color:#3D348B;text-align:center;padding:0 20px">${school.name || ""}</p>
     `;
     document.body.appendChild(overlay);
+    try { playRevealSound(school.revealSound); } catch (e) {} // 🔔 son de surprise, en même temps que le logo
     requestAnimationFrame(() => {
         overlay.style.opacity = "1";
         overlay.querySelector(".wreath-pop").classList.add("in");
@@ -1839,6 +1941,7 @@ async function loadSchoolAdminDashboard(){
     await saLoadClasses(school); await saLoadTeachers(school); await saLoadStats();
     const logoInput=document.getElementById("sa-logo-url");
     if(logoInput){ logoInput.value=school?.logoUrl||""; window.saPreviewLogo(); }
+    saRenderSoundChoice(school?.revealSound);
 
     // 🔑 Afficher le code d'école, ou en générer un si l'école n'en a pas encore (créée avant cette mise à jour)
     const codeDisplay = document.getElementById("sa-school-code-display");
@@ -4482,6 +4585,7 @@ TOURS.director = { icon: "🏫", title: T("جولة المدير", "Présentatio
   "والآن جرّبوا بأنفسكم فضاء التلميذ: تنتظركم جولة متحرّكة.",
 ].forEach((t, i) => { TOURS.director.steps[i].arLong = t; });
 Object.assign(DYNAMIC_I18N, {
+  soundSaved:   { fr:"Enregistré", nl:"Opgeslagen", en:"Saved", es:"Guardado" },
   pupilsWord:   { fr:"élève(s)", nl:"leerling(en)", en:"pupil(s)", es:"alumno(s)" },
   pupilsTitle:  { fr:"Élèves", nl:"Leerlingen", en:"Pupils", es:"Alumnos" },
   codeForPupils:{ fr:"Code à donner aux élèves", nl:"Code voor de leerlingen", en:"Code to give to the pupils", es:"Código para los alumnos" },

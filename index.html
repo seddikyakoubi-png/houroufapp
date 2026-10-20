@@ -14,7 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حروفي - تعلم الأبجدية العربية</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20260996">
+    <link rel="stylesheet" href="style.css?v=20260997">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -702,9 +702,7 @@
     <div id="admin-tab-sa-settings" class="admin-tab-content hidden">
         <div class="admin-section" style="max-width:500px">
             <h3 id="sa-settings-logo-title"><span class="tab-label">🎨 Personnalisation de l'école</span></h3>
-            <p style="color:#888;font-size:14px;margin-bottom:15px">
-                Ajoutez le logo de votre école : il apparaîtra dans l'application pour vos élèves, vos professeurs et vous-même.
-            </p>
+            <p style="color:#888;font-size:14px;margin-bottom:15px" id="sa-logo-note"><span class="tab-label">Ajoutez le logo de votre école : il apparaîtra dans l'application pour vos élèves, vos professeurs et vous-même.</span></p>
             <div style="text-align:center;margin-bottom:15px">
                 <img id="sa-logo-preview" src="" alt="Aperçu du logo" style="height:90px;width:90px;border-radius:50%;object-fit:cover;border:3px solid #eee;display:none">
                 <div id="sa-logo-placeholder" style="height:90px;width:90px;border-radius:50%;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto">🏫</div>
@@ -723,10 +721,15 @@
         </div>
 
         <div class="admin-section" style="max-width:500px;margin-top:20px">
+            <h3 id="sa-sound-title"><span class="tab-label">🔔 Son à l'apparition du logo</span></h3>
+            <p style="color:#888;font-size:14px;margin-bottom:12px" id="sa-sound-note"><span class="tab-label">Il retentit quand l'élève entre le code de l'école et que le logo apparaît.</span></p>
+            <div id="sa-sound-box" class="snd-box"></div>
+            <p id="sa-sound-status" style="color:#27ae60;font-size:14px;margin:8px 0 0;min-height:20px"></p>
+        </div>
+
+        <div class="admin-section" style="max-width:500px;margin-top:20px">
             <h3 id="sa-settings-code-title"><span class="tab-label">🔑 Code de votre école</span></h3>
-            <p style="color:#888;font-size:14px;margin-bottom:15px">
-                Communiquez ce code à vos élèves : ils le saisiront à la connexion pour rejoindre votre école, sans jamais voir la liste des autres écoles inscrites sur la plateforme.
-            </p>
+            <p style="color:#888;font-size:14px;margin-bottom:15px" id="sa-code-note"><span class="tab-label">Communiquez ce code à vos élèves : ils le saisiront à la connexion pour rejoindre votre école, sans jamais voir la liste des autres écoles inscrites sur la plateforme.</span></p>
             <div style="text-align:center;background:#f1effb;border-radius:14px;padding:18px">
                 <span id="sa-school-code-display" style="font-size:26px;font-weight:900;color:var(--primary);letter-spacing:2px">—</span>
             </div>
@@ -915,6 +918,6 @@
     </div>
 </div>
 
-<script type="module" src="script.js?v=20260996"></script>
+<script type="module" src="script.js?v=20260997"></script>
 </body>
 </html>
