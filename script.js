@@ -626,6 +626,30 @@ function applyPlaceholderTranslations() {
     });
 }
 
+// Traduction des options des listes déroulantes (arabe + langue de l'école)
+const OPTION_I18N = {
+    "autowrite-form-select": {
+        "0": { e:"🔵", ar:"أول الكلمة", fr:"Début du mot", nl:"Begin van het woord", en:"Start of the word", es:"Inicio de la palabra" },
+        "1": { e:"🟢", ar:"وسط الكلمة", fr:"Milieu du mot", nl:"Midden van het woord", en:"Middle of the word", es:"Medio de la palabra" },
+        "2": { e:"🟠", ar:"آخر الكلمة (متصلة)", fr:"Fin (attachée)", nl:"Einde (verbonden)", en:"End (joined)", es:"Final (unida)" },
+        "3": { e:"🟣", ar:"آخر الكلمة (منفصلة)", fr:"Fin (isolée)", nl:"Einde (los)", en:"End (separate)", es:"Final (aislada)" },
+    },
+    "msg-category": {
+        "general":      { e:"📋", ar:"عام", fr:"Général", nl:"Algemeen", en:"General", es:"General" },
+        "absence":      { e:"📅", ar:"غياب", fr:"Absence", nl:"Afwezigheid", en:"Absence", es:"Ausencia" },
+        "conduite":     { e:"⚠️", ar:"سلوك", fr:"Comportement", nl:"Gedrag", en:"Behaviour", es:"Comportamiento" },
+        "felicitation": { e:"🌟", ar:"تهنئة", fr:"Félicitation", nl:"Felicitatie", en:"Congratulations", es:"Felicitación" },
+    },
+};
+function applyOptionTranslations() {
+    Object.entries(OPTION_I18N).forEach(([id, opts]) => {
+        const sel = document.getElementById(id); if (!sel) return;
+        [...sel.options].forEach(o => {
+            const t = opts[o.value]; if (!t) return;
+            o.textContent = `${t.e} ${t.ar}` + (currentUILang && t[currentUILang] ? ` / ${t[currentUILang]}` : "");
+        });
+    });
+}
 function applyFeatureTranslations(uiLang) {
     currentUILang = uiLang || "";
     Object.entries(FEATURE_I18N).forEach(([id, data]) => {
@@ -638,6 +662,7 @@ function applyFeatureTranslations(uiLang) {
             : `${prefix}${data.ar}`;
     });
     applyPlaceholderTranslations();
+    applyOptionTranslations();
     try { wlRenderTexts(); helpRenderFab(); } catch (e) {} // pas encore prêts au tout premier chargement
 }
 
@@ -4606,6 +4631,7 @@ TOURS.director = { icon: "🏫", title: T("جولة المدير", "Présentatio
   "والآن جرّبوا بأنفسكم فضاء التلميذ: تنتظركم جولة متحرّكة.",
 ].forEach((t, i) => { TOURS.director.steps[i].arLong = t; });
 Object.assign(DYNAMIC_I18N, {
+  allClasses:   { fr:"Toutes les classes", nl:"Alle klassen", en:"All classes", es:"Todas las clases" },
   quizOther:    { fr:"ou choisis un autre exercice", nl:"of kies een andere oefening", en:"or choose another exercise", es:"o elige otro ejercicio" },
   soundSaved:   { fr:"Enregistré", nl:"Opgeslagen", en:"Saved", es:"Guardado" },
   pupilsWord:   { fr:"élève(s)", nl:"leerling(en)", en:"pupil(s)", es:"alumno(s)" },
@@ -7312,7 +7338,7 @@ async function initDirectorAbsences() {
     // Populate class filter
     const sel = document.getElementById("sa-absence-class-filter");
     if (sel) {
-        sel.innerHTML = '<option value="all">📚 Toutes les classes</option>';
+        sel.innerHTML = `<option value="all">📚 ${bi("كلّ الفصول", "allClasses")}</option>`;
         const snap = await getDoc(doc(db, "ecoles", currentSchoolId));
         const school = snap.data();
         if (school?.classes) {
