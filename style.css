@@ -2582,3 +2582,10 @@ body.tour-on .help-fab { display: none; }
 .qmb-hint { margin: 14px 0 6px; font-size: 18px; }
 #quiz-result .quiz-mode-bar { margin-top: 0; }
 @media (max-width: 600px) { .qmb-btn { min-width: 62px; padding: 5px 6px; } }
+
+/* ===== 🔤 Listes de lettres bien lisibles (prof, parent, écriture automatique) ===== */
+select.letter-select { font-family: 'Noto Naskh Arabic', 'Tajawal', serif; font-size: 26px; min-height: 52px; padding: 4px 10px; direction: rtl; }
+select.letter-select option { font-size: 26px; padding: 6px 10px; line-height: 1.6; }
+#autowrite-letter-select { max-width: 200px !important; }
+/* 👨‍👩‍👧 Bouton « Exercices et suivi » de la version famille */
+.btn-family-teach { background: #F0A830 !important; color: #2A2361 !important; border: none !important; font-weight: 800; }

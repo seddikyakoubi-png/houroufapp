@@ -389,6 +389,8 @@ const FEATURE_I18N = {
     "sa-th-coran":       { emoji:"📖", ar:"القرآن", fr:"Coran",   nl:"Koran",     en:"Quran",    es:"Corán" },
     "sa-logo-note": { emoji:"", ar:"أضيفوا شعار مدرستكم: سيظهر في التطبيق لتلاميذكم ومعلّميكم ولكم", fr:"Ajoutez le logo de votre école : il apparaîtra dans l'application pour vos élèves, vos professeurs et vous-même.", nl:"Voeg het logo van uw school toe: het verschijnt in de app voor uw leerlingen, uw leerkrachten en uzelf.", en:"Add your school's logo: it will appear in the app for your pupils, your teachers and yourself.", es:"Añada el logo de su escuela: aparecerá en la aplicación para sus alumnos, sus profesores y usted." },
     "sa-code-note": { emoji:"", ar:"أعطوا هذا الرمز لتلاميذكم: يكتبونه عند الدخول للالتحاق بمدرستكم، دون أن يروا قائمة المدارس الأخرى", fr:"Communiquez ce code à vos élèves : ils le saisiront à la connexion pour rejoindre votre école, sans jamais voir la liste des autres écoles inscrites sur la plateforme.", nl:"Geef deze code aan uw leerlingen: ze voeren hem in bij het aanmelden om bij uw school te komen, zonder ooit de lijst van andere scholen te zien.", en:"Give this code to your pupils: they enter it when logging in to join your school, without ever seeing the list of other schools.", es:"Comunique este código a sus alumnos: lo introducirán al conectarse para unirse a su escuela, sin ver nunca la lista de las demás escuelas." },
+    "btn-family-teach":  { emoji:"✏️", ar:"تمارين ومتابعة", fr:"Exercices et suivi", nl:"Oefeningen en opvolging", en:"Exercises and follow-up", es:"Ejercicios y seguimiento" },
+    "btn-back-family":   { emoji:"↩️", ar:"رجوع", fr:"Retour", nl:"Terug", en:"Back", es:"Volver" },
     "sa-sound-title": { emoji:"🔔", ar:"صوت ظهور الشعار", fr:"Son à l'apparition du logo", nl:"Geluid bij het verschijnen van het logo", en:"Sound when the logo appears", es:"Sonido al aparecer el logo" },
     "sa-sound-note":  { emoji:"", ar:"يُسمع عندما يُدخل التلميذ رمز المدرسة ويظهر الشعار. اضغط ▶ للاستماع، ثمّ اختر", fr:"Il retentit quand l'élève entre le code de l'école et que le logo apparaît. Touchez ▶ pour écouter, puis choisissez.", nl:"Het klinkt wanneer de leerling de schoolcode invoert en het logo verschijnt. Tik op ▶ om te luisteren en kies dan.", en:"It plays when the pupil enters the school code and the logo appears. Tap ▶ to listen, then choose.", es:"Suena cuando el alumno introduce el código de la escuela y aparece el logo. Toque ▶ para escuchar y luego elija." },
     "sa-settings-logo-title": { emoji:"🎨", ar:"تخصيص المدرسة", fr:"Personnalisation de l'école", nl:"Personalisatie van de school", en:"School customization", es:"Personalización de la escuela" },
@@ -1255,7 +1257,7 @@ window.logout = ()=>{
     try { if (auth.currentUser && !auth.currentUser.isAnonymous) signOut(auth); } catch (e) {}
     // Arrêter toute synthèse vocale en cours
     if(window.speechSynthesis) window.speechSynthesis.cancel();
-    currentUser=null;currentRole=null;currentSchoolId=null;currentClassId=null;selectedRole="student";isDemoMode=false;
+    currentUser=null;currentRole=null;currentSchoolId=null;currentClassId=null;selectedRole="student";isDemoMode=false;window._famParentMode=false;famTeachUi(false);
     try { tourStop(); } catch (e) {}
     _game = window._game = null; childWelcomeShown = false; try { renderGameBar(); renderDemoNews(); helpRenderFab(); } catch (e) {}
     document.getElementById("header-logo-img")?.classList.remove("child-photo-header");
@@ -1723,7 +1725,7 @@ async function loadTeacherDashboard(){
             if(data.schoolId&&data.classId){const prefix=data.schoolId+"_"+data.classId+"_";if(id.startsWith(prefix))name=id.slice(prefix.length);else name=id.split("_").slice(4).join(" ")||id.split("_").slice(2).join(" ");}else{name=id.split("_").slice(2).join(" ");}const pct=Math.round(data.learned.length/lettres.length*100);const sc=data.quizScores||[];const avgS=sc.length>0?Math.round(sc.reduce((a,s)=>a+(s.score/s.total*100),0)/sc.length):"-";const date=data.lastActivity?new Date(data.lastActivity).toLocaleDateString("fr-FR"):"Jamais";
             const hasPin = data.pin ? "🔐" : "🔓";
             const pinBtn = `<button class="btn-pin-student" onclick="setPinForStudent('${id}', '${name}')" title="Code personnel">${hasPin}</button>`;
-            const msgBtn = `<button class="btn-pin-student" onclick="openMessageModal('${id}', '${name}')" title="Envoyer un message au parent">✉️</button>`;
+            const msgBtn = window._famParentMode ? "" : `<button class="btn-pin-student" onclick="openMessageModal('${id}', '${name}')" title="Envoyer un message au parent">✉️</button>`;
             return `<tr><td><strong>${name}</strong>${gameSummaryHtml(data)}</td><td><div class="progress-mini"><div class="progress-mini-bar"><div class="progress-mini-fill" style="width:${pct}%"></div></div><span>${pct}%</span></div></td><td>${avgS}${avgS!=="-"?"%":""} (${sc.length})</td><td>${harakatCellHtml(data)}</td><td><button class="qn-open" onclick="showQuranNames('${id}', '${name.replace(/'/g, "\\'")}')">📖 ${quranSourahsCompleted(data)} ✅</button></td><td>${date}</td><td style="display:flex;gap:6px">${pinBtn}${msgBtn}<button class="btn-reset-student" onclick="resetOneStudent('${id}')">🔄</button></td></tr>`;}).join("");
 
     // Draw charts
@@ -1914,7 +1916,7 @@ window.sendParentMessage = async () => {
         date: new Date().toISOString(),
         category,
         text,
-        author: currentRole === "teacher" ? "المعلم / Professeur" : "الإدارة / Direction",
+        author: window._famParentMode ? "الوليّ / Parent" : currentRole === "teacher" ? "المعلم / Professeur" : "الإدارة / Direction",
     });
     await saveStudentData(messageTargetStudentId, data);
     window.closeMessageModal();
@@ -1982,6 +1984,8 @@ async function loadSchoolAdminDashboard(){
     currentOrgType = school.orgType || "school";
     // L'onglet Absences n'a pas de sens pour une famille (pas de vie de classe à suivre)
     document.getElementById("sa-tab-btn-absences")?.classList.toggle("hidden", currentOrgType === "family");
+    document.getElementById("btn-family-teach")?.classList.toggle("hidden", currentOrgType !== "family");
+    window._famParentMode = false;
     await saLoadClasses(school); await saLoadTeachers(school); await saLoadStats();
     const logoInput=document.getElementById("sa-logo-url");
     if(logoInput){ logoInput.value=school?.logoUrl||""; window.saPreviewLogo(); }
@@ -2717,6 +2721,47 @@ const getSubmissions = async () => { const s = await getDocs(collection(db, "sou
 let currentExType = "letter";
 
 // ====== TEACHER TABS ======
+// ============================================================
+//  👨‍👩‍👧 VERSION FAMILLE : le PARENT fait lui-même le travail du professeur
+//  (exercices, travaux rendus, enregistrements, suivi), sans compte professeur à créer.
+// ============================================================
+function wholeGroupLabel() {
+    return currentOrgType === "family" ? bi("كلّ الأبناء", "allChildren") : bi("كلّ القسم", "wholeClass");
+}
+function famTeachUi(on) {
+    document.getElementById("btn-back-family")?.classList.toggle("hidden", !on);
+    document.getElementById("fam-class-switch")?.classList.toggle("hidden", !on || (document.getElementById("fam-class-switch")?.options.length || 0) < 2);
+    ["t-tab-btn-comms", "t-tab-btn-attendance", "t-tab-btn-classlist"].forEach(id => { if (on) document.getElementById(id)?.classList.add("hidden"); });
+    if (!on) document.getElementById("t-tab-btn-comms")?.classList.remove("hidden");
+    document.querySelector("#screen-teacher .btn-reset-all")?.classList.toggle("hidden", on);
+}
+window.famOpenTeaching = async () => {
+    const school = (await getDoc(doc(db, "ecoles", currentSchoolId))).data() || {};
+    const classes = Object.entries(school.classes || {});
+    if (!classes.length) { alert(bi("أضيفوا أوّلًا مجموعة (فصلًا) وأبناءكم في تبويب الفصول", "famNeedClass")); return; }
+    window._famParentMode = true;
+    window._famAdminEmail = currentUser;
+    currentRole = "teacher";
+    if (!classes.some(([cid]) => cid === currentClassId)) currentClassId = classes[0][0];
+    const sw = document.getElementById("fam-class-switch");
+    if (sw) {
+        sw.innerHTML = classes.map(([cid, c]) => `<option value="${cid}"${cid === currentClassId ? " selected" : ""}>📚 ${c.name}</option>`).join("");
+        sw.onchange = () => { currentClassId = sw.value; const b = document.querySelector("#screen-teacher .admin-tab.active"); if (b) b.click(); };
+    }
+    document.getElementById("teacher-header-name").textContent = "👨‍👩‍👧 " + (school.name || "");
+    famTeachUi(true);
+    showScreen("screen-teacher");
+    window.switchTeacherTab("t-exercises", document.getElementById("t-tab-btn-exercises"));
+};
+window.famBackToDashboard = async () => {
+    window._famParentMode = false;
+    currentRole = "schooladmin";
+    if (window._famAdminEmail) currentUser = window._famAdminEmail;
+    famTeachUi(false);
+    showScreen("screen-schooladmin");
+    await loadSchoolAdminDashboard();
+};
+
 window.switchTeacherTab = (name, btn) => {
     document.querySelectorAll(".admin-tab").forEach(b => b.classList.remove("active")); btn.classList.add("active");
     document.querySelectorAll(".admin-tab-content").forEach(t => t.classList.add("hidden"));
@@ -2742,7 +2787,7 @@ function populateLetterSelect() {
     ["ex-letter-select","ex-forme-letter"].forEach(selId => {
         const sel = document.getElementById(selId);
         if (!sel) return;
-        sel.innerHTML = '<option value="">-- Choisir une lettre --</option>';
+        sel.innerHTML = `<option value="">-- ${bi("اختر حرفًا", "pickLetter")} --</option>`;
         lettres.forEach(item => sel.innerHTML += `<option value="${item.l}">${item.l} - ${item.mot}</option>`);
     });
 }
@@ -2784,23 +2829,23 @@ async function populateStudentSelect() {
 
     container.innerHTML = `
         <div style="margin-bottom:8px">
-            <label style="font-weight:600;font-size:14px">🎯 Assigner à :</label>
+            <label style="font-weight:600;font-size:14px">🎯 ${bi("لمن هذا التمرين؟", "assignTo")} :</label>
         </div>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px">
             <button type="button" onclick="toggleAllStudents(true)"
                 style="font-size:12px;padding:4px 10px;border-radius:20px;border:1px solid var(--primary);background:var(--primary);color:white;cursor:pointer">
-                ✅ Tous
+                ✅ ${bi("الكلّ", "selAll")}
             </button>
             <button type="button" onclick="toggleAllStudents(false)"
                 style="font-size:12px;padding:4px 10px;border-radius:20px;border:1px solid #ccc;background:white;cursor:pointer">
-                ☐ Aucun
+                ☐ ${bi("لا أحد", "selNone")}
             </button>
         </div>
         <div id="student-checkboxes" style="display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto;border:1px solid #eee;border-radius:8px;padding:8px">
             <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
                 <input type="checkbox" value="all" id="cb-all" onchange="handleAllCheckbox(this)" checked
                     style="width:16px;height:16px;cursor:pointer">
-                <span>👥 Toute la classe</span>
+                <span>👥 ${wholeGroupLabel()}</span>
             </label>
             ${studentNames.map(name => {
                 const id = buildStudentId(name);
@@ -2902,7 +2947,7 @@ async function loadTeacherExercises() {
         const subsForEx = Object.values(subs).filter(s => s.exerciceId === id);
         const typeIcon = ex.type==="letter"?"🔤":ex.type==="word"?"📝":ex.type==="forme"?"🔀":"✏️";
         const typeLabel = ex.type==="letter"?"Lettre":ex.type==="word"?"Mot":ex.type==="forme"?"Formes":"Libre";
-        const targetLabel = ex.target==="all"?"👥 Toute la classe":`👦 ${extractStudentName(ex.target, ex.schoolId||currentSchoolId, ex.classId||currentClassId)}`;
+        const targetLabel = ex.target==="all"?"👥 "+wholeGroupLabel():`👦 ${extractStudentName(ex.target, ex.schoolId||currentSchoolId, ex.classId||currentClassId)}`;
         const deadline = ex.deadline ? `📅 ${new Date(ex.deadline).toLocaleDateString("fr-FR")}` : "";
         // For forme type, show letter name instead of index
         let consigneDisplay = ex.consigne;
@@ -3138,6 +3183,7 @@ window.teacherSendMsg = async () => {
 };
 
 async function updateTeacherCommsBadge() {
+    if (window._famParentMode) return; // version famille : pas de messagerie professeur ↔ direction
     const data = (await getDoc(doc(db,"profs",currentUser))).data() || {};
     const school = (await getDoc(doc(db,"ecoles",currentSchoolId))).data() || {};
     const annLastSeen = data.annLastSeen || "1970-01-01T00:00:00.000Z";
@@ -4632,6 +4678,13 @@ TOURS.director = { icon: "🏫", title: T("جولة المدير", "Présentatio
 ].forEach((t, i) => { TOURS.director.steps[i].arLong = t; });
 Object.assign(DYNAMIC_I18N, {
   allClasses:   { fr:"Toutes les classes", nl:"Alle klassen", en:"All classes", es:"Todas las clases" },
+  assignTo:     { fr:"Pour qui est cet exercice ?", nl:"Voor wie is deze oefening?", en:"Who is this exercise for?", es:"¿Para quién es este ejercicio?" },
+  selAll:       { fr:"Tous", nl:"Iedereen", en:"All", es:"Todos" },
+  selNone:      { fr:"Aucun", nl:"Niemand", en:"None", es:"Ninguno" },
+  wholeClass:   { fr:"Toute la classe", nl:"De hele klas", en:"The whole class", es:"Toda la clase" },
+  allChildren:  { fr:"Tous mes enfants", nl:"Al mijn kinderen", en:"All my children", es:"Todos mis hijos" },
+  pickLetter:   { fr:"Choisir une lettre", nl:"Kies een letter", en:"Choose a letter", es:"Elige una letra" },
+  famNeedClass: { fr:"Ajoutez d'abord un groupe (classe) et vos enfants dans l'onglet Classes", nl:"Voeg eerst een groep (klas) en uw kinderen toe in het tabblad Klassen", en:"First add a group (class) and your children in the Classes tab", es:"Primero añada un grupo (clase) y sus hijos en la pestaña Clases" },
   quizOther:    { fr:"ou choisis un autre exercice", nl:"of kies een andere oefening", en:"or choose another exercise", es:"o elige otro ejercicio" },
   soundSaved:   { fr:"Enregistré", nl:"Opgeslagen", en:"Saved", es:"Guardado" },
   pupilsWord:   { fr:"élève(s)", nl:"leerling(en)", en:"pupil(s)", es:"alumno(s)" },

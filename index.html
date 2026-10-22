@@ -14,7 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حروفي - تعلم الأبجدية العربية</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20260999">
+    <link rel="stylesheet" href="style.css?v=20261000">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -363,7 +363,7 @@
                 <div class="trace-autowrite" style="margin-top:22px;padding:16px;background:#f8f7ff;border-radius:16px">
                     <h3 style="font-size:15px;color:var(--primary);margin-bottom:12px;text-align:center" id="autowrite-title"><span class="tab-label">🖊️ الكتابة التلقائية للحرف</span></h3>
                     <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:12px">
-                        <select id="autowrite-letter-select" class="admin-input" style="max-width:160px"></select>
+                        <select id="autowrite-letter-select" class="admin-input letter-select" style="max-width:160px"></select>
                         <select id="autowrite-form-select" class="admin-input" style="max-width:180px">
                             <option value="0">🔵 أول الكلمة / Début du mot</option>
                             <option value="1">🟢 وسط الكلمة / Milieu du mot</option>
@@ -427,6 +427,8 @@
             <span id="teacher-header-name">👩‍🏫 Mon tableau de bord</span>
         </div>
         <div class="header-right">
+            <button onclick="famBackToDashboard()" class="btn-export hidden" id="btn-back-family"><span class="tab-label">↩️ Retour</span></button>
+            <select id="fam-class-switch" class="admin-input hidden" style="max-width:160px;margin:0;padding:6px 8px"></select>
             <button onclick="exportData('teacher')" class="btn-export" id="btn-export-teacher"><span class="tab-label">📥 Export</span></button>
             <button onclick="resetAllStudents()" class="btn-reset-all">🗑️ Reset</button>
         </div>
@@ -508,7 +510,7 @@
                     <button class="ex-type-btn" onclick="selectExType('free',this)" id="ex-type-free"><span class="tab-label">✏️ Libre</span></button>
                 </div>
                 <div id="ex-letter-input">
-                    <select id="ex-letter-select" class="admin-input">
+                    <select id="ex-letter-select" class="admin-input letter-select">
                         <option value="">-- Choisir une lettre --</option>
                     </select>
                 </div>
@@ -516,7 +518,7 @@
                     <input type="text" id="ex-word" placeholder="Mot à écrire (ex: بَطَّة)" class="admin-input" dir="rtl">
                 </div>
                 <div id="ex-forme-input" class="hidden">
-                    <select id="ex-forme-letter" class="admin-input">
+                    <select id="ex-forme-letter" class="admin-input letter-select">
                         <option value="">-- اختر الحرف --</option>
                     </select>
                     <p style="font-size:13px;color:#888;margin-top:5px">سيُطلب من التلميذ سحب الشكل الصحيح للحرف إلى مكانه في الكلمة</p>
@@ -577,6 +579,7 @@
             <span id="schooladmin-title">🏫 Gestion École</span>
         </div>
         <div class="header-right" style="display:flex;gap:8px">
+            <button onclick="famOpenTeaching()" class="btn-export btn-family-teach hidden" id="btn-family-teach"><span class="tab-label">✏️ Exercices et suivi</span></button>
             <button onclick="exportSchoolRegistry()" class="btn-export" id="btn-registre-school"><span class="tab-label">📋 Registre</span></button>
             <button onclick="exportData('school')" class="btn-export" id="btn-export-school"><span class="tab-label">📥 Export</span></button>
         </div>
@@ -921,6 +924,6 @@
     </div>
 </div>
 
-<script type="module" src="script.js?v=20260999"></script>
+<script type="module" src="script.js?v=20261000"></script>
 </body>
 </html>
