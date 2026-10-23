@@ -199,14 +199,22 @@
     },
     {
       "number": 25,
-      "arabic": "وَجِيءَ يَوْمَئِذٍ بِجَهَنَّمَ يَوْمَئِذٍ يَتَذَكَّرُ الْإِنسَانُ وَأَنَّىٰ لَهُ الذِّكْرَىٰ",
-      "french": "et qu'on amènera ce jour-là l'Enfer — ce jour-là l'homme se souviendra, mais à quoi lui servira ce souvenir ?",
-      "dutch": "en die Dag de Hel gebracht wordt — die Dag zal de mens zich herinneren, maar wat zal die herinnering hem baten?",
-      "english": "And brought [within view], that Day, is Hell - that Day, man will remember, but what good to him will be the remembrance?",
-      "spanish": "y sea traído el Infierno. Ese día el hombre recordará sus obras, pero de nada le servirá."
+      "arabic": "وَجِيءَ يَوْمَئِذٍ بِجَهَنَّمَ",
+      "french": "et qu'on amènera ce jour-là l'Enfer,",
+      "dutch": "en die Dag de Hel gebracht wordt,",
+      "english": "And brought [within view], that Day, is Hell -",
+      "spanish": "y sea traído ese día el Infierno."
     },
     {
       "number": 26,
+      "arabic": "يَوْمَئِذٍ يَتَذَكَّرُ الْإِنسَانُ وَأَنَّىٰ لَهُ الذِّكْرَىٰ",
+      "french": "ce jour-là l'homme se souviendra, mais à quoi lui servira ce souvenir ?",
+      "dutch": "die Dag zal de mens zich herinneren, maar wat zal die herinnering hem baten?",
+      "english": "that Day, man will remember, but what good to him will be the remembrance?",
+      "spanish": "Ese día el hombre recordará sus obras, pero de nada le servirá."
+    },
+    {
+      "number": 27,
       "arabic": "يَقُولُ يَا لَيْتَنِي قَدَّمْتُ لِحَيَاتِي",
       "french": "Il dira : « Ah, si seulement j'avais fait de bonnes œuvres pour ma vie ! »",
       "dutch": "Hij zal zeggen: 'Had ik maar vooruit gezonden voor mijn leven!'",
@@ -214,7 +222,7 @@
       "spanish": "Y dirá lamentándose: \"¡Ojalá hubiera realizado buenas obras para mi vida [del más allá]!\""
     },
     {
-      "number": 27,
+      "number": 28,
       "arabic": "فَيَوْمَئِذٍ لَّا يُعَذِّبُ عَذَابَهُ أَحَدٌ",
       "french": "Ce jour-là, nul ne châtiera comme Lui châtie",
       "dutch": "Die Dag zal niemand straffen zoals Hij straft",
@@ -222,7 +230,7 @@
       "spanish": "Sepan que nadie ha castigado como Él castigará ese día,"
     },
     {
-      "number": 28,
+      "number": 29,
       "arabic": "وَلَا يُوثِقُ وَثَاقَهُ أَحَدٌ",
       "french": "et nul n'enchaînera comme Lui enchaîne",
       "dutch": "en niemand zal binden zoals Hij bindt",
@@ -230,7 +238,7 @@
       "spanish": "y nadie ha encadenado como Él encadenará [ese día]."
     },
     {
-      "number": 29,
+      "number": 30,
       "arabic": "يَا أَيَّتُهَا النَّفْسُ الْمُطْمَئِنَّةُ",
       "french": "Ô âme apaisée",
       "dutch": "O gerustgestelde ziel",
@@ -238,7 +246,7 @@
       "spanish": "[Le será dicho al creyente:] \"¡Oh, alma que estás en paz con tu Señor!"
     },
     {
-      "number": 30,
+      "number": 31,
       "arabic": "ارْجِعِي إِلَىٰ رَبِّكِ رَاضِيَةً مَّرْضِيَّةً",
       "french": "retourne vers ton Seigneur, satisfaite et agréée",
       "dutch": "keer terug tot jouw Heer, tevreden en welbehaaglijk",
@@ -246,20 +254,12 @@
       "spanish": "Vuelve a la vera de tu Señor complacida, porque Dios está complacido contigo,"
     },
     {
-      "number": 31,
-      "arabic": "فَادْخُلِي فِي عِبَادِي",
-      "french": "entre donc parmi Mes serviteurs",
-      "dutch": "treed dan binnen onder Mijn dienaren",
-      "english": "And enter among My [righteous] servants",
-      "spanish": "y únete a Mis siervos piadosos"
-    },
-    {
       "number": 32,
-      "arabic": "وَادْخُلِي جَنَّتِي",
-      "french": "et entre dans Mon Paradis",
-      "dutch": "en treed binnen in Mijn Paradijs",
-      "english": "And enter My Paradise.\"",
-      "spanish": "entrando a Mi Paraíso\"."
+      "arabic": "فَادْخُلِي فِي عِبَادِي وَادْخُلِي جَنَّتِي",
+      "french": "entre donc parmi Mes serviteurs, et entre dans Mon Paradis",
+      "dutch": "treed dan binnen onder Mijn dienaren, en treed binnen in Mijn Paradijs",
+      "english": "And enter among My [righteous] servants, and enter My Paradise.\"",
+      "spanish": "y únete a Mis siervos piadosos, entrando a Mi Paraíso\"."
     }
   ],
   "translation_credits": {
