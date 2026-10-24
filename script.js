@@ -1257,6 +1257,7 @@ window.logout = ()=>{
     try { if (auth.currentUser && !auth.currentUser.isAnonymous) signOut(auth); } catch (e) {}
     // Arrêter toute synthèse vocale en cours
     if(window.speechSynthesis) window.speechSynthesis.cancel();
+    demoStopTimer();
     currentUser=null;currentRole=null;currentSchoolId=null;currentClassId=null;selectedRole="student";isDemoMode=false;window._famParentMode=false;famTeachUi(false);
     try { tourStop(); } catch (e) {}
     _game = window._game = null; childWelcomeShown = false; try { renderGameBar(); renderDemoNews(); helpRenderFab(); } catch (e) {}
@@ -2148,12 +2149,50 @@ function subscriptionBadgeHtml(s) {
     return pill("#e6f6ea", "#1e8449", `✅ Actif jusqu'au ${isoToFr(s.accessExpiry)}`);
 }
 
-const DEMO_ACCESS_CODE = "HOUROUF-2026"; // ✏️ Changez ce code quand vous voulez
+// 🔒 Le code démo n'est plus écrit en clair dans l'appli : seule son « empreinte » (SHA-256) y figure,
+// on ne peut donc plus le lire avec Ctrl+U. Pour changer de code, demandez la nouvelle empreinte.
+const DEMO_CODE_HASH = "20945e925573e188e96238b1e85296ce5e920c71763002584a7347e0f580e897";
+async function sha256Hex(txt) {
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(txt));
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+}
+// ⏱️ L'espace élève de la démo sert à DÉCOUVRIR, pas à travailler : temps limité par jour et par appareil
+const DEMO_STUDENT_MINUTES_PER_DAY = 10;
+let demoTimer = null;
+function demoUsage() {
+    try { const u = JSON.parse(localStorage.getItem("hourouf_demo_use") || "{}"); return u.date === todayLocalIso() ? u : { date: todayLocalIso(), ms: 0 }; }
+    catch (e) { return { date: todayLocalIso(), ms: 0 }; }
+}
+function demoSaveUsage(u) { try { localStorage.setItem("hourouf_demo_use", JSON.stringify(u)); } catch (e) {} }
+function demoStopTimer() {
+    if (demoTimer) { clearInterval(demoTimer); demoTimer = null; }
+    document.getElementById("demo-timer")?.remove();
+}
+function demoLimitText() {
+    return `⏱️ انتهى وقت التجربة لهذا اليوم (${DEMO_STUDENT_MINUTES_PER_DAY} دقائق)` +
+        `\n\nLe temps d'essai de l'espace élève est terminé pour aujourd'hui (${DEMO_STUDENT_MINUTES_PER_DAY} min).` +
+        `\nPour l'utiliser vraiment, il faut un compte école ou famille actif.`;
+}
+function demoStartTimer() {
+    demoStopTimer();
+    const pill = document.createElement("div");
+    pill.id = "demo-timer"; pill.className = "demo-timer";
+    document.body.appendChild(pill);
+    let last = Date.now();
+    const tick = () => {
+        const u = demoUsage(); const now = Date.now(); u.ms += now - last; last = now; demoSaveUsage(u);
+        const left = Math.max(0, DEMO_STUDENT_MINUTES_PER_DAY * 60000 - u.ms);
+        const m = Math.floor(left / 60000), sec = Math.floor(left % 60000 / 1000);
+        pill.textContent = `🎬 تجربة / Démo · ${m}:${String(sec).padStart(2, "0")}`;
+        if (left <= 0) { demoStopTimer(); alert(demoLimitText()); window.demoBackToDirector(); }
+    };
+    tick(); demoTimer = setInterval(tick, 1000);
+}
 
-window.startDemoMode = () => {
+window.startDemoMode = async () => {
     const code = prompt("🔒 Code d'accès démo :");
     if (code === null) return; // annulé
-    if (code.trim().toUpperCase() !== DEMO_ACCESS_CODE) {
+    if ((await sha256Hex(code.trim().toUpperCase())) !== DEMO_CODE_HASH) {
         alert("❌ Code incorrect.");
         return;
     }
@@ -4462,12 +4501,15 @@ window.demoSetLang = (lang) => {
 };
 window.demoTryStudent = async () => {
     if (!isDemoMode) return;
+    if (demoUsage().ms >= DEMO_STUDENT_MINUTES_PER_DAY * 60000) { alert(demoLimitText()); return; }
+    demoStartTimer();
     window._demoStudent = window._demoStudent || demoStudentData();
     currentRole = "student"; currentUser = "demo_student"; currentClassId = "demo_c1";
     const hn = document.getElementById("header-name"); if (hn) hn.textContent = "Yasmine (démo)";
     await window.showMenu();
 };
 window.demoBackToDirector = () => {
+    demoStopTimer();
     hkSeriesStop(); hkMicReset();
     currentRole = "schooladmin"; currentUser = "demo_admin";
     _game = window._game = null; renderGameBar();
@@ -8742,3 +8784,23 @@ function renderCurrentMode() {
 // ============================================================
 // ===== FIN MODULE CORAN =====
 // ============================================================
+
+
+// ============================================================
+//  ⌛ ABONNEMENT : une session déjà ouverte se ferme aussi quand l'abonnement se termine
+//  (avant, seul le moment de la connexion était vérifié : un onglet resté ouvert continuait).
+//  Vérification toutes les 10 minutes et à chaque retour sur l'onglet.
+// ============================================================
+let accessLastCheck = 0;
+async function recheckSchoolAccess(force) {
+    if (isDemoMode || !currentSchoolId || !["student", "parent", "teacher", "schooladmin"].includes(currentRole)) return;
+    if (!force && Date.now() - accessLastCheck < 10 * 60000) return;
+    accessLastCheck = Date.now();
+    try {
+        const school = (await getDoc(doc(db, "ecoles", currentSchoolId))).data();
+        const err = school ? checkSchoolAccessValid(school) : "⛔ Compte introuvable";
+        if (err) { alert(err); window.logout(); }
+    } catch (e) { /* pas de réseau : on réessaiera plus tard */ }
+}
+setInterval(() => recheckSchoolAccess(false), 60000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) recheckSchoolAccess(true); });

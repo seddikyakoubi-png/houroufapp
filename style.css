@@ -2589,3 +2589,6 @@ select.letter-select option { font-size: 26px; padding: 6px 10px; line-height: 1
 #autowrite-letter-select { max-width: 200px !important; }
 /* 👨‍👩‍👧 Bouton « Exercices et suivi » de la version famille */
 .btn-family-teach { background: #F0A830 !important; color: #2A2361 !important; border: none !important; font-weight: 800; }
+
+/* ⏱️ Temps restant dans l'espace élève de la démo */
+.demo-timer { position: fixed; top: 10px; left: 50%; transform: translateX(-50%); z-index: 10040; background: #2A2361; color: #FFD58A; font-weight: 800; font-size: 14px; padding: 6px 14px; border-radius: 20px; box-shadow: 0 4px 14px rgba(0,0,0,.25); pointer-events: none; font-family: 'Tajawal', sans-serif; }
