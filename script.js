@@ -2157,7 +2157,7 @@ async function sha256Hex(txt) {
     return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
 }
 // ⏱️ L'espace élève de la démo sert à DÉCOUVRIR, pas à travailler : temps limité par jour et par appareil
-const DEMO_STUDENT_MINUTES_PER_DAY = 10;
+const DEMO_STUDENT_MINUTES_PER_DAY = 3;
 let demoTimer = null;
 function demoUsage() {
     try { const u = JSON.parse(localStorage.getItem("hourouf_demo_use") || "{}"); return u.date === todayLocalIso() ? u : { date: todayLocalIso(), ms: 0 }; }
