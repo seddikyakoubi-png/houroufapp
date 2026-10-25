@@ -391,6 +391,7 @@ const FEATURE_I18N = {
     "sa-code-note": { emoji:"", ar:"أعطوا هذا الرمز لتلاميذكم: يكتبونه عند الدخول للالتحاق بمدرستكم، دون أن يروا قائمة المدارس الأخرى", fr:"Communiquez ce code à vos élèves : ils le saisiront à la connexion pour rejoindre votre école, sans jamais voir la liste des autres écoles inscrites sur la plateforme.", nl:"Geef deze code aan uw leerlingen: ze voeren hem in bij het aanmelden om bij uw school te komen, zonder ooit de lijst van andere scholen te zien.", en:"Give this code to your pupils: they enter it when logging in to join your school, without ever seeing the list of other schools.", es:"Comunique este código a sus alumnos: lo introducirán al conectarse para unirse a su escuela, sin ver nunca la lista de las demás escuelas." },
     "btn-family-teach":  { emoji:"✏️", ar:"تمارين ومتابعة", fr:"Exercices et suivi", nl:"Oefeningen en opvolging", en:"Exercises and follow-up", es:"Ejercicios y seguimiento" },
     "btn-back-family":   { emoji:"↩️", ar:"رجوع", fr:"Retour", nl:"Terug", en:"Back", es:"Volver" },
+    "sa-qr-text": { emoji:"📱", ar:"امسحوه بكاميرا الهاتف: يُفتح التطبيق ورمز المدرسة مكتوب", fr:"Scannez avec l'appareil photo du téléphone : l'appli s'ouvre avec le code déjà rempli.", nl:"Scan met de camera van de telefoon: de app opent met de code al ingevuld.", en:"Scan with the phone camera: the app opens with the code already filled in.", es:"Escanee con la cámara del teléfono: la app se abre con el código ya puesto." },
     "sa-sound-title": { emoji:"🔔", ar:"صوت ظهور الشعار", fr:"Son à l'apparition du logo", nl:"Geluid bij het verschijnen van het logo", en:"Sound when the logo appears", es:"Sonido al aparecer el logo" },
     "sa-sound-note":  { emoji:"", ar:"يُسمع عندما يُدخل التلميذ رمز المدرسة ويظهر الشعار. اضغط ▶ للاستماع، ثمّ اختر", fr:"Il retentit quand l'élève entre le code de l'école et que le logo apparaît. Touchez ▶ pour écouter, puis choisissez.", nl:"Het klinkt wanneer de leerling de schoolcode invoert en het logo verschijnt. Tik op ▶ om te luisteren en kies dan.", en:"It plays when the pupil enters the school code and the logo appears. Tap ▶ to listen, then choose.", es:"Suena cuando el alumno introduce el código de la escuela y aparece el logo. Toque ▶ para escuchar y luego elija." },
     "sa-settings-logo-title": { emoji:"🎨", ar:"تخصيص المدرسة", fr:"Personnalisation de l'école", nl:"Personalisatie van de school", en:"School customization", es:"Personalización de la escuela" },
@@ -2004,6 +2005,7 @@ async function loadSchoolAdminDashboard(){
     document.getElementById("sa-tab-btn-absences")?.classList.toggle("hidden", currentOrgType === "family");
     document.getElementById("btn-family-teach")?.classList.toggle("hidden", currentOrgType !== "family");
     window._famParentMode = false;
+    familyTourAutoStart();
     await saLoadClasses(school); await saLoadTeachers(school); await saLoadStats();
     const logoInput=document.getElementById("sa-logo-url");
     if(logoInput){ logoInput.value=school?.logoUrl||""; window.saPreviewLogo(); }
@@ -4735,6 +4737,40 @@ TOURS.director = { icon: "🏫", title: T("جولة المدير", "Présentatio
   "في كلّ شاشة، يشرح زرّ ❓ ما يجب فعله ويعرض الجديد، للتلاميذ والأولياء والمعلّمين.",
   "والآن جرّبوا بأنفسكم فضاء التلميذ: تنتظركم جولة متحرّكة.",
 ].forEach((t, i) => { TOURS.director.steps[i].arLong = t; });
+
+// 👨‍👩‍👧 Visite « Bien démarrer » pour le parent d'une famille (dans toutes les langues).
+// Elle démarre toute seule à la première connexion de la famille, puis reste disponible dans ❓.
+TOURS.family = { icon: "👨‍👩‍👧", title: T("كيف أبدأ مع أبنائي؟", "Bien démarrer avec vos enfants", "Goed beginnen met uw kinderen", "Getting started with your children", "Empezar bien con sus hijos"), steps: [
+  { sel: null, ...T("مرحبًا بكم في حروفي!", "Bienvenue dans حروفي ! En quelques étapes, je vous montre comment préparer l'espace de vos enfants et suivre leurs progrès.", "Welkom bij حروفي! In een paar stappen laat ik zien hoe u de ruimte van uw kinderen klaarmaakt en hun voortgang volgt.", "Welcome to حروفي! In a few steps, I will show you how to set up your children's space and follow their progress.", "¡Bienvenido a حروفي! En unos pasos le muestro cómo preparar el espacio de sus hijos y seguir su progreso.") },
+  { do: saTab("sa-classes"), sel: "#sa-class-name", ...T("١. أنشئوا مجموعة", "Étape 1 : créez un groupe, par exemple « Mes enfants ». Écrivez son nom ici, puis touchez « Ajouter ».", "Stap 1: maak een groep aan, bijvoorbeeld « Mijn kinderen ». Schrijf de naam hier en tik op « Toevoegen ».", "Step 1: create a group, for example « My children ». Type its name here, then tap « Add ».", "Paso 1: cree un grupo, por ejemplo « Mis hijos ». Escriba su nombre aquí y toque « Añadir ».") },
+  { sel: ".school-card .btn-sm-add, #sa-class-name", ...T("٢. أضيفوا أبناءكم", "Étape 2 : touchez le bouton 👥 du groupe, puis ajoutez chaque enfant avec son prénom et son nom. Chacun reçoit automatiquement un code élève et un code parent.", "Stap 2: tik op de knop 👥 van de groep en voeg elk kind toe met voornaam en achternaam. Elk kind krijgt automatisch een leerlingcode en een oudercode.", "Step 2: tap the group's 👥 button, then add each child with first and last name. Each one automatically gets a pupil code and a parent code.", "Paso 2: toque el botón 👥 del grupo y añada a cada hijo con su nombre y apellido. Cada uno recibe automáticamente un código de alumno y un código de padres.") },
+  { sel: ".school-card .code-badge, #sa-class-name", ...T("٣. رمز المجموعة", "Étape 3 : voici le code du groupe. Votre enfant en aura besoin, avec son prénom et son code élève, pour entrer dans l'appli.", "Stap 3: dit is de groepscode. Uw kind heeft die nodig, samen met zijn voornaam en leerlingcode, om in de app te komen.", "Step 3: this is the group code. Your child needs it, with their first name and pupil code, to enter the app.", "Paso 3: este es el código del grupo. Su hijo lo necesitará, con su nombre y su código de alumno, para entrar en la app.") },
+  { do: saTab("sa-settings"), sel: ".sa-qr, #sa-school-code-display", ...T("٤. رمز العائلة ورمز QR", "Étape 4 : le code de la famille et son QR code. Sur la tablette ou le téléphone de l'enfant, scannez ce QR code : l'appli s'ouvre avec le code déjà rempli.", "Stap 4: de gezinscode en de QR-code. Scan deze QR-code met de tablet of telefoon van uw kind: de app opent met de code al ingevuld.", "Step 4: the family code and its QR code. Scan this QR code with your child's tablet or phone: the app opens with the code already filled in.", "Paso 4: el código de la familia y su código QR. Escanéelo con la tableta o el teléfono de su hijo: la app se abre con el código ya puesto.") },
+  { sel: "#btn-choose-logo", ...T("٥. صورة العائلة", "Étape 5 : ajoutez une photo de famille. Elle apparaît en grand, avec un son de surprise, quand votre enfant entre le code.", "Stap 5: voeg een gezinsfoto toe. Die verschijnt groot, met een verrassingsgeluid, wanneer uw kind de code invoert.", "Step 5: add a family photo. It appears large, with a surprise sound, when your child enters the code.", "Paso 5: añada una foto de familia. Aparece en grande, con un sonido sorpresa, cuando su hijo introduce el código.") },
+  { sel: "#btn-family-teach", ...T("٦. تمارين ومتابعة", "Étape 6 : avec ce bouton, vous jouez le rôle du professeur. Vous créez des exercices, vous écoutez les enregistrements de vos enfants et vous corrigez leurs travaux.", "Stap 6: met deze knop speelt u de rol van leerkracht. U maakt oefeningen, beluistert de opnames van uw kinderen en verbetert hun werk.", "Step 6: with this button, you play the teacher's role. You create exercises, listen to your children's recordings and correct their work.", "Paso 6: con este botón, usted hace de profesor. Crea ejercicios, escucha las grabaciones de sus hijos y corrige sus trabajos.") },
+  { do: saTab("sa-stats"), sel: "#sa-summary", ...T("٧. تابعوا التقدّم", "Étape 7 : dans les statistiques, suivez les progrès de chaque enfant : lettres, voyelles, quiz et sourates mémorisées.", "Stap 7: volg in de statistieken de voortgang van elk kind: letters, klinkers, quizzen en gememoriseerde soera's.", "Step 7: in the statistics, follow each child's progress: letters, vowels, quizzes and memorised surahs.", "Paso 7: en las estadísticas, siga el progreso de cada hijo: letras, vocales, cuestionarios y suras memorizadas.") },
+  { sel: null, ...T("نصيحة: ضعوا حروفي على الشاشة", "Conseil : sur le téléphone ou la tablette de l'enfant, ouvrez le menu du navigateur et choisissez « Ajouter à l'écran d'accueil ». L'icône حروفي s'y installe comme une application.", "Tip: open op de telefoon of tablet van uw kind het menu van de browser en kies « Toevoegen aan startscherm ». Het icoon حروفي komt er als een app.", "Tip: on your child's phone or tablet, open the browser menu and choose « Add to Home screen ». The حروفي icon appears like an app.", "Consejo: en el teléfono o la tableta de su hijo, abra el menú del navegador y elija « Añadir a pantalla de inicio ». El icono حروفي aparece como una aplicación.") },
+  { do: saTab("sa-classes"), sel: null, ...T("زرّ ❓ في كلّ وقت", "À tout moment, le bouton ❓ vous aide et vous permet de revoir cette visite. Quinze minutes par jour suffisent : bon apprentissage !", "De knop ❓ helpt u op elk moment en laat u deze rondleiding opnieuw bekijken. Vijftien minuten per dag volstaan: veel leerplezier!", "At any time, the ❓ button helps you and lets you replay this tour. Fifteen minutes a day is enough: happy learning!", "En cualquier momento, el botón ❓ le ayuda y le permite volver a ver esta visita. Quince minutos al día bastan: ¡buen aprendizaje!") },
+]};
+[
+  "مرحبًا بكم في حروفي! في خطوات قليلة، أريكم كيف تهيّئون فضاء أبنائكم وتتابعون تقدّمهم.",
+  "الخطوة الأولى: أنشئوا مجموعة، مثلًا «أبنائي». اكتبوا اسمها هنا، ثمّ اضغطوا «إضافة».",
+  "الخطوة الثانية: اضغطوا زرّ المجموعة، ثمّ أضيفوا كلّ طفل باسمه ولقبه. يحصل كلّ طفل تلقائيًّا على رمز التلميذ ورمز الوليّ.",
+  "الخطوة الثالثة: هذا رمز المجموعة. يحتاجه طفلكم مع اسمه ورمزه للدخول إلى التطبيق.",
+  "الخطوة الرابعة: رمز العائلة ورمز QR. امسحوه بلوحة الطفل أو هاتفه، فيُفتح التطبيق والرمز مكتوب.",
+  "الخطوة الخامسة: أضيفوا صورة للعائلة. تظهر كبيرة مع صوت مفاجأة عندما يكتب طفلكم الرمز.",
+  "الخطوة السادسة: بهذا الزرّ تقومون بدور المعلّم. تنشئون التمارين، وتستمعون إلى تسجيلات أبنائكم، وتصحّحون أعمالهم.",
+  "الخطوة السابعة: في الإحصائيات، تابعوا تقدّم كلّ طفل في الحروف والحركات والاختبارات والسور المحفوظة.",
+  "نصيحة: على هاتف الطفل أو لوحته، افتحوا قائمة المتصفّح واختاروا «إضافة إلى الشاشة الرئيسية»، فتظهر أيقونة حروفي كتطبيق.",
+  "زرّ علامة الاستفهام يساعدكم في كلّ وقت، ويمكنكم به إعادة هذه الجولة. خمس عشرة دقيقة في اليوم تكفي. تعلّمًا موفّقًا!",
+].forEach((t, i) => { TOURS.family.steps[i].arLong = t; });
+// Lancement automatique, une seule fois par famille et par appareil
+function familyTourAutoStart() {
+  if (isDemoMode || currentOrgType !== "family" || currentRole !== "schooladmin" || !currentSchoolId) return;
+  const k = "hourouf_famtour_" + currentSchoolId;
+  try { if (localStorage.getItem(k)) return; localStorage.setItem(k, "1"); } catch (e) { return; }
+  setTimeout(() => { if (currentRole === "schooladmin" && !_tour) startTour("family"); }, 1500);
+}
 Object.assign(DYNAMIC_I18N, {
   allClasses:   { fr:"Toutes les classes", nl:"Alle klassen", en:"All classes", es:"Todas las clases" },
   assignTo:     { fr:"Pour qui est cet exercice ?", nl:"Voor wie is deze oefening?", en:"Who is this exercise for?", es:"¿Para quién es este ejercicio?" },
@@ -4927,7 +4963,7 @@ window.tourStop = (silent) => { if (!_tour) return; _tour.token++; tourCleanup()
 function tourFinish() {
   const key = _tour?.key;
   tourStop();
-  if (key === "parent" || key === "director") return;
+  if (key === "parent" || key === "director" || key === "family") return;
   if (window._game) { window._game.toursSeen = [...new Set([...(window._game.toursSeen || []), key])]; gameSave(); }
   gameConfetti(); gameSay?.("🎉 " + bi("انتهت الجولة!", "tourEnd"));
 }
@@ -5403,7 +5439,7 @@ window.openHelp = async () => {
     bg.onclick = e => { if (e.target === bg) helpClose(); };
     const line = (x) => `<span class="help-i">${x.icon}</span><span class="help-t">${hTx(x, true)}</span>`;
     const allDone = role === "student" && routine.steps.every(s => s.k.some(doneToday));
-    const tours = role === "student" ? ["general", "harakat", "quiz", "quran", "game"] : role === "parent" ? ["parent"] : role === "schooladmin" ? ["director"] : [];
+    const tours = role === "student" ? ["general", "harakat", "quiz", "quran", "game"] : role === "parent" ? ["parent"] : role === "schooladmin" ? (currentOrgType === "family" ? ["family"] : ["director"]) : [];
     bg.innerHTML = `<div class="help-sheet" role="dialog" aria-modal="true" dir="${helpStaff() && helpLang() ? "ltr" : "rtl"}">
         <div class="help-grip"></div>
         <div class="help-head"><h2>${hTx(adult ? HELP_UI.titleA : HELP_UI.title, true)}</h2><button class="help-x" onclick="helpClose()" aria-label="✕">✕</button></div>
