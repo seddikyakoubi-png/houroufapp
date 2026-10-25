@@ -596,6 +596,11 @@ const DYNAMIC_I18N = {
 
 // Petit helper pour les textes bilingues générés dynamiquement en JS (hors boutons/onglets statiques).
 // Retourne "arabe / traduction" si une langue est choisie pour l'école, sinon juste l'arabe.
+// Variante pour du HTML : la traduction est isolée (<bdi>) pour que l'ordre arabe / latin reste correct
+function biH(arText, key) {
+    const t = DYNAMIC_I18N[key];
+    return (currentUILang && t && t[currentUILang]) ? `${arText} / <bdi>${t[currentUILang]}</bdi>` : arText;
+}
 function bi(arText, key) {
     const t = DYNAMIC_I18N[key];
     return (currentUILang && t && t[currentUILang]) ? `${arText} / ${t[currentUILang]}` : arText;
@@ -1799,12 +1804,24 @@ window.startRecording = async () => {
             }
         });
         recordedChunks = [];
+        // 🔊 Micro amplifié + compresseur : la voix de l'enfant est enregistrée plus fort, sans saturer
+        let recStream = stream;
+        try {
+            const actx = getAudioCtx();
+            const src = actx.createMediaStreamSource(stream);
+            const pre = actx.createGain(); pre.gain.value = 2.5;
+            const comp = actx.createDynamicsCompressor();
+            comp.threshold.value = -24; comp.knee.value = 10; comp.ratio.value = 4; comp.attack.value = 0.005; comp.release.value = 0.25;
+            const dest = actx.createMediaStreamDestination();
+            src.connect(pre); pre.connect(comp); comp.connect(dest);
+            recStream = dest.stream;
+        } catch (e) { recStream = stream; }
         // On tente un débit réduit (adapté à la voix) pour permettre des enregistrements plus longs ;
         // si le navigateur ne supporte pas l'option, on retombe sur les réglages par défaut.
         try {
-            mediaRecorder = new MediaRecorder(stream, { audioBitsPerSecond: RECORDING_BITRATE });
+            mediaRecorder = new MediaRecorder(recStream, { audioBitsPerSecond: RECORDING_BITRATE });
         } catch (e) {
-            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder = new MediaRecorder(recStream);
         }
         mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) recordedChunks.push(e.data); };
         mediaRecorder.onstop = () => {
@@ -3328,7 +3345,7 @@ function renderRecordingsList() {
                     <div style="opacity:${it.reviewed ? 0.6 : 1};padding:10px 0;border-top:1px solid #f0f0f0">
                         <h4 style="font-size:15px;margin:0 0 4px">${typeIcons[it.type] || "🎙️"} ${it.itemLabel} ${it.refText ? "— " + it.refText : ""}</h4>
                         <p style="font-size:12px;color:#888;margin:0 0 8px">📅 ${new Date(it.date).toLocaleDateString("fr-FR")} ${it.reviewed ? "· ✅ " + bi("تمّت المراجعة","reviewed") : ""}</p>
-                        <audio src="${it.url}" controls style="width:100%;margin-bottom:8px"></audio>
+                        <audio src="${it.url}" controls style="width:100%;margin-bottom:8px" onplay="boostPlayer(this)"></audio>
                         <div style="display:flex;gap:8px">
                             ${!it.reviewed ? `<button onclick="markRecordingReviewed('${it.studentId}', '${it.recordingId}')" class="btn-admin-add" style="padding:6px 14px;font-size:13px">✅ ${bi("وضع علامة كمُراجَع","markReviewed")}</button>` : ""}
                             <button onclick="deleteRecording('${it.studentId}', '${it.recordingId}')" class="btn-delete" style="padding:6px 14px;font-size:13px">🗑️ ${bi("حذف","delete")}</button>
@@ -4539,7 +4556,7 @@ async function loadParentRecordings(studentId) {
         <div class="pr-item ${pending ? "pending" : ""}">
             <div class="pr-head">${icons[it.type] || "🎙️"} <strong>${it.itemLabel || ""}</strong> ${it.refText ? "— " + it.refText : ""}
                 <span class="pr-date">📅 ${new Date(it.date).toLocaleDateString("fr-FR")}</span></div>
-            <audio src="${it.url}" controls preload="none"></audio>
+            <audio src="${it.url}" controls preload="none" onplay="boostPlayer(this)"></audio>
             ${pending
                 ? `<div class="pr-actions">
                        <button class="btn-admin-add" onclick="parentForwardRecording('${it.id}')">📤 ${bi("إرسال إلى المعلم", "prForward")}</button>
@@ -4727,6 +4744,19 @@ Object.assign(DYNAMIC_I18N, {
   allChildren:  { fr:"Tous mes enfants", nl:"Al mijn kinderen", en:"All my children", es:"Todos mis hijos" },
   pickLetter:   { fr:"Choisir une lettre", nl:"Kies een letter", en:"Choose a letter", es:"Elige una letra" },
   famNeedClass: { fr:"Ajoutez d'abord un groupe (classe) et vos enfants dans l'onglet Classes", nl:"Voeg eerst een groep (klas) en uw kinderen toe in het tabblad Klassen", en:"First add a group (class) and your children in the Classes tab", es:"Primero añada un grupo (clase) y sus hijos en la pestaña Clases" },
+  ayahsWord:    { fr:"versets", nl:"verzen", en:"verses", es:"versículos" },
+  verseWord:    { fr:"Verset", nl:"Vers", en:"Verse", es:"Versículo" },
+  qMeaning:     { fr:"Que veut dire ce verset ?", nl:"Wat betekent het?", en:"What does it mean?", es:"¿Qué significa?" },
+  qRepeat:      { fr:"Répéter", nl:"Herhalen", en:"Repeat", es:"Repetir" },
+  qListen:      { fr:"Écouter", nl:"Luisteren", en:"Listen", es:"Escuchar" },
+  qRecord:      { fr:"M'enregistrer", nl:"Opnemen", en:"Record", es:"Grabar" },
+  qGoMemorize:  { fr:"Passer à la mémorisation", nl:"Ga naar onthouden", en:"Go to memorizing", es:"Pasar a memorizar" },
+  qMemorizeWord:{ fr:"Mémoriser", nl:"Onthouden", en:"Memorize", es:"Memorizar" },
+  qMemorizedDone:{ fr:"Mémorisé !", nl:"Onthouden!", en:"Memorized!", es:"¡Memorizado!" },
+  qMarkMemorized:{ fr:"Je le connais par cœur", nl:"Ik ken het uit mijn hoofd", en:"I know it by heart", es:"Me lo sé de memoria" },
+  qTestYourself:{ fr:"Teste ta mémoire", nl:"Test je geheugen", en:"Test your memory", es:"Pon a prueba tu memoria" },
+  qCorrect:     { fr:"Correct !", nl:"Juist!", en:"Correct!", es:"¡Correcto!" },
+  qRightAnswer: { fr:"La bonne réponse :", nl:"Het juiste antwoord:", en:"The right answer:", es:"La respuesta correcta:" },
   quizOther:    { fr:"ou choisis un autre exercice", nl:"of kies een andere oefening", en:"or choose another exercise", es:"o elige otro ejercicio" },
   soundSaved:   { fr:"Enregistré", nl:"Opgeslagen", en:"Saved", es:"Guardado" },
   pupilsWord:   { fr:"élève(s)", nl:"leerling(en)", en:"pupil(s)", es:"alumno(s)" },
@@ -5440,9 +5470,23 @@ const SURAH_INFO = {
 function surahTr(s, lang = currentUILang) {
     return lang === "nl" ? s.name_nl : lang === "fr" ? s.name_fr : lang ? (SURAH_INFO[s.id]?.[1] || "") : "";
 }
+// Nom latin de la sourate (ex. « Al-Fatiha »), affiché pour tous à côté du nom arabe
+function surahLatin(s) { return SURAH_INFO[s.id]?.[1] || ""; }
+// Traduction du nom seulement quand elle diffère du nom latin (français, néerlandais)
+function surahMeaning(s) { return (currentUILang === "fr" || currentUILang === "nl") ? surahTr(s) : ""; }
 function surahLabel(s) {
-    const t = surahTr(s);
+    const t = surahLatin(s) || surahTr(s);
     return t ? `${s.name_ar} <bdi class="sl-tr">${t}</bdi>` : s.name_ar;
+}
+// « 7 آيات / 7 verzen »
+function ayahsCount(n) {
+    const w = DYNAMIC_I18N.ayahsWord[currentUILang];
+    return `${n} آيات` + (w ? ` / <bdi>${n} ${w}</bdi>` : "");
+}
+// « الآية 3 / Vers 3 »
+function ayahNo(n) {
+    const w = DYNAMIC_I18N.verseWord[currentUILang];
+    return `الآية ${n}` + (w ? ` / <bdi>${w} ${n}</bdi>` : "");
 }
 // Sourates terminées et en cours, dans l'ordre de la liste
 function quranSurahLists(data) {
@@ -5832,7 +5876,7 @@ function hkPlayTrimmed(loaded) {
         const ctx = getAudioCtx(), src = ctx.createBufferSource(), gain = ctx.createGain();
         const { start, dur } = hkTrimBounds(loaded.audioBuffer);
         src.buffer = loaded.audioBuffer; gain.gain.value = loaded.gainValue;
-        src.connect(gain); gain.connect(ctx.destination);
+        src.connect(gain); gain.connect(audioOut(ctx));
         src.onended = () => resolve(dur);
         src.start(0, start, dur);
         window._currentQuranSource = src;
@@ -5876,7 +5920,7 @@ window.hkWordChain = async () => {
     const loaded = await Promise.all(flat.map(p => loadNormalizedBuffer(p.path)));
     if (loaded.some(l => !l)) { hkWordNatural(); return; } // un enregistrement manque → voix de synthèse
     const ctx = getAudioCtx(); if (ctx.state === "suspended") await ctx.resume();
-    const master = ctx.createGain(); master.connect(ctx.destination); hkChain.master = master;
+    const master = ctx.createGain(); master.connect(audioOut(ctx)); hkChain.master = master;
     const OVERLAP = 0.045, FADE = 0.02;
     let t = ctx.currentTime + 0.08;
     flat.forEach((p, k) => {
@@ -8158,7 +8202,7 @@ window.openVocabCard = async (id) => {
             </div>
             <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
                 <button onclick="playVocabSound('${word.son}')" class="btn-audio">🔊 استمع</button>
-                <button onclick="closeVocabModal(); openRecordingWidget('vocab', '${id}', '${word.mot}', '${word.mot}')" class="btn-audio" style="background:linear-gradient(135deg,#e74c3c,#c0392b)">🎙️</button>
+                <button onclick="closeVocabModal(); openRecordingWidget('vocab', '${id}', '${word.mot}', '${word.mot}')" class="btn-audio" style="background:linear-gradient(135deg,#e74c3c,#c0392b)">🎙️ ${biH("سجّل", "qRecord")}</button>
                 ${!learned
                     ? `<button onclick="markVocabLearned('${id}')" class="btn-done">✅ تعلّمت هذه الكلمة</button>`
                     : `<div style="color:var(--green);font-weight:700;padding:12px 20px;background:#e8f8ec;border-radius:25px">✅ تعلّمتها!</div>`
@@ -8279,9 +8323,9 @@ function renderSurahList() {
     return `
       <div class="surah-card ${memorized >= s.ayahs ? "surah-done" : ""}" onclick="openSurah('${s.id}')" style="border-left: 4px solid ${s.color}">
         <div class="surah-card-info">
-          <div class="surah-name-ar" style="color:${s.color}">${s.name_ar}</div>
-          ${surahTr(s) ? `<div class="surah-name-fr"><bdi>${surahTr(s)}</bdi></div>` : ""}
-          <div class="surah-ayahs">${s.ayahs} آيات ${memorized >= s.ayahs ? `<span class="surah-done-tag">✅ ${bi("محفوظة", "qMemorized")}</span>` : ""}</div>
+          <div class="surah-name-row"><span class="surah-name-ar" style="color:${s.color}">${s.name_ar}</span>${surahLatin(s) ? `<bdi class="surah-name-lat">${surahLatin(s)}</bdi>` : ""}</div>
+          ${surahMeaning(s) ? `<div class="surah-name-fr"><bdi>${surahMeaning(s)}</bdi></div>` : ""}
+          <div class="surah-ayahs">${ayahsCount(s.ayahs)} ${memorized >= s.ayahs ? `<span class="surah-done-tag">✅ ${bi("محفوظة", "qMemorized")}</span>` : ""}</div>
         </div>
         <div class="surah-card-progress">
           <div class="surah-progress-bar">
@@ -8309,7 +8353,7 @@ window.openSurah = async (surahId) => {
   document.getElementById("quran-home").classList.add("hidden");
   document.getElementById("quran-surah-view").classList.remove("hidden");
   document.getElementById("qsv-name-ar").textContent = currentSurah.name_ar;
-  document.getElementById("qsv-name-fr").textContent = surahTr(currentSurah);
+  document.getElementById("qsv-name-fr").textContent = [surahLatin(currentSurah), surahMeaning(currentSurah)].filter(Boolean).join(" · ");
   updateQuranProgress();
   renderReciterPicker();
   document.querySelectorAll(".quran-mode-btn").forEach(b => b.classList.remove("active"));
@@ -8345,26 +8389,26 @@ function renderListenMode() {
 
   document.getElementById("quran-mode-content").innerHTML = `
     <div class="quran-ayah-card">
-      <div class="quran-ayah-number">الآية ${ayah.number}</div>
+      <div class="quran-ayah-number">${ayahNo(ayah.number)}</div>
       <div class="quran-ayah-arabic" style="font-size:1.6em;line-height:2.1">${ayah.arabic}</div>
       <div class="quran-ayah-translation hidden" id="q-translation">
         <div class="q-trans-single" style="font-size:1.4em;line-height:1.7">${trans.flag} ${trans.text}</div>
         ${trans.fallbackNote ? `<div style="font-size:12px;color:#666;margin-top:6px">(Traduction en ${currentUILang==="en"?"anglais":"espagnol"} pas encore disponible — français affiché)</div>` : ""}
         ${trans.credit ? `<div style="font-size:11px;color:#999;margin-top:6px">${currentUILang==="es"?"Traducción":"Translation"} : ${trans.credit}</div>` : ""}
       </div>
-      <button onclick="toggleQTranslation()" class="q-trans-btn">💡 ماذا تعني؟</button>
+      <button onclick="toggleQTranslation()" class="q-trans-btn">💡 ${biH("ماذا تعني؟", "qMeaning")}</button>
     </div>
     <div class="quran-listen-controls">
-      <button onclick="repeatAyah()" class="q-btn-repeat">🔁 كرر</button>
-      <button onclick="speakAyah()" class="q-btn-listen">🔊 استمع</button>
-      <button onclick="openRecordingWidget('quran', '${currentSurah.id}_${ayah.number}', '${currentSurahData.name_ar} — الآية ${ayah.number}', '${ayah.arabic.replace(/'/g, "\\'")}')" class="q-btn-listen" style="background:linear-gradient(135deg,#e74c3c,#c0392b)">🎙️</button>
+      <button onclick="repeatAyah()" class="q-btn-repeat">🔁 ${biH("كرّر", "qRepeat")}</button>
+      <button onclick="speakAyah()" class="q-btn-listen">🔊 ${biH("استمع", "qListen")}</button>
+      <button onclick="openRecordingWidget('quran', '${currentSurah.id}_${ayah.number}', '${currentSurahData.name_ar} — الآية ${ayah.number}', '${ayah.arabic.replace(/'/g, "\\'")}')" class="q-btn-listen" style="background:linear-gradient(135deg,#e74c3c,#c0392b)">🎙️ ${biH("سجّل", "qRecord")}</button>
     </div>
     <div class="quran-nav">
       <button onclick="prevAyah()" class="q-nav-btn" ${isFirst ? "disabled" : ""}>→ ${bi("السابقة","prevAyah")}</button>
       <span class="q-nav-counter">${currentAyahIndex + 1} / ${total}</span>
       <button onclick="nextAyah()" class="q-nav-btn" ${isLast ? "disabled" : ""}>← ${bi("التالية","nextAyah")}</button>
     </div>
-    ${isLast ? `<button onclick="setQuranMode('memorize', document.getElementById('qmode-memorize'))" class="q-btn-memorize">🧠 انتقل للحفظ</button>` : ""}
+    ${isLast ? `<button onclick="setQuranMode('memorize', document.getElementById('qmode-memorize'))" class="q-btn-memorize">🧠 ${biH("انتقل للحفظ", "qGoMemorize")}</button>` : ""}
   `;
   speakAyah();
 }
@@ -8378,7 +8422,27 @@ window.toggleQTranslation = () => {
 // Analyse le pic sonore de chaque MP3 et ajuste le gain pour que toutes
 // les récitations sonnent avec une intensité similaire à la lecture.
 const TARGET_PEAK = 0.9; // niveau sonore cible (0 à 1)
-const MAX_GAIN = 4;      // ne pas trop amplifier un enregistrement très faible (bruit)
+const MAX_GAIN = 8;      // ne pas trop amplifier un enregistrement très faible (bruit)
+const TARGET_RMS = 0.22; // intensité moyenne visée pour la voix
+
+// Limiteur commun : laisse passer la voix, écrase seulement les pics qui satureraient
+function audioOut(ctx) {
+  if (ctx._houroufOut) return ctx._houroufOut;
+  const lim = ctx.createDynamicsCompressor();
+  lim.threshold.value = -6; lim.knee.value = 4; lim.ratio.value = 20; lim.attack.value = 0.003; lim.release.value = 0.15;
+  lim.connect(ctx.destination);
+  return (ctx._houroufOut = lim);
+}
+// Rend plus fort un lecteur <audio> (enregistrements des élèves), sans saturer
+window.boostPlayer = (el) => {
+  if (!el || el._boosted) return; el._boosted = true;
+  try {
+    const ctx = getAudioCtx();
+    const src = ctx.createMediaElementSource(el);
+    const g = ctx.createGain(); g.gain.value = 3;
+    src.connect(g); g.connect(audioOut(ctx));
+  } catch (e) { /* lecture normale si l'amplification n'est pas possible */ }
+};
 
 function getAudioCtx() {
   if (!window._houroufAudioCtx) {
@@ -8410,7 +8474,15 @@ function loadNormalizedBuffer(path) {
           if (abs > peak) peak = abs;
         }
       }
-      const gainValue = peak > 0.01 ? Math.min(TARGET_PEAK / peak, MAX_GAIN) : 1;
+      // 🔊 Volume réglé sur l'intensité MOYENNE de la voix (et pas seulement sur le pic le plus fort),
+      // puis un limiteur évite toute saturation : les enregistrements faibles sonnent nettement plus fort.
+      let sum = 0, cnt = 0;
+      const d0 = audioBuffer.getChannelData(0);
+      for (let i = 0; i < d0.length; i += 25) { const a = Math.abs(d0[i]); if (a > 0.02) { sum += a * a; cnt++; } }
+      const rms = cnt ? Math.sqrt(sum / cnt) : 0;
+      const byRms = rms > 0.005 ? TARGET_RMS / rms : 1;
+      const byPeak = peak > 0.01 ? (TARGET_PEAK * 2.2) / peak : 1; // le limiteur absorbe les pics restants
+      const gainValue = Math.max(1, Math.min(byRms, byPeak, MAX_GAIN));
       resolve({ audioBuffer, gainValue });
     } catch (err) {
       resolve(null);
@@ -8446,7 +8518,7 @@ function playLoadedBuffer(loaded) {
     const gainNode = ctx.createGain();
     gainNode.gain.value = loaded.gainValue;
     source.connect(gainNode);
-    gainNode.connect(ctx.destination);
+    gainNode.connect(audioOut(ctx));
     source.onended = () => resolve(true);
     source.start(0);
     window._currentQuranSource = source;
@@ -8491,7 +8563,7 @@ window.repeatAyah = async () => {
     }
   }
 
-  if (repeatBtn) { repeatBtn.disabled = false; repeatBtn.textContent = "🔁 كرر"; }
+  if (repeatBtn) { repeatBtn.disabled = false; repeatBtn.textContent = "🔁 " + bi("كرّر", "qRepeat"); }
   isRepeatingAyah = false;
 };
 
@@ -8665,17 +8737,17 @@ function renderMemorizeMode(autoPlay = true) {
 
   document.getElementById("quran-mode-content").innerHTML = `
     <div class="quran-ayah-card memorize-card">
-      <div class="quran-ayah-number">الآية ${ayah.number} — حفظ</div>
+      <div class="quran-ayah-number">${ayahNo(ayah.number)} — ${biH("احفظ", "qMemorizeWord")}</div>
       <div class="quran-ayah-arabic" style="font-size:1.6em;line-height:2.1">${ayah.arabic}</div>
     </div>
     <div class="quran-listen-controls">
-      <button onclick="speakAyah()" class="q-btn-listen">🔊 استمع</button>
-      <button onclick="repeatAyah()" class="q-btn-repeat">🔁 كرر</button>
+      <button onclick="speakAyah()" class="q-btn-listen">🔊 ${biH("استمع", "qListen")}</button>
+      <button onclick="repeatAyah()" class="q-btn-repeat">🔁 ${biH("كرّر", "qRepeat")}</button>
     </div>
     <div class="memorize-action">
       ${memorized
-        ? `<div class="memorized-badge">✅ حفظتها!</div>`
-        : `<button onclick="markAyahMemorized(${ayah.number})" class="q-btn-memorize">✅ تم الحفظ</button>`
+        ? `<div class="memorized-badge">✅ ${biH("حفظتها!", "qMemorizedDone")}</div>`
+        : `<button onclick="markAyahMemorized(${ayah.number})" class="q-btn-memorize">✅ ${biH("تمّ الحفظ", "qMarkMemorized")}</button>`
       }
     </div>
     <div class="quran-nav">
@@ -8722,7 +8794,7 @@ function renderQuizMode() {
 
   document.getElementById("quran-mode-content").innerHTML = `
     <div class="quran-ayah-card quiz-card">
-      <div class="quran-ayah-number">الآية ${ayah.number} — اختبر حفظك</div>
+      <div class="quran-ayah-number">${ayahNo(ayah.number)} — ${biH("اختبر حفظك", "qTestYourself")}</div>
       <div class="quran-ayah-arabic quiz-text" dir="rtl">${displayed}</div>
     </div>
     <div class="quiz-choices" dir="rtl">
@@ -8747,7 +8819,7 @@ window.checkQuranAnswer = (btn, chosen, correct) => {
   if (chosen === correct) {
     btn.style.background = "#27ae60";
     btn.style.color = "white";
-    result.innerHTML = "✅ صحيح!";
+    result.innerHTML = "✅ " + bi("صحيح!", "qCorrect");
     result.style.color = "#27ae60";
     speakAyah();
   } else {
@@ -8756,7 +8828,7 @@ window.checkQuranAnswer = (btn, chosen, correct) => {
     document.querySelectorAll(".quiz-choice-btn").forEach(b => {
       if (b.textContent.trim() === correct) { b.style.background="#27ae60"; b.style.color="white"; }
     });
-    result.innerHTML = "❌ الجواب الصحيح: " + correct;
+    result.innerHTML = "❌ " + bi("الجواب الصحيح:", "qRightAnswer") + " " + correct;
     result.style.color = "#e74c3c";
   }
 };

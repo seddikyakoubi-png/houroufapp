@@ -14,7 +14,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>حروفي - تعلم الأبجدية العربية</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Noto+Naskh+Arabic:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20261002">
+    <link rel="stylesheet" href="style.css?v=20261003">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -907,7 +907,7 @@
         <p id="rec-status" style="font-size:14px;color:#888;min-height:20px;margin-bottom:10px"></p>
 
         <div id="rec-playback" class="hidden" style="margin-bottom:16px">
-            <audio id="rec-audio-player" controls style="width:100%"></audio>
+            <audio id="rec-audio-player" controls style="width:100%" onplay="boostPlayer(this)"></audio>
         </div>
 
         <button onclick="sendRecordingToTeacher()" id="rec-send-btn" class="login-btn hidden" style="margin-bottom:10px;background:linear-gradient(135deg,#43e97b,#38f9d7)"><span class="tab-label">📤 إرسال إلى والديّ</span></button>
@@ -924,6 +924,6 @@
     </div>
 </div>
 
-<script type="module" src="script.js?v=20261002"></script>
+<script type="module" src="script.js?v=20261003"></script>
 </body>
 </html>
