@@ -287,6 +287,7 @@ const FEATURE_I18N = {
     // Onglets élève (arabe toujours affiché + langue secondaire)
     "tab-btn-learn":      { emoji:"📖", ar:"تعلّم",  fr:"Apprendre",        nl:"Leren",            en:"Learn",       es:"Aprender" },
     "tab-btn-harakat":    { emoji:"🔤", ar:"الحركات", fr:"Voyelles",         nl:"Klinkertekens",    en:"Vowel marks", es:"Vocales" },
+    "tab-btn-games":      { emoji:"🎮", ar:"ألعاب", fr:"Jeux", nl:"Spelletjes", en:"Games", es:"Juegos" },
     "tab-btn-quiz":       { emoji:"🎯", ar:"اختبار", fr:"Quiz",             nl:"Quiz",             en:"Quiz",        es:"Cuestionario" },
     "tab-btn-trace":      { emoji:"✏️", ar:"أتتبع",  fr:"Tracé",            nl:"Natrekken",        en:"Tracing",     es:"Trazado" },
     "tab-btn-exercises":  { emoji:"📋", ar:"تمارين", fr:"Exercices",        nl:"Oefeningen",       en:"Exercises",   es:"Ejercicios" },
@@ -1071,7 +1072,7 @@ async function loadParentDashboard(studentId, studentName) {
         ${hks.weak ? `<div class="hk-class-weak" style="margin-bottom:20px">💡 ${bi("للمراجعة","hkWeak")} : <strong>${hkCatLabel(hks.weak)}</strong></div>` : ""}
         ${(() => { const g = data.game; if (!g || !g.xp) return "";
             const lv = gameLevel(g.xp), alive = g.lastGoalDay === todayLocalIso() || g.lastGoalDay === gameYesterday();
-            return `<div class="p-game"><span class="p-game-m">${GAME_MASCOT[lv - 1]}</span><div><strong>🎮 ${bi("مغامرة حروفي","pGameTitle")}</strong><br>
+            return `<div class="p-game"><span class="p-game-m">${gameMascotAt(lv - 1, g)}</span><div><strong>🎮 ${bi("مغامرة حروفي","pGameTitle")}</strong><br>
                 ${bi("المستوى","gLevel")} ${lv} · ${gameTitle(lv)} · ⭐ ${g.xp} · 🔥 ${alive ? g.streak : 0} ${bi("أيام متتالية","pGameStreak")} · 🏅 ${(g.badges || []).length}</div></div>`; })()}
         ${currentOrgType === "family" ? `<div id="parent-photo"></div>` : ""}
         <div class="admin-section" style="margin-bottom:20px">${quranNamesHtml(data)}</div>
@@ -3724,6 +3725,7 @@ window.switchTab = (name, btn) => {
     gameMark("tab:" + name);
     if (name === "learn") { buildMenu(); updateProgress(); }
     if (name === "quran") { loadQuranProgress().then(() => showQuranHome()); }
+    if (name === "games") gamesHome(); else gamesStop();
     // FIX: reset quiz view when switching to ikhtebar tab
     if (name === "ikhtebar") {
         const intro = document.getElementById("quiz-intro");
@@ -4110,6 +4112,16 @@ Object.assign(DYNAMIC_I18N, {
 const GAME_GOAL = 30;                       // ⭐ à gagner chaque jour pour garder sa série 🔥
 const GAME_LV = [0, 50, 150, 300, 500, 800, 1200, 1700, 2300, 3000];
 const GAME_MASCOT = ["🥚", "🐣", "🐥", "🐤", "🦉", "🦉", "🦅", "🦚", "🕊️", "🦄"];
+// 🐾 L'élève choisit son compagnon : chaque famille a 10 étapes, une par niveau
+const GAME_PETS = {
+    bird:   { ar:"العصفور", tr:{ fr:"L'oiseau", nl:"De vogel", en:"The bird", es:"El pájaro" }, s: GAME_MASCOT },
+    lion:   { ar:"الأسد", tr:{ fr:"Le lion", nl:"De leeuw", en:"The lion", es:"El león" }, s: ["🧶", "🐾", "🐱", "😺", "😸", "🐈", "🐆", "🐅", "🐯", "🦁"] },
+    dragon: { ar:"التنّين", tr:{ fr:"Le dragon", nl:"De draak", en:"The dragon", es:"El dragón" }, s: ["🥚", "🦎", "🐢", "🐊", "🦕", "🦖", "🐍", "🐲", "🐉", "🐉"] },
+    sea:    { ar:"البحر", tr:{ fr:"La mer", nl:"De zee", en:"The sea", es:"El mar" }, s: ["🫧", "🐟", "🐠", "🐡", "🦀", "🐙", "🦭", "🐬", "🦈", "🐳"] },
+    garden: { ar:"الحديقة", tr:{ fr:"Le jardin", nl:"De tuin", en:"The garden", es:"El jardín" }, s: ["🌰", "🌱", "🌿", "☘️", "🪴", "🌷", "🌻", "🌳", "🌴", "🌸"] },
+};
+const petStages = g => (GAME_PETS[g?.pet] || GAME_PETS.bird).s;
+const gameMascotAt = (i, g = _game) => petStages(g)[Math.max(0, Math.min(9, i))];
 // Petit utilitaire : texte arabe + traduction dans la langue de l'école ({fr, nl, en, es})
 const gTr = (ar, tr) => currentUILang && tr && tr[currentUILang] ? `${ar} / ${tr[currentUILang]}` : ar;
 const gOnly = tr => (tr && (tr[currentUILang] || tr.fr)) || "";
@@ -4124,7 +4136,8 @@ const GAME_TITLES = [
     ["عالم",      { fr:"Savant",        nl:"Geleerde",        en:"Scholar",      es:"Erudito" }],
     ["أستاذ",     { fr:"Maître",        nl:"Meester",         en:"Master",       es:"Maestro" }],
     ["أسطورة",    { fr:"Légende",       nl:"Legende",         en:"Legend",       es:"Leyenda" }]];
-const GAME_XP = { listen: 1, quizRight: 5, quizDone: 5, quizPerfect: 20, series: 5, compare: 3, word: 3, letter: 10, exercise: 10, challenge: 25 };
+const GAME_XP = { listen: 1, quizRight: 5, quizDone: 5, quizPerfect: 20, series: 5, compare: 3, word: 3, letter: 10, exercise: 10, challenge: 25, gameRight: 2, gameDone: 5 };
+const GAME_GAMES_CAP = 60;                  // ⭐ maximum par jour avec les mini-jeux
 const GAME_LISTEN_CAP = 20;                 // pas plus de 20 ⭐ par jour en écoutant (contre les clics à répétition)
 const GAME_HOWTO = [
     ["🔊", "استمع إلى حرف أو مقطع",   { fr:"Écouter une lettre ou une syllabe", nl:"Een letter of lettergreep beluisteren", en:"Listen to a letter or syllable", es:"Escuchar una letra o sílaba" }, "+1"],
@@ -4136,7 +4149,9 @@ const GAME_HOWTO = [
     ["✏️", "كوّن كلمة واستمع إليها",   { fr:"Composer et lire un mot", nl:"Een woord samenstellen en lezen", en:"Build and read a word", es:"Formar y leer una palabra" }, "+3"],
     ["📖", "تعلّم حرفًا",              { fr:"Apprendre une lettre", nl:"Een letter leren", en:"Learn a letter", es:"Aprender una letra" }, "+10"],
     ["📝", "أرسل تمرينًا",            { fr:"Envoyer un exercice", nl:"Een oefening versturen", en:"Send an exercise", es:"Enviar un ejercicio" }, "+10"],
-    ["🎯", "انجح في تحدّي اليوم",      { fr:"Réussir le défi du jour", nl:"De uitdaging van de dag halen", en:"Complete the daily challenge", es:"Superar el reto del día" }, "+25"]];
+    ["🎯", "انجح في تحدّي اليوم",      { fr:"Réussir le défi du jour", nl:"De uitdaging van de dag halen", en:"Complete the daily challenge", es:"Superar el reto del día" }, "+25"],
+    ["🎈", "فجّر البالون الصحيح",       { fr:"Éclater le bon ballon", nl:"De juiste ballon laten knallen", en:"Pop the right balloon", es:"Explotar el globo correcto" }, "+2"],
+    ["🃏", "أكمل لعبة",                { fr:"Finir un jeu (bonus si très bien joué)", nl:"Een spel afmaken (bonus als het heel goed gaat)", en:"Finish a game (bonus if very well played)", es:"Terminar un juego (bonus si va muy bien)" }, "+5 / +15"]];
 
 const GAME_CHALLENGES = [
     { id:"quiz8",    emoji:"🏆", ar:"احصل على 8/10 في اختبار",           tr:{ fr:"Obtiens au moins 8/10 à un quiz", nl:"Haal minstens 8/10 in een quiz", en:"Score at least 8/10 in a quiz", es:"Consigue al menos 8/10 en un cuestionario" }, target:1 },
@@ -4150,6 +4165,7 @@ const GAME_CHALLENGES = [
 
 const HK_CAT_TOTAL = () => Object.fromEntries(Object.keys(HK_CATS).map(c => [c, hkAllSyllables(HK_CATS[c].keys).length]));
 const GAME_BADGES = [
+    { id:"games10", e:"🎮", ar:"١٠ ألعاب", tr:{ fr:"10 jeux terminés", nl:"10 spellen gespeeld", en:"10 games finished", es:"10 juegos terminados" }, t:g => (g.c.games || 0) >= 10 },
     { id:"first_quiz", e:"🎯", ar:"أول اختبار", tr:{"fr": "Premier quiz", "nl": "Eerste quiz", "en": "First quiz", "es": "Primer cuestionario"}, t:g => g.c.quizzes >= 1 },
     { id:"perfect", e:"✨", ar:"بدون خطأ", tr:{"fr": "Un quiz sans faute", "nl": "Een foutloze quiz", "en": "A perfect quiz", "es": "Un cuestionario perfecto"}, t:g => g.c.perfect >= 1 },
     { id:"perfect10", e:"💎", ar:"١٠ اختبارات كاملة", tr:{"fr": "10 quiz sans faute", "nl": "10 foutloze quizzen", "en": "10 perfect quizzes", "es": "10 cuestionarios perfectos"}, t:g => g.c.perfect >= 10 },
@@ -4184,7 +4200,7 @@ function gameCatMastered(data) {
 
 function gameRollover() {
     const g = _game, today = todayLocalIso();
-    if (g.day !== today) { g.day = today; g.dayXp = 0; g.dayListen = 0; }
+    if (g.day !== today) { g.day = today; g.dayXp = 0; g.dayListen = 0; g.dayGame = 0; }
     if (g.lastGoalDay !== today && g.lastGoalDay !== gameYesterday()) g.streak = 0; // série cassée
     if (g.ch?.day !== today) {
         const ch = GAME_CHALLENGES[gameHash(today + (currentUser || "")) % GAME_CHALLENGES.length];
@@ -4236,6 +4252,11 @@ function gameEvent(type, info = {}) {
         case "word":      if (info.text && info.text !== g._lastWord) { g._lastWord = info.text; g.c.words++; xp = GAME_XP.word; } break;
         case "letter":    g.learned = info.n || g.learned; xp = GAME_XP.letter; break;
         case "exercise":  xp = GAME_XP.exercise; break;
+        // 🎮 Mini-jeux (ballons, memory) : plafond quotidien pour garder l'équilibre avec l'apprentissage
+        case "gameRight": xp = Math.max(0, Math.min(GAME_XP.gameRight, GAME_GAMES_CAP - (g.dayGame || 0))); g.dayGame = (g.dayGame || 0) + xp; break;
+        case "gameDone":  g.c.games = (g.c.games || 0) + 1;
+                          xp = Math.max(0, Math.min(GAME_XP.gameDone + (info.bonus || 0), GAME_GAMES_CAP - (g.dayGame || 0))); g.dayGame = (g.dayGame || 0) + xp;
+                          if (info.bonus) gameSound("win"); break;
     }
     // 🎯 Progression du défi du jour
     const ch = g.ch, def = GAME_CHALLENGES.find(c => c.id === ch?.id);
@@ -4267,7 +4288,7 @@ function gameAddXp(n) {
         gameCelebrate("🔥", bi("هدف اليوم تحقّق!", "gGoalDone"), `🔥 ${g.streak} ${bi("أيام متتالية", "gStreak")}`);
     }
     const after = gameLevel(g.xp);
-    if (after > before) gameCelebrate(GAME_MASCOT[after - 1], `${bi("المستوى", "gLevel")} ${after} !`, `${bi("مستوى جديد! رفيقك كبر", "gLevelUp")} — ${gameTitle(after)}`);
+    if (after > before) gameCelebrate(gameMascotAt(after - 1), `${bi("المستوى", "gLevel")} ${after} !`, `${bi("مستوى جديد! رفيقك كبر", "gLevelUp")} — ${gameTitle(after)}`);
 }
 function gameCheckChallenge() {
     const g = _game, def = GAME_CHALLENGES.find(c => c.id === g.ch?.id);
@@ -4306,7 +4327,7 @@ function renderGameBar() {
     const chPct = def ? Math.min(100, Math.round(g.ch.n / def.target * 100)) : 0;
     bar.innerHTML = `
     <div class="game-bar">
-        <button class="gb-mascot" onclick="gameMascotTalk()" title="${gameTitle(lv)}"><span id="gb-mascot-emoji">${GAME_MASCOT[lv - 1]}</span></button>
+        <button class="gb-mascot" onclick="gameMascotTalk()" title="${gameTitle(lv)}"><span id="gb-mascot-emoji">${gameMascotAt(lv - 1)}</span></button>
         <div class="gb-main">
             <div class="gb-level">${bi("المستوى", "gLevel")} ${lv} · ${gameTitle(lv)}</div>
             <div class="gb-bar"><span style="width:${lvPct}%"></span></div>
@@ -4315,6 +4336,7 @@ function renderGameBar() {
         <div class="gb-chips">
             <button class="gb-chip ${g.lastGoalDay === todayLocalIso() ? "gb-fire-on" : ""}" onclick="openGameHowTo()" title="${bi("أيام متتالية", "gStreak")}">🔥 ${g.streak}</button>
             <button class="gb-chip" onclick="openGameBadges()" title="${bi("أوسمتي", "gBadges")}">🏅 ${g.badges.length}</button>
+            <button class="gb-chip gb-pet ${g.pet ? "" : "gb-pet-new"}" onclick="openPetPicker()" title="${bi("اختر رفيقك", "petChoose")}">🐾</button>
             <button class="gb-chip gb-tour" onclick="openTourMenu()" title="${bi("كيف تعمل؟", "tourHelp")}">🎬</button>
         </div>
         <div id="gb-bubble" class="gb-bubble hidden"></div>
@@ -4347,7 +4369,7 @@ window.gameMascotTalk = () => {
     const tips = [];
     if (g.dayXp < GAME_GOAL) tips.push(`⭐ ${GAME_GOAL - g.dayXp} → 🔥 ${bi("هدف اليوم", "gGoal")}`);
     if (def && !g.ch.done) tips.push(`🎯 ${gameChallengeText()}`);
-    if (hi) tips.push(`${GAME_MASCOT[lv]} ⭐ ${hi - g.xp} → ${bi("المستوى", "gLevel")} ${lv + 1}`);
+    if (hi) tips.push(`${gameMascotAt(lv)} ⭐ ${hi - g.xp} → ${bi("المستوى", "gLevel")} ${lv + 1}`);
     const cheers = [["أحسنت!", { fr:"Bravo !", nl:"Goed zo!", en:"Well done!", es:"¡Bravo!" }], ["واصل!", { fr:"Continue !", nl:"Ga zo door!", en:"Keep going!", es:"¡Sigue así!" }],
                     ["أنت بطل!", { fr:"Tu es un champion !", nl:"Je bent een kampioen!", en:"You're a champion!", es:"¡Eres un campeón!" }], ["رائع!", { fr:"Super !", nl:"Super!", en:"Great!", es:"¡Genial!" }]];
     const ch = cheers[Math.floor(Math.random() * cheers.length)];
@@ -4432,14 +4454,14 @@ window.openGameHowTo = () => {
         <p class="gb-sheet-sub">⭐ ${GAME_GOAL} / ${bi("هدف اليوم", "gGoal")} → 🔥 +1</p>
         <h3>${bi("كيف تربح النجوم", "gHowTo")}</h3>
         <div class="gb-howto">${GAME_HOWTO.map(([e, ar, tr, x]) => `<div><span>${e}</span><span>${gTr(ar, tr)}</span><strong>${x} ⭐</strong></div>`).join("")}</div>
-        <h3>${GAME_MASCOT.map((m, i) => `<span class="gb-evo ${gameLevel(g.xp) > i ? "on" : ""}" title="${bi("المستوى", "gLevel")} ${i + 1}">${m}</span>`).join("")}</h3>`);
+        <h3>${petStages(g).map((m, i) => `<span class="gb-evo ${gameLevel(g.xp) > i ? "on" : ""}" title="${bi("المستوى", "gLevel")} ${i + 1}">${m}</span>`).join("")}</h3>`);
 };
 
 // Résumé pour les tableaux de bord prof / directeur
 function gameSummaryHtml(data) {
     const g = data?.game; if (!g || !g.xp) return "";
     const alive = g.lastGoalDay === todayLocalIso() || g.lastGoalDay === gameYesterday();
-    return ` <span class="gb-mini">${GAME_MASCOT[gameLevel(g.xp) - 1]} ${gameLevel(g.xp)}${alive && g.streak ? ` · 🔥${g.streak}` : ""}</span>`;
+    return ` <span class="gb-mini">${gameMascotAt(gameLevel(g.xp) - 1, g)} ${gameLevel(g.xp)}${alive && g.streak ? ` · 🔥${g.streak}` : ""}</span>`;
 }
 
 // ============================================================
@@ -8912,3 +8934,240 @@ async function recheckSchoolAccess(force) {
 }
 setInterval(() => recheckSchoolAccess(false), 60000);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) recheckSchoolAccess(true); });
+
+// ============================================================
+//  🐾 CHOIX DU COMPAGNON
+// ============================================================
+Object.assign(DYNAMIC_I18N, {
+    petChoose:  { fr:"Choisis ton compagnon", nl:"Kies je maatje", en:"Choose your buddy", es:"Elige tu compañero" },
+    petSub:     { fr:"Il grandit à chaque niveau. Tu peux changer quand tu veux, tes étoiles restent.", nl:"Het groeit bij elk niveau. Je mag altijd wisselen, je sterren blijven.", en:"It grows at every level. You can change anytime, your stars stay.", es:"Crece en cada nivel. Puedes cambiar cuando quieras, tus estrellas se quedan." },
+    petHello:   { fr:"Ton nouveau compagnon !", nl:"Je nieuwe maatje!", en:"Your new buddy!", es:"¡Tu nuevo compañero!" },
+    gamesTitle: { fr:"Jeux", nl:"Spelletjes", en:"Games", es:"Juegos" },
+    gamesSub:   { fr:"Joue, apprends et gagne des étoiles ⭐", nl:"Speel, leer en verdien sterren ⭐", en:"Play, learn and earn stars ⭐", es:"Juega, aprende y gana estrellas ⭐" },
+    gBalloons:  { fr:"Les ballons des lettres", nl:"De letterballonnen", en:"Letter balloons", es:"Los globos de letras" },
+    gBalloonsS: { fr:"Écoute la lettre et éclate le bon ballon !", nl:"Luister naar de letter en laat de juiste ballon knallen!", en:"Listen to the letter and pop the right balloon!", es:"¡Escucha la letra y explota el globo correcto!" },
+    gMemory:    { fr:"Le memory", nl:"Memory", en:"Memory", es:"Memoria" },
+    gMemoryS:   { fr:"Retrouve chaque lettre et son image", nl:"Zoek elke letter en haar afbeelding", en:"Match each letter with its picture", es:"Encuentra cada letra y su imagen" },
+    gEasy:      { fr:"Facile", nl:"Makkelijk", en:"Easy", es:"Fácil" },
+    gHard:      { fr:"Difficile", nl:"Moeilijk", en:"Hard", es:"Difícil" },
+    gListenAgain:{ fr:"Réécouter", nl:"Opnieuw luisteren", en:"Listen again", es:"Escuchar otra vez" },
+    gMoves:     { fr:"coups", nl:"zetten", en:"moves", es:"jugadas" },
+    gPlayAgain: { fr:"Rejouer", nl:"Opnieuw spelen", en:"Play again", es:"Jugar otra vez" },
+    gBackGames: { fr:"Autres jeux", nl:"Andere spelletjes", en:"Other games", es:"Otros juegos" },
+    gWellDone:  { fr:"Bravo !", nl:"Goed zo!", en:"Well done!", es:"¡Bravo!" },
+    gFound:     { fr:"bonnes réponses", nl:"goede antwoorden", en:"right answers", es:"respuestas correctas" },
+    gCapReached:{ fr:"Tu as gagné toutes les étoiles des jeux pour aujourd'hui. Continue avec les leçons !", nl:"Je hebt vandaag alle spelsterren verdiend. Ga verder met de lessen!", en:"You've earned all today's game stars. Keep going with the lessons!", es:"Has ganado todas las estrellas de juegos de hoy. ¡Sigue con las lecciones!" },
+});
+window.openPetPicker = () => {
+    if (!_game) return;
+    const g = _game, lv = gameLevel(g.xp), cur = g.pet || "bird";
+    gameOpenSheet(`<h2>🐾 ${biH("اختر رفيقك", "petChoose")}</h2>
+        <p class="gb-sheet-sub">${biH("يكبر مع كلّ مستوى. يمكنك التغيير متى شئت، ونجومك تبقى", "petSub")}</p>
+        <div class="pet-grid">${Object.entries(GAME_PETS).map(([k, p]) => `
+            <button class="pet-card ${k === cur ? "on" : ""}" onclick="choosePet('${k}')">
+                <span class="pet-big">${p.s[lv - 1]}</span>
+                <span class="pet-name">${gTr(p.ar, p.tr)}</span>
+                <span class="pet-evo">${p.s.filter((x, i) => i % 3 === 0 || i === 9).join(" ")}</span>
+            </button>`).join("")}</div>`);
+};
+window.choosePet = (k) => {
+    if (!_game || !GAME_PETS[k]) return;
+    _game.pet = k; gameSave(); renderGameBar();
+    document.querySelectorAll(".gb-modal-bg").forEach(m => m.remove());
+    gameSound("win");
+    setTimeout(() => gameSay(`${gameMascotAt(gameLevel(_game.xp) - 1)} ${biH("رفيقك الجديد!", "petHello")}`), 150);
+};
+
+// ============================================================
+//  🎮 MINI-JEUX : ballons des lettres et memory
+//  Lettres utilisées : celles que l'élève a déjà apprises (au moins 6), sinon les 10 premières.
+// ============================================================
+let gamesStudentLearned = [];
+async function gamesPool() {
+    try { const d = await getStudentData(currentUser); gamesStudentLearned = d.learned || []; } catch (e) {}
+    const pool = gamesStudentLearned.length >= 6 ? [...gamesStudentLearned] : [...Array(10).keys()];
+    return pool.filter(i => lettres[i]);
+}
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+function gamesLetterSound(i) {
+    const it = lettres[i]; if (!it) return;
+    window.playNormalizedAudio(it.son).then(ok => { if (!ok) trySpeechSynthesis(it.l); });
+}
+function gamesBlip(kind) {
+    try {
+        const ctx = getAudioCtx(), t = ctx.currentTime, out = audioOut(ctx);
+        if (kind === "pop") {
+            const len = Math.floor(ctx.sampleRate * .12), buf = ctx.createBuffer(1, len, ctx.sampleRate), d = buf.getChannelData(0);
+            for (let i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 3);
+            const s = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+            s.buffer = buf; f.type = "bandpass"; f.frequency.value = 1800; g.gain.value = .9; s.connect(f); f.connect(g); g.connect(out); s.start(t);
+        }
+        const notes = kind === "pop" ? [880, 1320] : kind === "flip" ? [660] : kind === "match" ? [784, 1047] : [220, 180];
+        notes.forEach((fq, i) => { const o = ctx.createOscillator(), g = ctx.createGain(); o.type = kind === "bad" ? "square" : "triangle"; o.frequency.value = fq;
+            g.gain.setValueAtTime(.0001, t + i * .08); g.gain.exponentialRampToValueAtTime(kind === "bad" ? .05 : .15, t + i * .08 + .01); g.gain.exponentialRampToValueAtTime(.0001, t + i * .08 + .2);
+            o.connect(g); g.connect(out); o.start(t + i * .08); o.stop(t + i * .08 + .25); });
+    } catch (e) {}
+}
+function gamesHome() {
+    gamesStop();
+    const el = document.getElementById("games-root"); if (!el) return;
+    el.innerHTML = `
+        <div class="games-head"><h2>🎮 ${biH("ألعاب", "gamesTitle")}</h2><p>${biH("العب وتعلّم واربح النجوم ⭐", "gamesSub")}</p></div>
+        <div class="games-list">
+            <div class="game-card gc-balloons">
+                <div class="gc-art">🎈<span>ب</span>🎈</div>
+                <h3>${biH("بالونات الحروف", "gBalloons")}</h3>
+                <p>${biH("استمع إلى الحرف وفجّر البالون الصحيح!", "gBalloonsS")}</p>
+                <button class="gc-play" onclick="balloonsStart()">▶</button>
+            </div>
+            <div class="game-card gc-memory">
+                <div class="gc-art">🃏<span>ت</span>🍎</div>
+                <h3>${biH("لعبة الذاكرة", "gMemory")}</h3>
+                <p>${biH("جد كلّ حرف وصورته", "gMemoryS")}</p>
+                <div class="gc-levels">
+                    <button class="gc-play" onclick="memoryStart(4)">😊 ${biH("سهل", "gEasy")}</button>
+                    <button class="gc-play gc-hard" onclick="memoryStart(6)">🔥 ${biH("صعب", "gHard")}</button>
+                </div>
+            </div>
+        </div>`;
+}
+window.gamesHome = gamesHome;
+function gamesStop() {
+    if (BAL.raf) cancelAnimationFrame(BAL.raf);
+    BAL.raf = null; BAL.running = false;
+    clearTimeout(MEM.t);
+}
+function gamesEnd(score, total, bonus, extra) {
+    const capped = (_game?.dayGame || 0) >= GAME_GAMES_CAP;
+    gameEvent("gameDone", { bonus });
+    const el = document.getElementById("games-root");
+    const pct = total ? score / total : 1;
+    el.innerHTML = `<div class="games-end">
+        <div class="ge-emoji">${pct >= .9 ? "🏆" : pct >= .6 ? "🌟" : "💪"}</div>
+        <h2>${biH("أحسنت!", "gWellDone")}</h2>
+        <p class="ge-score">${extra}</p>
+        ${_game ? `<p class="ge-pet">${gameMascotAt(gameLevel(_game.xp) - 1)}</p>` : ""}
+        ${capped ? `<p class="ge-cap">${biH("ربحت كلّ نجوم الألعاب لهذا اليوم. واصل مع الدروس!", "gCapReached")}</p>` : ""}
+        <div class="ge-btns">
+            <button class="btn-primary" onclick="${BAL.last ? "balloonsStart()" : `memoryStart(${MEM.pairs})`}">🔄 ${biH("العب مرة أخرى", "gPlayAgain")}</button>
+            <button class="btn-secondary" onclick="gamesHome()">🎮 ${biH("ألعاب أخرى", "gBackGames")}</button>
+        </div></div>`;
+    if (pct >= .9) gameConfetti();
+}
+
+// ---------- 🎈 Ballons ----------
+const BAL = { raf: null, running: false, pool: [], round: 0, total: 10, score: 0, target: -1, items: [], last: false, lock: false };
+const BAL_COLORS = ["#FF6B6B", "#4ECDC4", "#FFB830", "#8E7CF2", "#6BCB77", "#FF8FB1"];
+window.balloonsStart = async () => {
+    gamesStop(); BAL.last = true; MEM.last = false;
+    BAL.pool = await gamesPool(); BAL.round = 0; BAL.score = 0;
+    const el = document.getElementById("games-root");
+    el.innerHTML = `<div class="bal-top">
+            <button class="bal-back" onclick="gamesHome()">✕</button>
+            <span class="bal-count" id="bal-count" dir="ltr">1 / ${BAL.total}</span>
+            <span class="bal-score" id="bal-score">⭐ 0</span>
+        </div>
+        <button class="bal-listen" onclick="balloonsReplay()">🔊 ${biH("أعد الاستماع", "gListenAgain")}</button>
+        <div class="bal-arena" id="bal-arena"></div>`;
+    BAL.running = true; balloonsRound();
+    let last = performance.now();
+    const loop = (ts) => {
+        if (!BAL.running) return;
+        const dt = Math.min(.05, (ts - last) / 1000); last = ts;
+        const arena = document.getElementById("bal-arena"); if (!arena) { BAL.running = false; return; }
+        const H = arena.clientHeight;
+        BAL.items.forEach(b => {
+            if (b.popped) return;
+            b.y -= b.v * dt; b.t += dt;
+            if (b.y < -130) { b.y = H + 20 + Math.random() * 80; b.x = 6 + Math.random() * 74; }
+            b.el.style.left = b.x + "%"; b.el.style.top = b.y + "px";
+            b.el.style.marginLeft = (Math.sin(b.t * 1.6 + b.ph) * 10) + "px";
+        });
+        BAL.raf = requestAnimationFrame(loop);
+    };
+    BAL.raf = requestAnimationFrame(loop);
+};
+function balloonsRound() {
+    if (BAL.round >= BAL.total) { BAL.running = false; gamesEnd(BAL.score, BAL.total, BAL.score === BAL.total ? 10 : 0, `🎈 ${BAL.score} / ${BAL.total} ${biH("إجابات صحيحة", "gFound")}`); return; }
+    BAL.lock = false;
+    const arena = document.getElementById("bal-arena"); if (!arena) return;
+    document.getElementById("bal-count").textContent = `${BAL.round + 1} / ${BAL.total}`;
+    const target = BAL.pool[Math.floor(Math.random() * BAL.pool.length)];
+    BAL.target = target;
+    const n = Math.min(5, 3 + Math.floor(BAL.round / 3));            // de 3 à 5 ballons
+    const others = shuffle(lettres.map((_, i) => i).filter(i => i !== target)).slice(0, n - 1);
+    const letters = shuffle([target, ...others]);
+    arena.innerHTML = ""; BAL.items = [];
+    const H = arena.clientHeight || 420, speed = 55 + BAL.round * 7;
+    letters.forEach((li, k) => {
+        const el = document.createElement("button");
+        el.className = "balloon";
+        el.style.setProperty("--c", BAL_COLORS[(k + BAL.round) % BAL_COLORS.length]);
+        el.innerHTML = `<span class="bl-l">${lettres[li].l}</span><i></i>`;
+        const b = { el, li, x: 4 + (k * (80 / letters.length)) + Math.random() * 6, y: H + 20 + k * 70 + Math.random() * 40, v: speed * (.85 + Math.random() * .3), t: 0, ph: Math.random() * 6, popped: false };
+        el.onclick = () => balloonsTap(b);
+        arena.appendChild(el); BAL.items.push(b);
+    });
+    setTimeout(() => gamesLetterSound(target), 350);
+}
+window.balloonsReplay = () => gamesLetterSound(BAL.target);
+window._balTarget = () => lettres[BAL.target]?.l; // (utile pour les tests automatiques)
+function balloonsTap(b) {
+    if (b.popped || BAL.lock) return;
+    if (b.li === BAL.target) {
+        BAL.lock = true; b.popped = true; b.el.classList.add("pop");
+        gamesBlip("pop"); BAL.score++; BAL.round++;
+        document.getElementById("bal-score").textContent = "⭐ " + BAL.score;
+        gameEvent("gameRight");
+        setTimeout(() => { if (BAL.running) balloonsRound(); }, 750);
+    } else {
+        gamesBlip("bad"); b.el.classList.remove("wobble"); void b.el.offsetWidth; b.el.classList.add("wobble");
+        setTimeout(() => gamesLetterSound(BAL.target), 300);
+    }
+}
+
+// ---------- 🃏 Memory ----------
+const MEM = { pairs: 4, cards: [], open: [], found: 0, moves: 0, t: null, last: false };
+window.memoryStart = async (pairs) => {
+    gamesStop(); MEM.last = true; BAL.last = false;
+    const pool = (await gamesPool()).filter(i => lettres[i].img);
+    const pick = shuffle(pool.length >= pairs ? pool : lettres.map((_, i) => i)).slice(0, pairs);
+    MEM.pairs = pairs; MEM.found = 0; MEM.moves = 0; MEM.open = [];
+    MEM.cards = shuffle(pick.flatMap(i => [{ i, kind: "l" }, { i, kind: "p" }]));
+    const el = document.getElementById("games-root");
+    el.innerHTML = `<div class="bal-top">
+            <button class="bal-back" onclick="gamesHome()">✕</button>
+            <span class="bal-count" id="mem-found" dir="ltr">0 / ${pairs}</span>
+            <span class="bal-score" id="mem-moves">0 ${biH("محاولات", "gMoves")}</span>
+        </div>
+        <div class="mem-grid ${pairs > 4 ? "mem-6" : ""}">${MEM.cards.map((c, k) => `
+            <button class="mem-card" id="mem-${k}" onclick="memoryFlip(${k})">
+                <span class="mem-in">
+                    <span class="mem-back">؟</span>
+                    <span class="mem-face">${c.kind === "l" ? `<b>${lettres[c.i].l}</b>` : `<img src="${lettres[c.i].img}" alt="" onerror="this.remove()"><small>${lettres[c.i].mot}</small>`}</span>
+                </span>
+            </button>`).join("")}</div>`;
+};
+window.memoryFlip = (k) => {
+    const c = MEM.cards[k], el = document.getElementById("mem-" + k);
+    if (!c || c.done || MEM.open.includes(k) || MEM.open.length >= 2) return;
+    el.classList.add("flip"); gamesBlip("flip"); MEM.open.push(k);
+    if (c.kind === "l") gamesLetterSound(c.i);
+    if (MEM.open.length < 2) return;
+    MEM.moves++;
+    document.getElementById("mem-moves").textContent = `${MEM.moves} ${bi("محاولات", "gMoves")}`;
+    const [a, b] = MEM.open.map(x => MEM.cards[x]);
+    if (a.i === b.i && a.kind !== b.kind) {
+        a.done = b.done = true; MEM.found++;
+        MEM.open.forEach(x => document.getElementById("mem-" + x).classList.add("ok"));
+        MEM.open = []; gamesBlip("match");
+        setTimeout(() => gamesLetterSound(a.i), 250);
+        document.getElementById("mem-found").textContent = `${MEM.found} / ${MEM.pairs}`;
+        if (MEM.found === MEM.pairs) {
+            const great = MEM.moves <= MEM.pairs + 2;
+            MEM.t = setTimeout(() => gamesEnd(MEM.pairs, MEM.pairs, great ? 10 : 0, `🃏 ${MEM.pairs} / ${MEM.pairs} · ${MEM.moves} ${biH("محاولات", "gMoves")}`), 900);
+        }
+    } else {
+        MEM.t = setTimeout(() => { MEM.open.forEach(x => document.getElementById("mem-" + x)?.classList.remove("flip")); MEM.open = []; }, 1000);
+    }
+};

@@ -2632,3 +2632,68 @@ select.letter-select option { font-size: 26px; padding: 6px 10px; line-height: 1
     #tab-quran .q-nav-btn { font-size: 16px; padding: 10px 12px; }
     #tab-quran .quran-mode-btn { font-size: 15px; }
 }
+
+/* ===== 🐾 Choix du compagnon ===== */
+.gb-pet-new { position: relative; animation: hqPulse 1.6s ease-in-out infinite; }
+.gb-pet-new::after { content: ""; position: absolute; top: 2px; right: 2px; width: 9px; height: 9px; border-radius: 50%; background: #FF6B6B; }
+.pet-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin: 10px 0 14px; }
+.pet-card { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 14px 8px; border: 3px solid #eee; border-radius: 18px; background: #fff; cursor: pointer; font-family: 'Tajawal', sans-serif; transition: transform .15s, border-color .2s; }
+.pet-card:hover { transform: translateY(-3px); border-color: #c9c5ec; }
+.pet-card.on { border-color: #F0A830; background: #FFF6E3; }
+.pet-big { font-size: 56px; line-height: 1.1; }
+.pet-name { font-weight: 800; color: #2A2361; font-size: 15px; }
+.pet-evo { font-size: 18px; letter-spacing: 2px; opacity: .85; direction: ltr; }
+
+/* ===== 🎮 Mini-jeux ===== */
+#games-root { max-width: 720px; margin: 0 auto; padding: 8px 4px 24px; }
+.games-head { text-align: center; margin-bottom: 14px; }
+.games-head h2 { font-size: 28px; color: #2A2361; margin: 0; }
+.games-head p { font-size: 17px; color: #5a4fa0; margin: 4px 0 0; }
+.games-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.game-card { border-radius: 24px; padding: 20px; text-align: center; color: #2A2361; box-shadow: 0 8px 24px rgba(42,35,97,.12); display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.gc-balloons { background: linear-gradient(160deg, #E8F7FF, #CDEBFF); }
+.gc-memory { background: linear-gradient(160deg, #FFF3DC, #FFE2B0); }
+.gc-art { font-size: 44px; line-height: 1.2; display: flex; align-items: center; gap: 6px; }
+.gc-art span { font-family: 'Noto Naskh Arabic', serif; font-weight: 700; font-size: 46px; color: #2A2361; background: #fff; border-radius: 16px; padding: 0 14px; }
+.game-card h3 { font-size: 21px; margin: 6px 0 0; }
+.game-card p { font-size: 16px; margin: 0 0 8px; color: #3D348B; }
+.gc-play { font-family: 'Tajawal', sans-serif; font-size: 20px; font-weight: 800; border: none; border-radius: 30px; padding: 12px 28px; background: #2A2361; color: #fff; cursor: pointer; }
+.gc-play:hover { transform: scale(1.04); }
+.gc-levels { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.gc-hard { background: #F2677A; }
+.bal-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.bal-back { width: 40px; height: 40px; border-radius: 50%; border: none; background: #eee; font-size: 18px; cursor: pointer; }
+.bal-count, .bal-score { font-size: 19px; font-weight: 800; color: #2A2361; background: #fff; border-radius: 20px; padding: 6px 14px; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.bal-listen { display: block; margin: 0 auto 10px; font-family: 'Tajawal', sans-serif; font-size: 19px; font-weight: 800; border: none; border-radius: 30px; padding: 12px 26px; background: #F0A830; color: #2A2361; cursor: pointer; box-shadow: 0 6px 16px rgba(240,168,48,.35); }
+.bal-arena { position: relative; height: min(62vh, 560px); border-radius: 24px; overflow: hidden; background: linear-gradient(180deg, #BFE6FF 0%, #E9F7FF 70%, #D4F5D0 100%); touch-action: manipulation; }
+.balloon { position: absolute; width: 88px; height: 106px; border: none; background: none; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.balloon::before { content: ""; position: absolute; inset: 0 0 18px; border-radius: 50% 50% 48% 48%; background: radial-gradient(circle at 32% 28%, rgba(255,255,255,.75) 0 10%, transparent 11%), var(--c); box-shadow: inset -8px -10px 0 rgba(0,0,0,.08); }
+.balloon i { position: absolute; left: 50%; bottom: 0; width: 2px; height: 22px; background: rgba(0,0,0,.25); }
+.bl-l { position: relative; display: block; padding-top: 14px; font-family: 'Noto Naskh Arabic', serif; font-size: 46px; font-weight: 700; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,.25); line-height: 1.3; }
+.balloon.pop { animation: balPop .45s ease-out forwards; }
+.balloon.wobble { animation: shake .4s; }
+@keyframes balPop { 0% { transform: scale(1); opacity: 1; } 40% { transform: scale(1.35); opacity: .9; } 100% { transform: scale(.2); opacity: 0; } }
+.mem-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.mem-card { aspect-ratio: 3 / 4; border: none; background: none; padding: 0; cursor: pointer; perspective: 800px; }
+.mem-in { position: relative; display: block; width: 100%; height: 100%; transition: transform .45s; transform-style: preserve-3d; }
+.mem-card.flip .mem-in { transform: rotateY(180deg); }
+.mem-back, .mem-face { position: absolute; inset: 0; border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.mem-back { background: linear-gradient(160deg, #3D348B, #2A2361); color: #F0A830; font-size: 40px; font-weight: 900; box-shadow: 0 4px 12px rgba(42,35,97,.25); }
+.mem-face { background: #fff; transform: rotateY(180deg); box-shadow: 0 4px 12px rgba(0,0,0,.1); border: 3px solid #eee; overflow: hidden; }
+.mem-face b { font-family: 'Noto Naskh Arabic', serif; font-size: 52px; color: #2A2361; line-height: 1.2; }
+.mem-face img { width: 78%; height: 62%; object-fit: contain; }
+.mem-face small { font-family: 'Noto Naskh Arabic', serif; font-size: 18px; font-weight: 700; color: #2A2361; }
+.mem-card.ok .mem-face { border-color: #6BCB77; background: #EFFBF0; }
+.mem-card.ok { animation: pulse .4s; }
+.games-end { text-align: center; padding: 30px 10px; }
+.ge-emoji { font-size: 76px; }
+.games-end h2 { font-size: 30px; color: #2A2361; margin: 6px 0; }
+.ge-score { font-size: 21px; font-weight: 800; color: #3D348B; }
+.ge-pet { font-size: 64px; margin: 6px 0; animation: petBob 1.4s ease-in-out infinite; }
+@keyframes petBob { 50% { transform: translateY(-8px); } }
+.ge-cap { font-size: 15px; color: #8a5a00; background: #FFF6E3; border-radius: 12px; padding: 8px 12px; display: inline-block; }
+.ge-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 14px; }
+@media (max-width: 600px) {
+    .balloon { width: 74px; height: 90px; } .bl-l { font-size: 38px; padding-top: 12px; }
+    .mem-grid { gap: 7px; } .mem-face b { font-size: 40px; } .mem-face small { font-size: 14px; }
+}
