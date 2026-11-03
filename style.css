@@ -2697,3 +2697,5 @@ select.letter-select option { font-size: 26px; padding: 6px 10px; line-height: 1
     .balloon { width: 74px; height: 90px; } .bl-l { font-size: 38px; padding-top: 12px; }
     .mem-grid { gap: 7px; } .mem-face b { font-size: 40px; } .mem-face small { font-size: 14px; }
 }
+/* Démonstration d'écriture pendant la visite famille */
+input.tour-typing::placeholder { color: #2A2361; opacity: 1; font-weight: 700; }

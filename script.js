@@ -4765,8 +4765,9 @@ TOURS.director = { icon: "🏫", title: T("جولة المدير", "Présentatio
 TOURS.family = { icon: "👨‍👩‍👧", title: T("كيف أبدأ مع أبنائي؟", "Bien démarrer avec vos enfants", "Goed beginnen met uw kinderen", "Getting started with your children", "Empezar bien con sus hijos"), steps: [
   { sel: null, ...T("مرحبًا بكم في حروفي!", "Bienvenue dans حروفي ! En quelques étapes, je vous montre comment préparer l'espace de vos enfants et suivre leurs progrès.", "Welkom bij حروفي! In een paar stappen laat ik zien hoe u de ruimte van uw kinderen klaarmaakt en hun voortgang volgt.", "Welcome to حروفي! In a few steps, I will show you how to set up your children's space and follow their progress.", "¡Bienvenido a حروفي! En unos pasos le muestro cómo preparar el espacio de sus hijos y seguir su progreso.") },
   { do: saTab("sa-classes"), sel: "#sa-class-name", ...T("١. أنشئوا مجموعة", "Étape 1 : créez un groupe, par exemple « Mes enfants ». Écrivez son nom ici, puis touchez « Ajouter ».", "Stap 1: maak een groep aan, bijvoorbeeld « Mijn kinderen ». Schrijf de naam hier en tik op « Toevoegen ».", "Step 1: create a group, for example « My children ». Type its name here, then tap « Add ».", "Paso 1: cree un grupo, por ejemplo « Mis hijos ». Escriba su nombre aquí y toque « Añadir ».") },
-  { sel: ".school-card .btn-sm-add, #sa-class-name", ...T("٢. أضيفوا أبناءكم", "Étape 2 : touchez le bouton 👥 du groupe, puis ajoutez chaque enfant avec son prénom et son nom. Chacun reçoit automatiquement un code élève et un code parent.", "Stap 2: tik op de knop 👥 van de groep en voeg elk kind toe met voornaam en achternaam. Elk kind krijgt automatisch een leerlingcode en een oudercode.", "Step 2: tap the group's 👥 button, then add each child with first and last name. Each one automatically gets a pupil code and a parent code.", "Paso 2: toque el botón 👥 del grupo y añada a cada hijo con su nombre y apellido. Cada uno recibe automáticamente un código de alumno y un código de padres.") },
-  { sel: ".school-card .code-badge, #sa-class-name", ...T("٣. رمز المجموعة", "Étape 3 : voici le code du groupe. Votre enfant en aura besoin, avec son prénom et son code élève, pour entrer dans l'appli.", "Stap 3: dit is de groepscode. Uw kind heeft die nodig, samen met zijn voornaam en leerlingcode, om in de app te komen.", "Step 3: this is the group code. Your child needs it, with their first name and pupil code, to enter the app.", "Paso 3: este es el código del grupo. Su hijo lo necesitará, con su nombre y su código de alumno, para entrar en la app.") },
+  { do: saTab("sa-classes"), sel: ".school-card .btn-sm-add, #sa-class-name", tap: true, ...T("٢. افتحوا قائمة المجموعة", "Étape 2 : touchez le bouton 👥 du groupe : la liste de vos enfants s'ouvre.", "Stap 2: tik op de knop 👥 van de groep: de lijst van uw kinderen gaat open.", "Step 2: tap the group's 👥 button: your children's list opens.", "Paso 2: toque el botón 👥 del grupo: se abre la lista de sus hijos.") },
+  { do: () => tourTypeDemo("stu-firstname", "Yasmine"), sel: "#stu-firstname, #sa-class-name", ...T("أضيفوا كلّ طفل", "Écrivez le prénom ici, le nom à côté, puis touchez « Ajouter ». Faites-le pour chaque enfant : chacun reçoit un code élève et un code parent.", "Typ hier de voornaam, de achternaam ernaast, en tik op « Toevoegen ». Doe dat voor elk kind: elk kind krijgt een leerlingcode en een oudercode.", "Type the first name here, the last name next to it, then tap « Add ». Do this for each child: each one gets a pupil code and a parent code.", "Escriba aquí el nombre, el apellido al lado, y toque « Añadir ». Hágalo con cada hijo: cada uno recibe un código de alumno y un código de padres.") },
+  { do: () => tourTypeDemo(null), sel: "#sa-students-list table, .school-card .code-badge, #sa-class-name", ...T("٣. رموز أبنائكم", "Étape 3 : voici les codes de chaque enfant. Le code élève est pour l'enfant, le code parent pour vous. Le code du groupe se trouve en haut, sur la carte du groupe.", "Stap 3: dit zijn de codes van elk kind. De leerlingcode is voor het kind, de oudercode voor u. De groepscode staat bovenaan, op de kaart van de groep.", "Step 3: here are each child's codes. The pupil code is for the child, the parent code is for you. The group code is at the top, on the group card.", "Paso 3: aquí están los códigos de cada hijo. El código de alumno es para el niño, el de padres para usted. El código del grupo está arriba, en la tarjeta del grupo.") },
   { do: saTab("sa-settings"), sel: ".sa-qr, #sa-school-code-display", ...T("٤. رمز العائلة ورمز QR", "Étape 4 : le code de la famille et son QR code. Sur la tablette ou le téléphone de l'enfant, scannez ce QR code : l'appli s'ouvre avec le code déjà rempli.", "Stap 4: de gezinscode en de QR-code. Scan deze QR-code met de tablet of telefoon van uw kind: de app opent met de code al ingevuld.", "Step 4: the family code and its QR code. Scan this QR code with your child's tablet or phone: the app opens with the code already filled in.", "Paso 4: el código de la familia y su código QR. Escanéelo con la tableta o el teléfono de su hijo: la app se abre con el código ya puesto.") },
   { sel: "#btn-choose-logo", ...T("٥. صورة العائلة", "Étape 5 : ajoutez une photo de famille. Elle apparaît en grand, avec un son de surprise, quand votre enfant entre le code.", "Stap 5: voeg een gezinsfoto toe. Die verschijnt groot, met een verrassingsgeluid, wanneer uw kind de code invoert.", "Step 5: add a family photo. It appears large, with a surprise sound, when your child enters the code.", "Paso 5: añada una foto de familia. Aparece en grande, con un sonido sorpresa, cuando su hijo introduce el código.") },
   { sel: "#btn-family-teach", ...T("٦. تمارين ومتابعة", "Étape 6 : avec ce bouton, vous jouez le rôle du professeur. Vous créez des exercices, vous écoutez les enregistrements de vos enfants et vous corrigez leurs travaux.", "Stap 6: met deze knop speelt u de rol van leerkracht. U maakt oefeningen, beluistert de opnames van uw kinderen en verbetert hun werk.", "Step 6: with this button, you play the teacher's role. You create exercises, listen to your children's recordings and correct their work.", "Paso 6: con este botón, usted hace de profesor. Crea ejercicios, escucha las grabaciones de sus hijos y corrige sus trabajos.") },
@@ -4777,8 +4778,9 @@ TOURS.family = { icon: "👨‍👩‍👧", title: T("كيف أبدأ مع أب
 [
   "مرحبًا بكم في حروفي! في خطوات قليلة، أريكم كيف تهيّئون فضاء أبنائكم وتتابعون تقدّمهم.",
   "الخطوة الأولى: أنشئوا مجموعة، مثلًا «أبنائي». اكتبوا اسمها هنا، ثمّ اضغطوا «إضافة».",
-  "الخطوة الثانية: اضغطوا زرّ المجموعة، ثمّ أضيفوا كلّ طفل باسمه ولقبه. يحصل كلّ طفل تلقائيًّا على رمز التلميذ ورمز الوليّ.",
-  "الخطوة الثالثة: هذا رمز المجموعة. يحتاجه طفلكم مع اسمه ورمزه للدخول إلى التطبيق.",
+  "الخطوة الثانية: اضغطوا زرّ المجموعة، فتُفتح قائمة أبنائكم.",
+  "اكتبوا الاسم الأول هنا واللقب بجانبه، ثمّ اضغطوا «إضافة». افعلوا ذلك لكلّ طفل، فيحصل كلّ واحد على رمز التلميذ ورمز الوليّ.",
+  "الخطوة الثالثة: هذه رموز كلّ طفل. رمز التلميذ للطفل، ورمز الوليّ لكم. ورمز المجموعة في الأعلى، على بطاقة المجموعة.",
   "الخطوة الرابعة: رمز العائلة ورمز QR. امسحوه بلوحة الطفل أو هاتفه، فيُفتح التطبيق والرمز مكتوب.",
   "الخطوة الخامسة: أضيفوا صورة للعائلة. تظهر كبيرة مع صوت مفاجأة عندما يكتب طفلكم الرمز.",
   "الخطوة السادسة: بهذا الزرّ تقومون بدور المعلّم. تنشئون التمارين، وتستمعون إلى تسجيلات أبنائكم، وتصحّحون أعمالهم.",
@@ -4786,6 +4788,17 @@ TOURS.family = { icon: "👨‍👩‍👧", title: T("كيف أبدأ مع أب
   "نصيحة: على هاتف الطفل أو لوحته، افتحوا قائمة المتصفّح واختاروا «إضافة إلى الشاشة الرئيسية»، فتظهر أيقونة حروفي كتطبيق.",
   "زرّ علامة الاستفهام يساعدكم في كلّ وقت، ويمكنكم به إعادة هذه الجولة. خمس عشرة دقيقة في اليوم تكفي. تعلّمًا موفّقًا!",
 ].forEach((t, i) => { TOURS.family.steps[i].arLong = t; });
+// Petite démonstration d'écriture dans un champ (on anime seulement le texte d'exemple, rien n'est enregistré)
+let _tourTypeTimer = null;
+function tourTypeDemo(id, word) {
+    clearInterval(_tourTypeTimer);
+    document.querySelectorAll("[data-tour-ph]").forEach(el => { el.placeholder = el.dataset.tourPh; delete el.dataset.tourPh; el.classList.remove("tour-typing"); });
+    if (!id) return;
+    const el = document.getElementById(id); if (!el) return;
+    el.dataset.tourPh = el.placeholder; el.classList.add("tour-typing");
+    let i = 0;
+    _tourTypeTimer = setInterval(() => { el.placeholder = word.slice(0, ++i) + (i % 2 ? "|" : ""); if (i > word.length + 6) i = 0; }, 260);
+}
 // Lancement automatique, une seule fois par famille et par appareil
 function familyTourAutoStart() {
   if (isDemoMode || currentOrgType !== "family" || currentRole !== "schooladmin" || !currentSchoolId) return;
@@ -4981,7 +4994,7 @@ function tourCleanup() {
   document.body.classList.remove("tour-on");
   window._tourRunning = false;
 }
-window.tourStop = (silent) => { if (!_tour) return; _tour.token++; tourCleanup(); _tour = null; };
+window.tourStop = (silent) => { try { tourTypeDemo(null); } catch (e) {} if (!_tour) return; _tour.token++; tourCleanup(); _tour = null; };
 function tourFinish() {
   const key = _tour?.key;
   tourStop();
