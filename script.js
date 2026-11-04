@@ -393,6 +393,9 @@ const FEATURE_I18N = {
     "btn-family-teach":  { emoji:"✏️", ar:"تمارين ومتابعة", fr:"Exercices et suivi", nl:"Oefeningen en opvolging", en:"Exercises and follow-up", es:"Ejercicios y seguimiento" },
     "btn-back-family":   { emoji:"↩️", ar:"رجوع", fr:"Retour", nl:"Terug", en:"Back", es:"Volver" },
     "sa-qr-text": { emoji:"📱", ar:"امسحوه بكاميرا الهاتف: يُفتح التطبيق ورمز المدرسة مكتوب", fr:"Scannez avec l'appareil photo du téléphone : l'appli s'ouvre avec le code déjà rempli.", nl:"Scan met de camera van de telefoon: de app opent met de code al ingevuld.", en:"Scan with the phone camera: the app opens with the code already filled in.", es:"Escanee con la cámara del teléfono: la app se abre con el código ya puesto." },
+    "btn-choose-logo": { emoji:"📁", ar:"اختيار صورة من جهازي", fr:"Choisir une image sur mon appareil", nl:"Een afbeelding op mijn toestel kiezen", en:"Choose a picture on my device", es:"Elegir una imagen de mi dispositivo" },
+    "sa-logo-url-toggle": { emoji:"🔗", ar:"لديّ رابط صورة على الإنترنت", fr:"J'ai déjà un lien d'image en ligne", nl:"Ik heb al een link naar een afbeelding", en:"I already have an online image link", es:"Ya tengo un enlace de imagen en línea" },
+    "btn-save-logo": { emoji:"💾", ar:"حفظ هذا الرابط", fr:"Enregistrer ce lien", nl:"Deze link opslaan", en:"Save this link", es:"Guardar este enlace" },
     "sa-sound-title": { emoji:"🔔", ar:"صوت ظهور الشعار", fr:"Son à l'apparition du logo", nl:"Geluid bij het verschijnen van het logo", en:"Sound when the logo appears", es:"Sonido al aparecer el logo" },
     "sa-sound-note":  { emoji:"", ar:"يُسمع عندما يُدخل التلميذ رمز المدرسة ويظهر الشعار. اضغط ▶ للاستماع، ثمّ اختر", fr:"Il retentit quand l'élève entre le code de l'école et que le logo apparaît. Touchez ▶ pour écouter, puis choisissez.", nl:"Het klinkt wanneer de leerling de schoolcode invoert en het logo verschijnt. Tik op ▶ om te luisteren en kies dan.", en:"It plays when the pupil enters the school code and the logo appears. Tap ▶ to listen, then choose.", es:"Suena cuando el alumno introduce el código de la escuela y aparece el logo. Toque ▶ para escuchar y luego elija." },
     "sa-settings-logo-title": { emoji:"🎨", ar:"تخصيص المدرسة", fr:"Personnalisation de l'école", nl:"Personalisatie van de school", en:"School customization", es:"Personalización de la escuela" },
@@ -751,14 +754,14 @@ window.saHandleLogoFile = (event) => {
                 // Garde le champ "lien externe" synchronisé, pour qu'il ne montre jamais une valeur périmée
                 const urlInput = document.getElementById("sa-logo-url");
                 if (urlInput) urlInput.value = dataUrl;
-                status.textContent = "✅ " + (currentUILang === "nl" ? "Logo opgeslagen!" : "Logo enregistré !");
+                status.textContent = "✅ " + bi("تمّ حفظ الشعار", "logoSaved");
             } catch (err) {
                 if (myToken === logoUploadToken) {
-                    status.textContent = "❌ " + (currentUILang === "nl" ? "Fout bij opslaan." : "Erreur lors de l'enregistrement.");
+                    status.textContent = "❌ " + bi("خطأ في الحفظ", "saveError");
                 }
             }
         };
-        img.onerror = () => { if (myToken === logoUploadToken) status.textContent = "❌ " + (currentUILang === "nl" ? "Ongeldige afbeelding." : "Image invalide."); };
+        img.onerror = () => { if (myToken === logoUploadToken) status.textContent = "❌ " + bi("صورة غير صالحة", "badImage"); };
         img.src = e.target.result;
     };
     reader.readAsDataURL(file);
@@ -4828,6 +4831,9 @@ Object.assign(DYNAMIC_I18N, {
   qTestYourself:{ fr:"Teste ta mémoire", nl:"Test je geheugen", en:"Test your memory", es:"Pon a prueba tu memoria" },
   qCorrect:     { fr:"Correct !", nl:"Juist!", en:"Correct!", es:"¡Correcto!" },
   qRightAnswer: { fr:"La bonne réponse :", nl:"Het juiste antwoord:", en:"The right answer:", es:"La respuesta correcta:" },
+  logoSaved:    { fr:"Logo enregistré !", nl:"Logo opgeslagen!", en:"Logo saved!", es:"¡Logo guardado!" },
+  saveError:    { fr:"Erreur lors de l'enregistrement.", nl:"Fout bij opslaan.", en:"Error while saving.", es:"Error al guardar." },
+  badImage:     { fr:"Image invalide.", nl:"Ongeldige afbeelding.", en:"Invalid image.", es:"Imagen no válida." },
   quizOther:    { fr:"ou choisis un autre exercice", nl:"of kies een andere oefening", en:"or choose another exercise", es:"o elige otro ejercicio" },
   soundSaved:   { fr:"Enregistré", nl:"Opgeslagen", en:"Saved", es:"Guardado" },
   pupilsWord:   { fr:"élève(s)", nl:"leerling(en)", en:"pupil(s)", es:"alumno(s)" },

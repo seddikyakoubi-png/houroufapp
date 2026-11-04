@@ -2699,3 +2699,21 @@ select.letter-select option { font-size: 26px; padding: 6px 10px; line-height: 1
 }
 /* Démonstration d'écriture pendant la visite famille */
 input.tour-typing::placeholder { color: #2A2361; opacity: 1; font-weight: 700; }
+
+/* ===== 🔤 Harakat : série et réglages plus lisibles pour les enfants ===== */
+#tab-harakat .hk-s-label { font-size: 18px; color: #2A2361; margin: 16px 4px 8px; }
+#tab-harakat .hk-s-row, #tab-harakat .hk-s-letters { gap: 9px; }
+#tab-harakat .hk-chip { font-size: 17px; padding: 10px 16px; border-radius: 22px; color: #3a3560; }
+#tab-harakat .hk-chip.active { color: #5b3a96; }
+#tab-harakat .hk-chip-move { font-size: 30px; padding: 2px 14px; min-width: 60px; line-height: 1.6; }
+#tab-harakat .hk-chip-letter { width: 50px; height: 50px; font-size: 27px; }
+#tab-harakat .hk-btn { font-size: 19px; padding: 13px 24px; border-radius: 28px; }
+#tab-harakat .hk-s-item { font-size: 34px; min-width: 56px; }
+#tab-harakat .hk-s-latin { font-size: 26px; }
+#tab-harakat .hk-s-count { font-size: 16px; }
+#tab-harakat .hk-s-hint, #tab-harakat .hk-s-empty { font-size: 16px; }
+#tab-harakat .hk-s-count-inline { font-size: 15px; }
+@media (max-width: 600px) {
+    #tab-harakat .hk-chip { font-size: 15.5px; padding: 9px 13px; }
+    #tab-harakat .hk-chip-move { font-size: 27px; min-width: 52px; }
+}
