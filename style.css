@@ -2717,3 +2717,60 @@ input.tour-typing::placeholder { color: #2A2361; opacity: 1; font-weight: 700; }
     #tab-harakat .hk-chip { font-size: 15.5px; padding: 9px 13px; }
     #tab-harakat .hk-chip-move { font-size: 27px; min-width: 52px; }
 }
+
+/* =====================================================================
+   👦 ESPACE ÉLÈVE : textes plus grands partout (lecteurs de 5 à 10 ans)
+   ===================================================================== */
+#screen-menu .tab-btn { font-size: 17px; padding: 14px 10px; }
+#screen-menu .compteur, #screen-menu .compteur-harakat { font-size: 17px; }
+#screen-menu .pill { font-size: 17px; }
+/* Harakat */
+#screen-menu .harakat-tile-name { font-size: 16px; }
+#screen-menu .harakat-latin small { font-size: 16px; }
+#screen-menu .harakat-pos-btn { font-size: 17px; padding: 10px 18px; }
+#screen-menu .harakat-group-title { font-size: 19px; color: #2A2361; }
+#screen-menu .harakat-note { font-size: 16px; }
+#screen-menu .hk-tile-star { font-size: 17px; }
+#screen-menu .hk-mic-title { font-size: 19px; }
+#screen-menu .hk-mic-btn { font-size: 17px; padding: 11px 18px; }
+#screen-menu .hk-mic-error { font-size: 15px; }
+#screen-menu .hk-mic-privacy { font-size: 13.5px; }
+#screen-menu .hk-word-label, #screen-menu .hk-voice-row label, #screen-menu .hk-voice-select { font-size: 16px; }
+#screen-menu .hk-premium, #screen-menu .hk-locked-text { font-size: 15px; }
+#screen-menu .hk-weak-tag { font-size: 14px; }
+/* Quiz */
+#screen-menu .qmb-ar { font-size: 17px; }
+#screen-menu .qmb-tr { font-size: 14px; }
+#screen-menu .hq-level-title small, #screen-menu .hq-level-btn span { font-size: 17px; }
+#screen-menu .hq-level-btn { font-size: 19px; }
+#screen-menu .hq-listen span { font-size: 16px; }
+#screen-menu .quiz-mode-btn { font-size: 19px; }
+/* Vocabulaire */
+#screen-menu .vocab-filter-btn { font-size: 17px; padding: 10px 16px; }
+#screen-menu .vocab-trad { font-size: 16px; }
+#screen-menu .vocab-learned-badge, #screen-menu .vocab-lettre-badge { font-size: 15px; }
+/* Tracer et exercices */
+#screen-menu .tool-label, #screen-menu .brush-size-label { font-size: 16px; }
+#screen-menu .btn-tool { font-size: 17px; }
+#screen-menu .ex-meta, #screen-menu .ex-type-badge, #screen-menu .ex-status-badge { font-size: 15.5px; }
+#screen-menu .submission-date { font-size: 15px; }
+/* Barre de jeu */
+#screen-menu .gb-level { font-size: 17px; }
+#screen-menu .gb-xp, #screen-menu .gb-goal { font-size: 16px; }
+#screen-menu .gb-chip { font-size: 17px; }
+#screen-menu .gb-bubble { font-size: 17px; }
+/* Fenêtres du jeu et de l'aide (affichées par-dessus l'écran) */
+.gb-sheet .gb-sheet-sub, .gb-howto div { font-size: 17px; }
+.gb-badge-ar { font-size: 16px; } .gb-badge-fr { font-size: 14.5px; }
+.gb-modal p { font-size: 18px; }
+.help-t { font-size: 17px; } .help-t .h-tr { font-size: 15.5px; }
+.help-sec h3 { font-size: 18px; }
+.help-faq p { font-size: 16px; }
+.help-fab-l { font-size: 15px; }
+.tour-tr { font-size: 17px; }
+.mem-face small { font-size: 17px; }
+.pet-name { font-size: 17px; }
+@media (max-width: 600px) {
+    #screen-menu .tab-btn { font-size: 15.5px; padding: 12px 6px; }
+    #screen-menu .harakat-pos-btn { font-size: 15.5px; padding: 9px 12px; }
+}
