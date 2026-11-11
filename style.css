@@ -2774,3 +2774,32 @@ input.tour-typing::placeholder { color: #2A2361; opacity: 1; font-weight: 700; }
     #screen-menu .tab-btn { font-size: 15.5px; padding: 12px 6px; }
     #screen-menu .harakat-pos-btn { font-size: 15.5px; padding: 9px 12px; }
 }
+
+/* =====================================================================
+   🖼️ MA PHOTO — médaillon qui accompagne l'élève
+   ===================================================================== */
+.kid-buddy {
+    position: fixed; right: 14px; bottom: 14px; z-index: 899; width: 78px; height: 78px; padding: 0; border-radius: 50%;
+    border: 4px solid #fff; background: #fff; cursor: pointer; overflow: visible;
+    box-shadow: 0 0 0 4px #ffb6d5, 0 8px 22px rgba(43,37,96,.3); animation: kbFloat 4s ease-in-out infinite;
+}
+.kid-buddy img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: block; }
+.kid-buddy-empty { display: flex; flex-direction: column; align-items: center; justify-content: center; background: #FFF4E5; box-shadow: 0 0 0 3px #FFD58A, 0 8px 22px rgba(43,37,96,.25); }
+.kid-buddy-empty span { font-size: 28px; line-height: 1; }
+.kid-buddy-empty small { font-size: 12px; font-weight: 800; color: #3D348B; font-family: 'Tajawal', sans-serif; }
+@keyframes kbFloat { 50% { transform: translateY(-5px); } }
+.kid-buddy.kb-cheer { animation: kbCheer .7s cubic-bezier(.34,1.56,.64,1); }
+@keyframes kbCheer { 30% { transform: scale(1.25) rotate(-8deg); } 60% { transform: scale(1.1) rotate(6deg); } }
+.kb-pop { position: absolute; top: -10px; left: 50%; font-size: 28px; pointer-events: none; animation: kbPop 1.1s ease-out forwards; }
+@keyframes kbPop { from { transform: translate(-50%, 0) scale(.5); opacity: 1; } to { transform: translate(-50%, -60px) scale(1.2); opacity: 0; } }
+body.tour-on .kid-buddy { display: none; }
+.gb-modal-kid { width: 92px; height: 92px; border-radius: 50%; object-fit: cover; border: 4px solid #fff; box-shadow: 0 0 0 4px #ffb6d5; display: block; margin: 0 auto 6px; }
+.kid-pic-now { display: flex; justify-content: center; margin: 4px 0 10px; }
+.kid-pic-btn { display: block; box-sizing: border-box; max-width: 100%; margin: 0 auto; cursor: pointer; font-size: 16px; white-space: normal; text-align: center; line-height: 1.4; }
+#screen-menu { padding-bottom: 96px; }
+.kid-av-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 10px 0 14px; }
+.kid-av { padding: 0; border: 3px solid transparent; border-radius: 50%; background: none; cursor: pointer; aspect-ratio: 1; transition: transform .15s; }
+.kid-av:hover { transform: scale(1.08); border-color: #ffb6d5; }
+.kid-av img { width: 100%; height: 100%; border-radius: 50%; display: block; }
+.kid-pic-remove { display: block; margin: 0 auto 10px; }
+@media (max-width: 480px) { .kid-buddy { width: 64px; height: 64px; right: 10px; bottom: 10px; } }

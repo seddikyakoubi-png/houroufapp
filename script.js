@@ -1270,7 +1270,7 @@ window.logout = ()=>{
     demoStopTimer();
     currentUser=null;currentRole=null;currentSchoolId=null;currentClassId=null;selectedRole="student";isDemoMode=false;window._famParentMode=false;famTeachUi(false);
     try { tourStop(); } catch (e) {}
-    _game = window._game = null; childWelcomeShown = false; try { renderGameBar(); renderDemoNews(); helpRenderFab(); } catch (e) {}
+    _game = window._game = null; childWelcomeShown = false; _kidPic = ""; document.getElementById("kid-buddy")?.remove(); try { renderGameBar(); renderDemoNews(); helpRenderFab(); } catch (e) {}
     document.getElementById("header-logo-img")?.classList.remove("child-photo-header");
     applyFeatureTranslations(""); // reset : évite qu'une langue d'école reste affichée pour le prochain utilisateur
     const mainLogo = document.getElementById("login-logo-main");
@@ -4282,6 +4282,7 @@ function gameAddXp(n) {
     const g = _game, before = gameLevel(g.xp), today = todayLocalIso();
     g.xp += n; g.dayXp += n;
     gameToast(`+${n} ⭐`);
+    kidBuddyCheer();
     if (g.ch && g.ch.id === "xp40" && !g.ch.done) g.ch.n = g.dayXp;
     // 🔥 Objectif du jour
     if (g.dayXp >= GAME_GOAL && g.lastGoalDay !== today) {
@@ -4400,7 +4401,7 @@ function gameNextCelebration() {
     gameSound("fanfare"); gameConfetti();
     const m = document.createElement("div");
     m.className = "gb-modal-bg";
-    m.innerHTML = `<div class="gb-modal"><div class="gb-modal-emoji">${c.emoji}</div><h2>${c.title}</h2><p>${c.sub || ""}</p>
+    m.innerHTML = `<div class="gb-modal">${_kidPic ? `<img class="gb-modal-kid" src="${_kidPic}" alt="">` : ""}<div class="gb-modal-emoji">${c.emoji}</div><h2>${c.title}</h2><p>${c.sub || ""}</p>
         <button class="btn-primary" onclick="this.closest('.gb-modal-bg').remove(); gameNextCelebration();">🎉 ${bi("رائع!", "gSuper")}</button></div>`;
     document.body.appendChild(m);
 }
@@ -4656,19 +4657,24 @@ window.parentRemovePhoto = async (studentId) => {
     await updateDoc(doc(db, "eleves", studentId), { photo: deleteField() });
     renderParentPhoto(studentId, "");
 };
-// Côté enfant : sa photo remplace le logo dans l'en-tête, et l'accueille en grand une fois par séance
+// Côté enfant : sa photo (ou l'image qu'il a choisie) l'accompagne pendant tout son apprentissage
 let childWelcomeShown = false;
 function applyChildPhoto(data) {
-    if (currentRole !== "student" || currentOrgType !== "family" || !data?.photo) return;
-    const img = document.getElementById("header-logo-img"), emoji = document.getElementById("header-logo-emoji");
-    if (img) { img.src = data.photo; img.classList.remove("hidden"); img.classList.add("child-photo-header"); }
-    if (emoji) emoji.classList.add("hidden");
+    if (currentRole !== "student") return;
+    _kidPic = kidPicUrl(data);
+    renderKidBuddy();
+    if (!_kidPic) return;
+    if (currentOrgType === "family") { // en famille, elle remplace aussi le logo dans l'en-tête
+        const img = document.getElementById("header-logo-img"), emoji = document.getElementById("header-logo-emoji");
+        if (img) { img.src = _kidPic; img.classList.remove("hidden"); img.classList.add("child-photo-header"); }
+        if (emoji) emoji.classList.add("hidden");
+    }
     if (childWelcomeShown) return;
     childWelcomeShown = true;
     const first = (document.getElementById("header-name")?.textContent || "").split(" ")[0];
     const overlay = document.createElement("div");
     overlay.className = "child-welcome";
-    overlay.innerHTML = `<div class="wreath-pop">${logoWreathHtml(data.photo, "big")}</div>
+    overlay.innerHTML = `<div class="wreath-pop">${logoWreathHtml(_kidPic, "big")}</div>
         <p class="child-welcome-name">🌸 ${bi("مرحبًا", "welcomeChild")} ${first} 🌸</p>`;
     overlay.onclick = () => overlay.remove();
     document.body.appendChild(overlay);
@@ -9190,3 +9196,104 @@ window.memoryFlip = (k) => {
         MEM.t = setTimeout(() => { MEM.open.forEach(x => document.getElementById("mem-" + x)?.classList.remove("flip")); MEM.open = []; }, 1000);
     }
 };
+
+
+// ============================================================
+//  🖼️ MA PHOTO : l'élève choisit sa photo ou une image, qui l'accompagne pendant l'apprentissage
+//  - Version famille (et démo) : photo de l'appareil OU image au choix
+//  - Version école : image au choix seulement (pas de photo d'enfant envoyée dans le cloud de l'école)
+//  Affichage : médaillon fleuri en bas à droite (il applaudit à chaque ⭐), accueil en grand,
+//  et dans chaque fête (niveau, badge, objectif du jour).
+// ============================================================
+let _kidPic = "";
+const KID_AVATARS = [
+    ["🦁", "#FFD36E", "#FF8C42"], ["🐱", "#FFC1D9", "#FF6FA5"], ["🐼", "#D9F2E6", "#5FBF8F"], ["🦊", "#FFD8B0", "#F2763C"],
+    ["🐰", "#E9E2FF", "#9B87F5"], ["🐸", "#D6F5C9", "#4CAF50"], ["🦄", "#FFE0F7", "#C77DFF"], ["🐢", "#CFF3EC", "#2BB3A0"],
+    ["🐬", "#CDEBFF", "#3A8DDE"], ["🦋", "#E3E8FF", "#5C6BC0"], ["🚀", "#DCE3FF", "#3D348B"], ["⚽", "#E8F5E9", "#43A047"],
+    ["🌸", "#FFE4EC", "#EC407A"], ["🌙", "#FFF2C7", "#3D348B"], ["⭐", "#FFF6CC", "#F5A623"], ["🌈", "#E0F7FA", "#7E57C2"],
+];
+const _kidAvCache = {};
+function kidAvatarUrl(i) {
+    const a = KID_AVATARS[i]; if (!a) return "";
+    if (_kidAvCache[i]) return _kidAvCache[i];
+    const c = document.createElement("canvas"); c.width = c.height = 240;
+    const x = c.getContext("2d"), g = x.createRadialGradient(100, 90, 20, 120, 120, 150);
+    g.addColorStop(0, a[1]); g.addColorStop(1, a[2]);
+    x.fillStyle = g; x.fillRect(0, 0, 240, 240);
+    x.font = "150px 'Apple Color Emoji','Segoe UI Emoji','Noto Color Emoji',sans-serif";
+    x.textAlign = "center"; x.textBaseline = "middle"; x.fillText(a[0], 120, 132);
+    return (_kidAvCache[i] = c.toDataURL("image/png"));
+}
+function kidPicUrl(data) {
+    if (data?.photo) return data.photo;
+    if (Number.isInteger(data?.avatar) && KID_AVATARS[data.avatar]) return kidAvatarUrl(data.avatar);
+    return "";
+}
+const kidCanUsePhoto = () => isDemoMode || currentOrgType === "family";
+
+// Le médaillon qui accompagne l'élève (dans l'écran élève uniquement)
+function renderKidBuddy() {
+    const screen = document.getElementById("screen-menu");
+    if (!screen || currentRole !== "student") return;
+    let b = document.getElementById("kid-buddy");
+    if (!b) { b = document.createElement("button"); b.id = "kid-buddy"; b.onclick = () => window.openKidPicPicker(); screen.appendChild(b); }
+    b.className = "kid-buddy" + (_kidPic ? "" : " kid-buddy-empty");
+    b.title = bi("صورتي", "kidPicTitle");
+    b.innerHTML = _kidPic ? `<img src="${_kidPic}" alt="">` : `<span>🖼️</span><small>صورتي</small>`;
+}
+function kidBuddyCheer() {
+    const b = document.getElementById("kid-buddy"); if (!b || !_kidPic) return;
+    b.classList.remove("kb-cheer"); void b.offsetWidth; b.classList.add("kb-cheer");
+    const p = document.createElement("span");
+    p.className = "kb-pop"; p.textContent = ["👏", "⭐", "💪", "🎉", "❤️"][Math.floor(Math.random() * 5)];
+    b.appendChild(p); setTimeout(() => p.remove(), 1100);
+}
+
+window.openKidPicPicker = () => {
+    document.querySelectorAll(".gb-modal-bg").forEach(m => m.remove());
+    gameOpenSheet(`<h2>🖼️ ${biH("صورتي", "kidPicTitle")}</h2>
+        <p class="gb-sheet-sub">${biH("ترافقك خلال تعلّمك وتصفّق لك مع كلّ نجمة", "kidPicSub")}</p>
+        <div class="kid-pic-now">${_kidPic ? logoWreathHtml(_kidPic, "small") : `<div class="p-photo-empty">👦👧</div>`}</div>
+        ${kidCanUsePhoto() ? `<label class="btn-admin-add kid-pic-btn">📷 ${biH("صورة من جهازي", "kidPicDevice")}
+            <input type="file" accept="image/*" onchange="kidPickPhoto(this)" hidden></label>
+            <p class="gb-sheet-sub" style="margin-top:12px">${biH("أو اختر صورة", "kidPicOr")}</p>` : ""}
+        <div class="kid-av-grid">${KID_AVATARS.map((a, i) => `<button class="kid-av" onclick="kidChooseAvatar(${i})"><img src="${kidAvatarUrl(i)}" alt="${a[0]}"></button>`).join("")}</div>
+        ${_kidPic ? `<button class="btn-delete kid-pic-remove" onclick="kidRemovePic()">🗑️ ${biH("إزالة الصورة", "pPhotoRemove")}</button>` : ""}`);
+};
+async function kidSavePic(fields) {
+    if (isDemoMode) { window._demoStudent = Object.assign(window._demoStudent || { learned: [], quizScores: [] }, fields); Object.keys(fields).forEach(k => { if (fields[k] === null) delete window._demoStudent[k]; }); return; }
+    const f = {}; Object.entries(fields).forEach(([k, v]) => f[k] = v === null ? deleteField() : v);
+    await setDoc(doc(db, "eleves", currentUser), f, { merge: true });
+}
+function kidPicDone(url) {
+    _kidPic = url;
+    document.querySelectorAll(".gb-modal-bg").forEach(m => m.remove());
+    renderKidBuddy();
+    if (currentOrgType === "family") {
+        const img = document.getElementById("header-logo-img"), emoji = document.getElementById("header-logo-emoji");
+        if (img && url) { img.src = url; img.classList.remove("hidden"); img.classList.add("child-photo-header"); emoji?.classList.add("hidden"); }
+    }
+    if (url) { gameSound("win"); gameConfetti(); setTimeout(kidBuddyCheer, 300); }
+}
+window.kidPickPhoto = async (input) => {
+    const file = input.files?.[0]; if (!file || !kidCanUsePhoto()) return;
+    try {
+        const url = await resizePhotoToDataUrl(file);
+        await kidSavePic({ photo: url, avatar: null });
+        kidPicDone(url);
+    } catch (e) { alert("❌ " + e.message); }
+};
+window.kidChooseAvatar = async (i) => {
+    try { await kidSavePic({ avatar: i, photo: null }); kidPicDone(kidAvatarUrl(i)); }
+    catch (e) { alert("❌ " + e.message); }
+};
+window.kidRemovePic = async () => {
+    try { await kidSavePic({ avatar: null, photo: null }); kidPicDone(""); }
+    catch (e) { alert("❌ " + e.message); }
+};
+Object.assign(DYNAMIC_I18N, {
+    kidPicTitle:  { fr: "Ma photo", nl: "Mijn foto", en: "My picture", es: "Mi foto" },
+    kidPicSub:    { fr: "Elle t'accompagne pendant que tu apprends et t'applaudit à chaque étoile", nl: "Ze vergezelt je tijdens het leren en applaudisseert bij elke ster", en: "It stays with you while you learn and cheers at every star", es: "Te acompaña mientras aprendes y te aplaude en cada estrella" },
+    kidPicDevice: { fr: "Une photo de mon appareil", nl: "Een foto van mijn toestel", en: "A photo from my device", es: "Una foto de mi dispositivo" },
+    kidPicOr:     { fr: "ou choisis une image", nl: "of kies een afbeelding", en: "or pick a picture", es: "o elige una imagen" },
+});
